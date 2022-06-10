@@ -1,5 +1,6 @@
 # substake-hackathon
 > OneBlock Hackathon
+> 
 > Staking Curating Platform for Substrate 
 
 ## Front-End
