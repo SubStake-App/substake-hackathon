@@ -1,3 +1,5 @@
+
+import string
 from substrateinterface import SubstrateInterface 
 from web3 import Web3
 import json
@@ -54,17 +56,66 @@ class Substrate:
             return 0
             
     def get_generic_call(self, module, function, params=None):
+
+        '''
+        Params
+        - module: Name of Pallet. First word must be Capital letter.
+        - function: Dispatch call of Pallet
+        - params: Parameters of dipatch call. Form should be dictionary.
+        '''
         generic_call = self.api.compose_call(
             call_module=module,
             call_function=function,
             call_params=params
         )
         return generic_call
+
+    def send_extrinsic(self, generic_call):
+
+        '''
+        Take extrinsic call as parameter and send extrinsic with user's key-pair
+
+        Params
+        - generic_call: extrinc call from Substrate Interface. 
+        '''
         
+        signed = self.api.create_signed_extrinsic(
+            call=generic_call,
+            keypair=KEY_PAIR, # ToDo
+        )
+        try:
+            self.api.submit_extrinsic(
+                extrinsic=signed,
+            ) 
+        except Exception as e:
+            print("Error submitting extrinsic. Message: {error}".format(error=e))
+    
+    def bond(self, user_account, amount):
+
+        '''
+        Send bond extrinsic using user's key pair
+        
+        Params
+        - user_account(controller): address of user
+        - amount: bond amount
+        '''
+        generic_call = self.get_generic_call(
+            module="Staking",
+            call_function="bond",
+            params={
+                'controller': user_account,
+                'value': amount
+            }
+        )
+        self.send_extrinsic(generic_call=generic_call)
+
     def nominate(self, validators):
 
         '''
-        Send Nominate extrinsic using users' key pair
+        Send Nominate extrinsic using user's key pair
+
+        Params
+        - validators: [address of Validators]
         '''
 
         generic_call = self.get_generic_call(
@@ -74,28 +125,106 @@ class Substrate:
                 'targets': validators
             }
         )
+        self.send_extrinsic(generic_call=generic_call)
 
-        signed_extrinc = self.api.create_signed_extrinsic(
-            call=generic_call,
-            keypair= KEY_PAIR, # ToDo
+    def bond_extra(self, additional): 
+        
+        '''
+        1. Send bond extra extrinsic using user's key pair
+        2. Call "putInFrontof" extrinsic to adjust user's bag position
+        
+        Params
+        - additional: bond extra amount. 'Int'
+        '''
+        generic_call = self.get_generic_call(
+            module="Staking",
+            call_function="bondExtra",
+            params={
+                'max_additional': additional
+            }
         )
+        self.send_extrinsic(generic_call=generic_call)
+        self.put_in_front_of(substrate_account="") # TO-DO 
 
-        try:
-            self.api.submit_extrinsic(
-                extrinsic=signed_extrinc,
-            ) 
-        except Exception as e:
-            print("Error submitting extrinsic. Message: {error}".format(error=e))
+    def unbond(self, amount):
+        '''
+        Send unbond extrinsic using user's key pair
+
+        Params
+        - amount: unbond amount. 'Int'
+        '''
+        generic_call = self.get_generic_call(
+            module="Staking",
+            call_function="unbond",
+            params={
+                'value': amount
+            }
+        )
+        self.send_extrinsic(generic_call=generic_call)
+
+    def put_in_front_of(self, substrate_account):
+        
+        '''
+        Dispat call of "Bag-list" Pallet.
+
+        Params
+        - lighter: address of whose point is lighter than user's
+        '''
+
+        (user_score, list_head) = self.get_list_head(substrate_account=substrate_account)
+        curr_node = list_head;
+        score = self.get_score(node=curr_node);
+
+        if user_score > score: 
+            print("Put user node in front of {curr_node}".format(curr_node=curr_node))
+            return curr_node
+        
+        while True :
+            if user_score > score:
+                print("Put user node in front of {curr_node}".format(curr_node=curr_node))
+                break
+
+            curr_node = self.get_next(curr_node)
+            score = self.get_score(curr_node)
+
+        generic_call = self.get_generic_call(
+            module="VoterList",
+            call_function="putInFrontOf",
+            params={
+                'lighter': curr_node
+            }
+        )
+        self.send_extrinsic(generic_call=generic_call)
+
+    def get_list_head(self, substrate_account):
+        
+        '''
+        Get head of the bag-list
+
+        Params
+        - substrate_account: User's substrate account
+        '''
+        
+        list_node = self.api.query('VoterList', 'ListNodes', params=[substrate_account]).value
+        user_score = list_node['score']
+        user_bag_upper = list_node['bag_upper']
+        list_bags = self.api.query('VoterList', 'ListBags', params=[user_bag_upper]).value
+        list_head = list_bags['head']
+        
+        return (user_score, list_head)
+
+    def get_score(self, node):
+        return self.api.query('VoterList', 'ListNodes', params=[node]).value['score']
+
+    def get_next(self, node):
+        return self.api.query('VoterList', 'ListNodes', params=[node]).value['next']
+
 
 if __name__ == "__main__":
 
-    substrate = Substrate(url="wss://ws-api.substake.app").api
-    metamask = MetaMask(provider="https://rpc.api.moonbase.moonbeam.network")
-    metamask.delegate(
-        collator_address="0x3937B5F83f8e3DB413bD202bAf4da5A64879690F",
-        delegator_address="0x24E54d40c79dd99Ec626692C0AB58862A126A67b",
-        delegate_amount=5,
-    )
+    substrate = Substrate(url="wss://ws-api.substake.app")
+    substrate.put_in_front_of(substrate_account="5C5iC1ueEsEUTeXwwrzVDRkJqAHK1LbVaBMS59QdxhpZ9TD5")
+    
 
 
     
