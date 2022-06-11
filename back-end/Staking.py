@@ -254,6 +254,7 @@ class Substrate:
         Params
         - amount: unbond amount. 'Int'
         '''
+
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
@@ -261,6 +262,29 @@ class Substrate:
             params={
                 'value': amount
             }
+        )
+        Helper.send_extrinsic(
+            api=self.api,
+            generic_call=generic_call,
+            user_address=user_address    
+        )
+
+    def chill(self, user_address):
+
+        '''
+        Method
+        - Send chill extrinsic 
+        - Stop being as nominator/validator
+
+        Params
+        - user_addrss: User's public addrss
+        '''
+
+        generic_call = Helper.get_generic_call(
+            api=self.api,
+            module="Staking",
+            function="chill",
+            params={}
         )
         Helper.send_extrinsic(
             api=self.api,

@@ -17,5 +17,6 @@ def get_recommended_collator():
     else:
         return make_response("Not supported method", 400)
 
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
