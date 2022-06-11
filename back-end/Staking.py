@@ -157,6 +157,7 @@ class Substrate:
         '''
 
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="Staking",
             function="bond",
             params={
@@ -183,6 +184,7 @@ class Substrate:
         '''
 
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="Staking",
             function="nominate",
             params={
@@ -206,6 +208,7 @@ class Substrate:
         - additional: bond extra amount. 'Int'
         '''
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="Staking",
             function="bondExtra",
             params={
@@ -229,6 +232,7 @@ class Substrate:
         - amount: unbond amount. 'Int'
         '''
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="Staking",
             function="unbond",
             params={
@@ -251,6 +255,7 @@ class Substrate:
         - amount: unbond amount. 'Int'
         '''
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="Staking",
             function="rebond",
             params={
@@ -290,6 +295,7 @@ class Substrate:
             score = self._get_score(curr_node)
 
         generic_call = Helper.get_generic_call(
+            api=self.api,
             module="VoterList",
             function="putInFrontOf",
             params={
