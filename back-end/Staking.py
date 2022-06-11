@@ -76,7 +76,7 @@ class MetaMask:
         tx_dict = self.contract.functions.delegator_bond_more(
             collator_address,
             more,
-        )
+        ).buildTransaction()
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
@@ -101,7 +101,7 @@ class MetaMask:
         tx_dict = self.contract.functions.schedule_delegator_bond_less(
             collator_address,
             less,
-        )
+        ).buildTransaction()
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
@@ -124,7 +124,7 @@ class MetaMask:
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.schedule_revoke_delegation(
             collator_address,
-        )
+        ).buildTransaction()
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
