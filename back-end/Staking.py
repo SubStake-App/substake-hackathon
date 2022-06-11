@@ -123,7 +123,7 @@ class Substrate:
             generic_call=generic_call,
             user_account=user_account    
         )
-        self.put_in_front_of(substrate_account="") # TO-DO 
+        self._put_in_front_of(substrate_account="") # TO-DO 
 
     def unbond(self, user_account, amount):
         '''
@@ -165,7 +165,7 @@ class Substrate:
             user_account=user_account    
         )
 
-    def put_in_front_of(self, user_account):
+    def _put_in_front_of(self, user_account):
         
         '''
         Dispat call of "Bag-list" Pallet.
