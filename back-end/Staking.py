@@ -9,6 +9,25 @@ MOONBEAM_STAKING_CONTRACT = "0x0000000000000000000000000000000000000800"
 MOONBEAM_STAKING_DECIMALS = 18
 PRIVATE_KEY = ""
 
+class Staking:
+
+    @classmethod
+    def stake(cls):
+        pass
+    
+    @classmethod
+    def stake_more(cls):
+        pass
+
+    @classmethod
+    def stake_less(cls):
+        pass
+
+    @classmethod
+    def stop_stake(cls):
+        pass
+
+
 class MetaMask:
 
     def __init__(self, provider):
