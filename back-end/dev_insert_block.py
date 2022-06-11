@@ -94,6 +94,7 @@ def insert_bottom_nominator_status():
         
     finally:
         conn.close()
+        
 def insert_collator_list():
     try:
 
@@ -152,69 +153,7 @@ def insert_collator_list():
         conn.rollback()
     finally:
         conn.close()
-
-def has_action_request(collator_address:str, request_list:list) -> list:
-    for value in request_list:
-        if collator_address in value:
-            return value
-    return False
-
-def update_nominator_status():
-    try:
-        conn = db_con.get_connection()
-        cur = conn.cursor()
-        
-        query_str = f"SELECT user_address FROM dev_user_info WHERE set_notify=True"
-        cur.execute(query_str)
-
-        for user_address in cur.fetchall():
-            result = substrate.query(
-                module='ParachainStaking',
-                storage_function='DelegatorState',
-                params=[user_address[0]]
-                )
-            
-            if not result == None :
-                if not result['delegations'] == None:
-                    logging.info(f"result:{result['delegations']}")
-                
-                    for result_request in result['delegations']:
-                        collator_address = result_request['owner']
-
-                        request_list = list(result['requests']['requests'].value)
-                        value = has_action_request(collator_address, request_list)
-                        if value:
-                            amount = value[1]['amount']
-                            when_executable = value[1]['when_executable']
-                            action = value[1]['action']
-                            logging.info(f"user_address:{user_address[0]}:collator_address:{collator_address}:amount:{amount}:when_executable{when_executable}:action:{action}")
-                            query_str = f"UPDATE glmr_nominator_list SET " \
-                                    f"action = '{action}', " \
-                                    f"amount = {amount} , " \
-                                    f"excute_round = {when_executable} " \
-                                    f"WHERE " \
-                                    f"collator_address = '{collator_address}' AND " \
-                                    f"nominator_address = '{user_address[0]}'" 
-                            cur.execute(query_str)
-                        else:
-                            logging.info(f"user_address:{user_address[0]}:collator_address:{collator_address}:No Action")
-                            query_str = f"UPDATE dev_nominator_list SET " \
-                                    f"action = null, " \
-                                    f"amount =  null, " \
-                                    f"excute_round = null " \
-                                    f"WHERE " \
-                                    f"collator_address = '{collator_address}' AND " \
-                                    f"nominator_address = '{user_address[0]}'" 
-                            cur.execute(query_str)  
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        e.with_traceback()
-        
-    finally:
-        
-        conn.close()  
-               
+ 
 def insert_dev_block_data(max_page:int):
     logging.info("get_dev_block_data()")
     
@@ -255,6 +194,10 @@ def insert_dev_block_data(max_page:int):
 def main():
     max_page = 3
     insert_dev_block_data(max_page)
+    insert_collator_list()
+    insert_top_nominator_status()
+    insert_bottom_nominator_status()
 
+    
 if __name__ == "__main__":
     main()
