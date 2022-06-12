@@ -1,6 +1,7 @@
 import requests
 import json
 import dev_substrate_interface as dev
+from staking import Staking
 
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__)
@@ -16,6 +17,14 @@ def get_recommended_collator():
         return response
     else:
         return make_response("Not supported method", 400)
+
+
+@app.route('/api/request/dev/stake', methods=['POST'])
+def request_stake():
+    pass
+
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
