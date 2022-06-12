@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Nunito600 } from '../constant';
-import Layout from '../Layout';
-import TopBar from '../TopBar/TopBar';
-import StakableList from '../StakableAssets/StakableList';
+import { Nunito600 } from '../components/constant';
+import Layout from '../components/Layout';
+import TopBar from '../components/TopBar/TopBar';
+import StakableList from '../components/StakableAssets/StakableList';
 
 export default function StakableAssets({ navigation }) {
   return (

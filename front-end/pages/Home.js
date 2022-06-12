@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Nunito700 } from '../constant';
-import Layout from '../Layout';
+import { Nunito700 } from '../components/constant';
+import Layout from '../components/Layout';
 import { Button } from '@rneui/base';
 
 export default function Home({ navigation }) {

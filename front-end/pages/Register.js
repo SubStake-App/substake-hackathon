@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
-import { commonStyle } from '../common/ChatBox';
-import Layout from '../Layout';
+import { commonStyle } from '../components/common/ChatBox';
+import Layout from '../components/Layout';
 import { Divider } from '@rneui/base';
 
 export default function Register() {

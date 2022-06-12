@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Text, View, Image, Animated, Easing } from 'react-native';
-import Layout from '../Layout';
-import loading_bag from '../../assets/loading_bag.png';
-import loading_light from '../../assets/loading_light.png';
+import Layout from '../components/Layout';
+import loading_bag from '../assets/loading_bag.png';
+import loading_light from '../assets/loading_light.png';
 
 export default function Loading() {
   const animated = new Animated.Value(5);

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
-import Layout from '../../Layout';
-import TopBar from '../../TopBar/TopBar';
+import Layout from '../../components/Layout';
+import TopBar from '../../components/TopBar/TopBar';
 
 export default function MoonbaseCollator({ navigation }) {
   return (

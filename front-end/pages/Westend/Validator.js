@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
-import Layout from '../../Layout';
-import TopBar from '../../TopBar/TopBar';
+import Layout from '../../components/Layout';
+import TopBar from '../../components/TopBar/TopBar';
 import { View, Text, TextInput, Pressable, ScrollView, Image } from 'react-native';
-import { commonStyle } from '../../common/ChatBox';
+import { commonStyle } from '../../components/common/ChatBox';
 import { Divider } from '@rneui/base';
-import success from '../../../assets/success.png';
+import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 
 export default function WestendValidator({ navigation }) {

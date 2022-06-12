@@ -9,17 +9,17 @@ import {
   useFonts,
 } from '@expo-google-fonts/nunito';
 
-import Home from './components/pages/Home';
-import StakableAssets from './components/pages/StakableAssets';
-import WestendNominator from './components/pages/Westend/Nominator';
-import WestendNominationPool from './components/pages/Westend/NominationPool';
-import WestendValidator from './components/pages/Westend/Validator';
-import MoonbaseCollator from './components/pages/Moonbase/Collator';
-import MoonbaseDelegator from './components/pages/Moonbase/Delegator';
+import Home from './pages/Home';
+import StakableAssets from './pages/StakableAssets';
+import WestendNominator from './pages/Westend/Nominator';
+import WestendNominationPool from './pages/Westend/NominationPool';
+import WestendValidator from './pages/Westend/Validator';
+import MoonbaseCollator from './pages/Moonbase/Collator';
+import MoonbaseDelegator from './pages/Moonbase/Delegator';
 import { useEffect, useState } from 'react';
-import Register from './components/pages/Register';
-import Welcome from './components/pages/Welcome';
-import Loading from './components/pages/Loading';
+import Register from './pages/Register';
+import Welcome from './pages/Welcome';
+import Loading from './pages/Loading';
 
 const Stack = createNativeStackNavigator();
 
