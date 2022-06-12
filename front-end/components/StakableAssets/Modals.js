@@ -1,6 +1,4 @@
 import { View, StyleSheet, Text, Modal, Pressable, Image } from 'react-native';
-import westend from '../../assets/westend.png';
-import moonbase from '../../assets/moonbase.png';
 import { Nunito400, Nunito700 } from '../constant';
 
 export default function StakableModal({

@@ -50,4 +50,42 @@ export const commonStyle = StyleSheet.create({
     alignItems: 'flex-end',
     marginTop: 20,
   },
+  buttonWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    alignSelf: 'stretch',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: 'rgba(108, 132, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginTop: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 12,
+  },
+  succesContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    backgroundColor: 'rgba(52, 55, 129, 0.63)',
+    borderRadius: 10,
+    maxWidth: '70%',
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  successHeader: {
+    color: '#26F2A9',
+  },
+  successMain: {
+    color: 'white',
+    fontSize: 10,
+  },
+  successLink: {
+    fontSize: 10,
+    color: '#3959FF',
+  },
 });

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Image, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Image, SafeAreaView, ScrollView } from 'react-native';
 import background_1 from '../../assets/background_1.png';
 import background_2 from '../../assets/background_2.png';
 
