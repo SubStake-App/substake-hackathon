@@ -7,12 +7,12 @@
 - [ ] Account select
 - [x] Network selection
 - Westend
-  - [] Nomiator
-  - [] Nomination Pool
-  - [] Pool Owner
+  - [ ] Nomiator
+  - [ ] Nomination Pool
+  - [ ] Pool Owner
   - [x] Validator
 - Moonbase
-  - [] Delegator
+  - [ ] Delegator
   - [x] Collator
 
 <br>
