@@ -1,8 +1,8 @@
 
 from substrateinterface import SubstrateInterface, Keypair
 from web3 import Web3
-import json
 from helper import Helper
+import json
 
 KEY_PAIR = None
 MOONBEAM_STAKING_CONTRACT = "0x0000000000000000000000000000000000000800"
@@ -11,24 +11,109 @@ PRIVATE_KEY = ""
 
 class Staking:
 
-    @classmethod
-    def stake(cls):
-        pass
+    '''
+    Class
+    - Staking class contains EVM/Substrate class
+    '''
+
+    def __init__(self, env, provider):
+        
+        if env == 'evm':
+            self.evm = EVM(provider=provider)
+            self.name = 'evm'
+        elif env == 'substrate':
+            self.substrate = Substrate(provider=provider)
+            self.name = 'substrate'
+
+    def stake(
+        self, 
+        user_address=None, 
+        collator_address=None, 
+        amount=None, 
+        payee='Staked',
+        is_nominate=False,
+    ):
+
+        '''
+        Method
+        - EVM: delegate
+        - Substrate: bond
+        '''
+        
+        if self.name == 'evm':
+            self.evm.delegate(
+                user_address=user_address, 
+                collator_address=collator_address, 
+                delegate_amount=amount
+            )
+        elif self.name == 'substrate':
+            if is_nominate: # To-Do: Bond and Nominate
+                pass
+            else:
+                self.substrate.bond(
+                    user_address=user_address,
+                    amount=amount,
+                    payee=payee
+                )
     
-    @classmethod
-    def stake_more(cls):
-        pass
+    def stake_more(self, user_address, more, collator_address=None):
 
-    @classmethod
-    def stake_less(cls):
-        pass
+        '''
+        Method
+        - Send stake-more-asset transaction
+        
+        Params
+        - user_address: Whose asset
+        - more: additional asset
+        - collator_address: Only needed in EVM
+        '''
 
-    @classmethod
-    def stop_stake(cls):
-        pass
+        if self.name == 'evm':
+            self.evm.bond_more(
+                user_address=user_address,
+                collator_address=collator_address,
+                more=more
+            )
+        elif self.name == 'substrate':
+            self.substrate.bond_extra(
+                user_address=user_address,
+                additional=more
+            )
+
+    def stake_less(self, user_address, less, collator_address=None):
+        if self.name == 'evm':
+            self.evm.bond_less(
+                user_address=user_address,
+                collator_address=collator_address,
+                less=less
+            )
+        elif self.name == 'substrate':
+            self.substrate.unbond(
+                user_address=user_address,
+                amount=less,
+            )
+
+    def stop_stake(self, user_address, collator_address=None):
+
+        '''
+        Method
+        - Pull all staked asset
+
+        Params 
+        - user_address: Whose asset
+        - collator_address: Only needed in EVM(Moonbeam)
+        '''
+
+        if self.name == 'evm':
+            self.evm.revoke(
+                user_address=user_address, 
+                collator_address=collator_address
+            )
+        elif self.name == 'substrate':
+            self.substrate.chill(user_address=user_address)
 
 
-class MetaMask:
+class EVM:
 
     def __init__(self, provider):
         try:
@@ -48,7 +133,7 @@ class MetaMask:
         self, 
         user_address,
         collator_address, 
-        delegate_amount, 
+        amount, 
     ):
 
         '''
@@ -66,7 +151,7 @@ class MetaMask:
         delegator_delegation_count = self.contract.functions.delegator_delegation_count(user_address).call()
         tx_dict = self.contract.functions.delegate(
             collator_address,
-            delegate_amount,
+            amount,
             candidate_delgation_count,
             delegator_delegation_count
         ).buildTransaction()
@@ -162,7 +247,7 @@ class Substrate:
         except Exception as e:
             print("Error connecting local node. Message: {error}".format(error=e))
             return 0
-    
+
     def bond(self, user_address, amount, payee):
 
         '''
@@ -410,16 +495,21 @@ class Substrate:
 
 if __name__ == "__main__":
 
-    substrate = Substrate(provider="wss://ws-api.substake.app")
+    # substrate = Substrate(provider="wss://ws-api.substake.app")
     # This account is only for test
     # No worry for hacking
-    mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
-    key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
-    substrate.rebond(
-        user_address=key_pair,
-        amount=1000000000000,
-    )
-    
+    # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
+    # key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
+    # substrate.rebond(
+    #     user_address=key_pair,
+    #     amount=1000000000000,
+    # )
+
+    staking1 = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
+    staking2 = Staking(env='substrate', provider='wss://ws-api.substake.app')
+
+    print(staking1.name)
+    print(staking2.name)
 
 
     
