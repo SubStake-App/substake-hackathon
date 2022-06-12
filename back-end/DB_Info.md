@@ -33,3 +33,10 @@ create table dev_nominator_list (
     Primary Key(collator_address, nominator_address)
 );
 ALTER TABLE dev_nominator_list ADD COLUMN is_top boolean;
+
+
+## west end
+
+# Create Table
+drop table wnd_block_collator;
+create table wnd_block_collator (blocknum bigint primary key,collator_addr varchar(100), auth_name varchar(100));
