@@ -3,8 +3,10 @@ import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { commonStyle } from '../components/common/ChatBox';
 import Layout from '../components/Layout';
 import { Divider } from '@rneui/base';
+import LoadingModal from '../components/LoadingModal';
 
-export default function Register() {
+export default function Register({ navigation }) {
+  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
   const [seed, setSeed] = useState('');
   const [nickname, setNickname] = useState('');
@@ -13,8 +15,16 @@ export default function Register() {
 
   const scrollViewRef = useRef();
 
+  const loadAndNavigate = async () => {
+    setPending(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    setPending(false);
+    navigation.navigate('Home');
+  };
+
   return (
     <Layout>
+      {pending && <LoadingModal />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -113,7 +123,7 @@ export default function Register() {
                   onChangeText={(text) => setPasswordReCheck(text)}
                   editable={status === 3}
                 />
-                <Pressable onPress={() => {}} disabled={status !== 3}>
+                <Pressable onPress={loadAndNavigate} disabled={status !== 3}>
                   <Text style={commonStyle.confirm}>확인</Text>
                 </Pressable>
               </View>

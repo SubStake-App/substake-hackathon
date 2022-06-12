@@ -24,7 +24,7 @@ export default function WestendValidator({ navigation }) {
         <View style={commonStyle.serviceChatContainer}>
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>Validator 액션을 선택해주세요</Text>
-            <Text style={commonStyle.serviceChatBoxDesc}>서비스 시작을 위해 처음 한 번만 복구하시면 됩니다.</Text>
+            <Text style={commonStyle.serviceChatBoxDesc}>모든 액션은 4시간 소요 예상됩니다.</Text>
             <Divider color="rgba(65, 69, 151, 0.8)" />
             <View style={commonStyle.buttonWrapper}>
               <Pressable
@@ -74,7 +74,7 @@ export default function WestendValidator({ navigation }) {
                 <Divider color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
-                    // TODO: 숫자 키패드 나오게
+                    keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
                     placeholder="숫자만 입력해주세요"
@@ -104,7 +104,7 @@ export default function WestendValidator({ navigation }) {
                 <Divider color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
-                    // TODO: 숫자 키패드 나오게
+                    keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
                     placeholder="숫자만 입력해주세요"

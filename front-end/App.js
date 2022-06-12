@@ -43,28 +43,30 @@ export default function App() {
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isRegistered ? (
+        {/* {isRegistered ? (
           <>
             {loaded ? (
-              <>
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="StakableAssets" component={StakableAssets} />
-                <Stack.Screen name="WestendNominator" component={WestendNominator} />
-                <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
-                <Stack.Screen name="WestendValidator" component={WestendValidator} />
-                <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
-                <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
-              </>
+              <> */}
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="StakableAssets" component={StakableAssets} />
+        <Stack.Screen name="WestendNominator" component={WestendNominator} />
+        <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
+        <Stack.Screen name="WestendValidator" component={WestendValidator} />
+        <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
+        <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+        {/* </>
             ) : (
               <Stack.Screen name="Loading" component={Loading} />
-            )}
-          </>
+            )} */}
+        {/* </>
         ) : (
           <>
             <Stack.Screen name="Welcome" component={Welcome} />
             <Stack.Screen name="Register" component={Register} />
           </>
-        )}
+        )} */}
       </Stack.Navigator>
     </NavigationContainer>
   );
