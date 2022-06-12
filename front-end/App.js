@@ -19,12 +19,15 @@ import MoonbaseDelegator from './components/pages/Moonbase/Delegator';
 import { useEffect, useState } from 'react';
 import Register from './components/pages/Register';
 import Welcome from './components/pages/Welcome';
+import Loading from './components/pages/Loading';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [hasRegistered, setHasRegistered] = useState(false);
-  const [f] = useFonts({ Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold });
+  const [isRegistered, setIsRegistered] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+
+  useFonts({ Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold });
 
   useEffect(() => {
     const checkIfRegistered = async () => {};
@@ -32,19 +35,29 @@ export default function App() {
     checkIfRegistered();
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => setLoaded(true), 1000);
+  }, []);
+
   return (
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {hasRegistered ? (
+        {isRegistered ? (
           <>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="StakableAssets" component={StakableAssets} />
-            <Stack.Screen name="WestendNominator" component={WestendNominator} />
-            <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
-            <Stack.Screen name="WestendValidator" component={WestendValidator} />
-            <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
-            <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+            {loaded ? (
+              <>
+                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="StakableAssets" component={StakableAssets} />
+                <Stack.Screen name="WestendNominator" component={WestendNominator} />
+                <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
+                <Stack.Screen name="WestendValidator" component={WestendValidator} />
+                <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
+                <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+              </>
+            ) : (
+              <Stack.Screen name="Loading" component={Loading} />
+            )}
           </>
         ) : (
           <>
