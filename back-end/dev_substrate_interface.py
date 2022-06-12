@@ -40,7 +40,7 @@ def get_recommended_collators(bond_amount:int) -> list:
                 collators = {
                                 'address' : account_address,                #콜래터 지갑 주소 
                                 'display_name' : account_displayname,       #콜래터 이름
-                                'average_bpr' : average_bpr_week,              #20pts per block  
+                                'average_bpr' : average_bpr_week,           #20pts per block  
                                 'simulated_share' : simulated_share
                                 
                             }
