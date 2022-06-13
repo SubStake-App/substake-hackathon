@@ -72,7 +72,7 @@ class Staking:
                                         collator_address=collator_address, 
                                         amount=amount
                                     )
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
 
@@ -84,7 +84,7 @@ class Staking:
                                             user_address=user_address,
                                             validators=validators
                                         )
-                print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+                return {'Transaction Status': is_success, 'Message': message}
             else:
                 amount = amount * 10**SUBSTRATE_DECIMALS
 
@@ -98,7 +98,7 @@ class Staking:
                                                 is_pool=is_pool,
                                                 pool_id=pool_id
                                             )
-                    print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+                    return {'Transaction Status': is_success, 'Message': message}
                 else:
                     assert payee is not None, "SUBSTAKE_STAKING(stake): Payee must be provided for Substrate"
                     (is_success, message) = self.substrate.bond(
@@ -106,7 +106,7 @@ class Staking:
                                                 amount=amount,
                                                 payee=payee
                                             )
-                    print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+                    return {'Transaction Status': is_success, 'Message': message}
     
     def stake_more(
         self, 
@@ -139,7 +139,7 @@ class Staking:
                                         collator_address=collator_address,
                                         more=more
                                     )
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             more = more * 10**SUBSTRATE_DECIMALS
@@ -149,7 +149,7 @@ class Staking:
                                         additional=more,
                                         is_pool=is_pool
                                     )
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
     def stake_less(
         self, 
@@ -171,12 +171,12 @@ class Staking:
                                         collator_address=collator_address,
                                         less=less
                                     )
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             less = less * 10**SUBSTRATE_DECIMALS
             (is_success, message) = self.substrate.unbond(user_address=user_address,less=less)
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
     def restake(
         self, 
@@ -193,7 +193,7 @@ class Staking:
         elif self.name == 'substrate':
             amount = amount * 10**SUBSTRATE_DECIMALS
             (is_success, message) = self.substrate.rebond(user_address=user_address, amount=amount)
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
     def stop_stake(
         self, 
@@ -217,11 +217,11 @@ class Staking:
                                         user_address=user_address, 
                                         collator_address=collator_address
                                     )
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             (is_success, message) = self.substrate.chill(user_address=user_address)
-            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+            return {'Transaction Status': is_success, 'Message': message}
 
 class EVM:
 
