@@ -10,6 +10,13 @@ app = Flask (__name__)
 def get_recommended_collator():
     if request.method == 'POST':
         
+        """ for Ito.
+        data = request.get_json()
+        print('Data Received: "{data}"'.format(data=data))
+        action = data.get('action')
+        user_addresss = data.get('address')
+        chain_name = data.get('chain-name')
+        """
         return_str = json.dumps(dev.get_recommended_collators())
         
         response = make_response(return_str, 200)

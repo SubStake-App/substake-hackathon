@@ -18,14 +18,15 @@ def get_recommended_collators(bond_amount:int) -> list:
         conn = db_con.get_connection()
         collator_list = []
         with conn.cursor() as cur:
+            avg_bpr = 7.5 #80(active collators)/600(blocks per round)
             query_string = f"SELECT * from dev_collator_list " \
                         f"WHERE active_status = True " \
                         f"AND minimun_bond < {bond_amount} " \
-                        f"AND average_bpr_week > 7.5 " \
+                        f"AND average_bpr_week > {avg_bpr} " \
                         f"ORDER BY average_bpr_week DESC, bonded_total DESC " \
                         f"LIMIT 48" # Total 80 collators.80*(2/3)
                         
-            print(query_string)            
+            print(query_string)
             cur.execute(query_string)
             collator_set = cur.fetchall()
             
