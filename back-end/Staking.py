@@ -5,7 +5,7 @@ from helper import Helper
 import json
 
 KEY_PAIR = None
-MOONBEAM_STAKING_CONTRACT = "0x0000000000000000000000000000000000000800"
+EVM_CONTRACT = "0x0000000000000000000000000000000000000800"
 EVM_DECIMALS = 18
 SUBSTRATE_DECIMALS = 12
 PRIVATE_KEY = ""
@@ -116,7 +116,9 @@ class Staking:
 
 class EVM:
 
-    def __init__(self, provider):
+    def __init__(self, provider=None):
+
+        assert provider is not None, "SUBSTAKE-EVM: Provider must be provided"
         try:
             self.web3 = Web3(Web3.HTTPProvider(provider))
         except Exception as e:
@@ -126,15 +128,15 @@ class EVM:
         file = open("Utils/moonbeam_abi.json")
         MOONBEAM_STAKING_ABI = json.load(file)
         self.contract = self.web3.eth.contract(
-            address=MOONBEAM_STAKING_CONTRACT, 
+            address=EVM_CONTRACT, 
             abi=MOONBEAM_STAKING_ABI
         )
         
     def delegate(
         self, 
-        user_address,
-        collator_address, 
-        amount, 
+        user_address=None,
+        collator_address=None, 
+        amount=None, 
     ):
 
         '''
@@ -147,6 +149,12 @@ class EVM:
         - delegate_amount: amount of delegate
         '''
 
+        assert user_address is not None, "SUBSTAKE-EVM(DELEGATE): User address must be provided"
+        assert collator_address is not None, "SUBSTAKE-EVM(DELEGATE): Collator address must be provided"
+        assert amount is not None, "SUBSTAKE-EVM(DELEGATE): Amount must be provided"
+        assert type(amount) is int, "SUBSTAKE-EVM(DELEGATE): Amount must be Int"
+        
+        amount = amount * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         candidate_delgation_count = self.contract.functions.candidate_delegation_count(collator_address).call()
         delegator_delegation_count = self.contract.functions.delegator_delegation_count(user_address).call()
@@ -177,6 +185,12 @@ class EVM:
         - more: amount of more staking 
         '''
 
+        assert user_address is not None, "SUBSTAKE-EVM(BOND_MORE): User address must be provided"
+        assert collator_address is not None, "SUBSTAKE-EVM(BOND_MORE): Collator address must be provided"
+        assert more is not None, "SUBSTAKE-EVM(BOND_MORE): Amount must be provided"
+        assert type(more) is int, "SUBSTAKE-EVM(BOND_MORE): Amount must be Int"
+        
+        more = more * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.delegator_bond_more(
             collator_address,
@@ -202,6 +216,13 @@ class EVM:
         - collator_address: Whom to bond less
         - less: amount of bond less
         '''
+
+        assert user_address is not None, "SUBSTAKE-EVM(BOND_LESS): User address must be provided"
+        assert collator_address is not None, "SUBSTAKE-EVM(BOND_LESS): Collator address must be provided"
+        assert less is not None, "SUBSTAKE-EVM(BOND_LESS): Amount must be provided"
+        assert type(less) is int, "SUBSTAKE-EVM(BOND_LESS): Amount must be Int"
+
+        less = less * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.schedule_delegator_bond_less(
             collator_address,
@@ -226,6 +247,10 @@ class EVM:
         - user_address: User's public address
         - collator_address: Whom to revoke
         '''
+
+        assert user_address is not None, "SUBSTAKE-EVM(REVOKE): User address must be provided"
+        assert collator_address is not None, "SUBSTAKE-EVM(REVOKE): Collator address must be provided"
+
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.schedule_revoke_delegation(
             collator_address,
@@ -242,7 +267,9 @@ class EVM:
 
 class Substrate:
 
-    def __init__(self, provider, is_pool=False):
+    def __init__(self, provider=None, is_pool=False):
+        
+        assert provider is not None, "SUBSTAKE-SUBSTRATE: Provider must be provided"
         try:
             self.api = SubstrateInterface(url=provider)
         except Exception as e:
@@ -458,8 +485,9 @@ class Substrate:
 
 if __name__ == "__main__":
 
-    substrate = Substrate(provider="wss://ws-api.substake.app", is_pool=True)
-    substrate.nominate(user_address="a", validators="b")
+    evm = EVM()
+    # substrate = Substrate(provider="wss://ws-api.substake.app", is_pool=True)
+    # substrate.nominate(user_address="a", validators="b")
     # This account is only for test
     # No worry for hacking
     # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
