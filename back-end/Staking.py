@@ -1,12 +1,13 @@
 
-from substrateinterface import SubstrateInterface, Keypair
+from substrateinterface import SubstrateInterface
 from web3 import Web3
 from helper import Helper
 import json
 
 KEY_PAIR = None
 MOONBEAM_STAKING_CONTRACT = "0x0000000000000000000000000000000000000800"
-MOONBEAM_STAKING_DECIMALS = 18
+EVM_DECIMALS = 18
+SUBSTRATE_DECIMALS = 12
 PRIVATE_KEY = ""
 
 class Staking:
@@ -16,13 +17,13 @@ class Staking:
     - Staking class contains EVM/Substrate class
     '''
 
-    def __init__(self, env, provider):
+    def __init__(self, env, provider, is_pool=False):
         
         if env == 'evm':
             self.evm = EVM(provider=provider)
             self.name = 'evm'
         elif env == 'substrate':
-            self.substrate = Substrate(provider=provider)
+            self.substrate = Substrate(provider=provider, is_pool=is_pool)
             self.name = 'substrate'
 
     def stake(
@@ -241,14 +242,15 @@ class EVM:
 
 class Substrate:
 
-    def __init__(self, provider):
+    def __init__(self, provider, is_pool=False):
         try:
             self.api = SubstrateInterface(url=provider)
         except Exception as e:
             print("Error connecting local node. Message: {error}".format(error=e))
             return 0
+        self.is_pool = is_pool
 
-    def bond(self, user_address, amount, payee):
+    def bond(self, user_address=None, amount=None, payee=None, pool_id=None):
 
         '''
         Method
@@ -256,27 +258,41 @@ class Substrate:
         
         Params
         - user_account(controller): user's public address 
-        - amount: bond amount
+        - amount: bond amount. Int
         - payee: Staked(auto-compound) / Stash(Reward goes to stash account)
+        - pool_id: Pool id when user stakes to nomination pool. Int
         '''
+        
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(BOND): User adress should be provided"
+        assert amount is not None, "SUBSTAKE-SUBSTRATE(BOND): Amount should be provided"
+        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(BOND): Amount should be Int" 
+        
+        if self.is_pool:
+            assert pool_id is not None, "Pool ID must be provided when bond to nomination pool"
 
+        if not self.is_pool:
+            assert payee is not None, "Payee must be provided when bond to validators"
+
+        amount = amount * 10**SUBSTRATE_DECIMALS    
+        pallet = "NominationPools" if self.is_pool else "Staking"
+        dispatch_call = "join" if self.is_pool else "bond"
+        params = {'amount': amount, 'pool_id': pool_id} if self.is_pool \
+                 else {'controller': user_address, 'value': amount, 'payee': payee}
+        
         generic_call = Helper.get_generic_call(
             api=self.api,
-            module="Staking",
-            function="bond",
-            params={
-                'controller': user_address.ss58_address,
-                'value': amount,
-                'payee': payee
-            }
+            module=pallet,
+            function=dispatch_call,
+            params=params
         )
+            
         Helper.send_extrinsic(
             api=self.api,
             generic_call=generic_call,
             user_address=user_address    
         )
 
-    def nominate(self, user_address, validators):
+    def nominate(self, user_address=None, validators=None):
 
         '''
         Method
@@ -286,6 +302,10 @@ class Substrate:
         - user_account: User's public address
         - validators: [address of Validators]
         '''
+
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(NOMINATE): User address should be provided"
+        assert validators is not None, "SUBSTAKE-SUBSTRATE(NOMINATE): Validators should be provided when nominate"
+        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(NOMINATE): Current nomination pool not supports nominate"
 
         generic_call = Helper.get_generic_call(
             api=self.api,
@@ -301,22 +321,46 @@ class Substrate:
             user_address=user_address    
         )
 
-    def bond_extra(self, user_address, additional): 
+    def bond_extra(self, user_address=None, additional=None): 
         
         '''
         Method
         - Send bond extra extrinsic using user's key pair
+        - Depends on whether user stakes to nomination pools or not
         - Call "putInFrontof" extrinsic to adjust user's bag position
         
         Params
         - additional: bond extra amount. 'Int'
         '''
+
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): User adress should be provided"
+        assert additional is not None, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): Additional amount should be provided"
+        assert type(additional) is int, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): Additional type should be Int"
+        
+        additional = additional * 10**SUBSTRATE_DECIMALS
+        pallet = "NominationPools" if self.is_pool else "Staking"
+        dispatch_call = "bondExtra"
+        params = {'extra': additional} if self.is_pool else {'max_additional': additional}
+    
         generic_call = Helper.get_generic_call(
             api=self.api,
-            module="Staking",
-            function="bondExtra",
+            module=pallet,
+            function=dispatch_call,
+            params=params
+        )
+        Helper.send_extrinsic(
+            api=self.api,
+            generic_call=generic_call,
+            user_address=user_address    
+        )
+
+        lighter_node = Helper.reorder_bag_for(api=self.api, user_address=user_address) # TO-DO 
+        generic_call = Helper.get_generic_call(
+            api=self.api,
+            module="VoterList",
+            function="putInFrontOf",
             params={
-                'max_additional': additional
+                'lighter': lighter_node
             }
         )
         Helper.send_extrinsic(
@@ -324,9 +368,8 @@ class Substrate:
             generic_call=generic_call,
             user_address=user_address    
         )
-        self._put_in_front_of(substrate_account="") # TO-DO 
 
-    def unbond(self, user_address, amount):
+    def unbond(self, user_address=None, amount=None):
         
         '''
         Method
@@ -335,6 +378,13 @@ class Substrate:
         Params
         - amount: unbond amount. 'Int'
         '''
+
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(UNBOND): User adress should be provided"
+        assert amount is not None, "SUBSTAKE-SUBSTRATE(UNBOND): Amount should be provided"
+        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(UNBOND): Amount should be Int"
+        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(UNBOND): Current nomination pool not support unbond"
+
+        amount = amount * 10**SUBSTRATE_DECIMALS
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
@@ -349,7 +399,7 @@ class Substrate:
             user_address=user_address    
         )
 
-    def rebond(self, user_address, amount):
+    def rebond(self, user_address=None, amount=None):
         
         '''
         Method
@@ -359,6 +409,12 @@ class Substrate:
         - amount: unbond amount. 'Int'
         '''
 
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(REBOND): User adress should be provided"
+        assert amount is not None, "SUBSTAKE-SUBSTRATE(REBOND): Amount should be provided"
+        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(REBOND): Amount should be Int"
+        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(REBOND): Current nomination pool not supports rebond"
+
+        amount = amount * 10**SUBSTRATE_DECIMALS
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
@@ -373,7 +429,7 @@ class Substrate:
             user_address=user_address    
         )
 
-    def chill(self, user_address):
+    def chill(self, user_address=None):
 
         '''
         Method
@@ -384,6 +440,9 @@ class Substrate:
         - user_addrss: User's public addrss
         '''
 
+        assert user_address is not None, "SUBSTAKE-SUBSTRATE(CHILL): User address must be provided"
+        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(CHILL): Current nomination pool not supports chill"
+        
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
@@ -396,106 +455,11 @@ class Substrate:
             user_address=user_address    
         )
 
-    def _put_in_front_of(self, user_address):
-        
-        '''
-        Method
-        - Dispath call of "Bag-list" Pallet.
-
-        Params
-        - lighter: address of whose point is lighter than user's
-        '''
-
-        (user_score, list_head) = self._get_list_head(substrate_account=user_address)
-        curr_node = list_head;
-        score = self._get_score(node=curr_node);
-
-        if user_score > score: 
-            print("Put user node in front of {curr_node}".format(curr_node=curr_node))
-            return curr_node
-        
-        while True :
-            if user_score > score:
-                print("Put user node in front of {curr_node}".format(curr_node=curr_node))
-                break
-
-            curr_node = self._get_next(curr_node)
-            score = self._get_score(curr_node)
-
-        generic_call = Helper.get_generic_call(
-            api=self.api,
-            module="VoterList",
-            function="putInFrontOf",
-            params={
-                'lighter': curr_node
-            }
-        )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
-
-    def _get_list_head(self, substrate_account):
-        
-        '''
-        Method
-        - Internal method
-        - Get head of the bag-list
-
-        Params
-        - substrate_account: User's substrate account
-
-        Returns
-        - Tuple
-        - user_score: Score of user. Int 
-        - list_head: address of head. String
-        '''
-        
-        list_node = self.api.query('VoterList', 'ListNodes', params=[substrate_account]).value
-        user_score = list_node['score']
-        user_bag_upper = list_node['bag_upper']
-        list_bags = self.api.query('VoterList', 'ListBags', params=[user_bag_upper]).value
-        list_head = list_bags['head']
-        
-        return (user_score, list_head)
-
-    def _get_score(self, node):
-        
-        '''
-        Method
-        - Internal method
-
-        Params
-        - node: current node
-        
-        Returns
-        - Int
-        - score of node
-        '''
-
-        return self.api.query('VoterList', 'ListNodes', params=[node]).value['score']
-
-    def _get_next(self, node):
-        
-        '''
-        Method
-        - Internal method
-
-        Params
-        - node: current node
-
-        Returns
-        - String
-        - Next node
-        '''
-
-        return self.api.query('VoterList', 'ListNodes', params=[node]).value['next']
-
 
 if __name__ == "__main__":
 
-    # substrate = Substrate(provider="wss://ws-api.substake.app")
+    substrate = Substrate(provider="wss://ws-api.substake.app", is_pool=True)
+    substrate.nominate(user_address="a", validators="b")
     # This account is only for test
     # No worry for hacking
     # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
@@ -505,11 +469,11 @@ if __name__ == "__main__":
     #     amount=1000000000000,
     # )
 
-    staking1 = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
-    staking2 = Staking(env='substrate', provider='wss://ws-api.substake.app')
+    # staking1 = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
+    # staking2 = Staking(env='substrate', provider='wss://ws-api.substake.app')
 
-    print(staking1.name)
-    print(staking2.name)
+    # print(staking1.name)
+    # print(staking2.name)
 
 
     
