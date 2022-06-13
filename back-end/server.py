@@ -28,7 +28,15 @@ def get_recommended_collator():
 
 @app.route('/api/request/dev/stake', methods=['POST'])
 def request_stake():
-    pass
+    if request.method == 'POST':
+        _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
+        env = _request.get('env')
+        provider = _request.get('provider')
+        is_pool = _request.get('is_pool') # if needed 
+
+    else:
+        return make_response('Not supported method', 400)
 
 
 

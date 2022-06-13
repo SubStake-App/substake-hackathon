@@ -1,5 +1,6 @@
 
-from substrateinterface import SubstrateInterface
+
+from substrateinterface import SubstrateInterface, Keypair
 from web3 import Web3
 from helper import Helper
 import json
@@ -17,47 +18,103 @@ class Staking:
     - Staking class contains EVM/Substrate class
     '''
 
-    def __init__(self, env, provider, is_pool=False):
+    def __init__(self, env=None, provider=None):
         
+        assert env is not None, "SUBSTAKE-STAKING: Environment must be provided"
+        assert provider is not None, "SUBSTAKE_STAKING: Provider must be provided"
+
         if env == 'evm':
             self.evm = EVM(provider=provider)
             self.name = 'evm'
         elif env == 'substrate':
-            self.substrate = Substrate(provider=provider, is_pool=is_pool)
+            self.substrate = Substrate(provider=provider)
             self.name = 'substrate'
 
     def stake(
         self, 
         user_address=None, 
         collator_address=None, 
+        validators=None,
         amount=None, 
         payee='Staked',
         is_nominate=False,
+        is_pool=False,
+        pool_id=None,
     ):
 
         '''
         Method
         - EVM: delegate
         - Substrate: bond
+
+        Params
+        - user_address: Public address of user. String
+        - collator_address: For EVM, address of collator. String
+        - validators: For Substrate, list of address of validators. [String]
+        - amount: Staking amount. Int
+        - payee: For Substrate, 'Staked' or 'Stash'
+        - is_nominate: For Substrate, if already bonds 'True'. Default: 'False' 
+        - is_pool: If user stakes to nomination pool, set to 'True'
+        - pool_id: Pool id for nomination pool
         '''
-        
+
+        assert user_address is not None, "SUBSTAKE-STAKING(stake): User address must be provided"
+        assert amount is not None, "SUBSTAKE-STAKING(stake): Amount must be provided"
+        amount = int(amount)
+
         if self.name == 'evm':
-            self.evm.delegate(
-                user_address=user_address, 
-                collator_address=collator_address, 
-                delegate_amount=amount
-            )
+            
+            assert collator_address is not None, "SUBSTAKE_STAKING(stake): Collator address must be provided for EVM"
+            amount = amount * 10**EVM_DECIMALS
+
+            (is_success, message) = self.evm.delegate(
+                                        user_address=user_address, 
+                                        collator_address=collator_address, 
+                                        amount=amount
+                                    )
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
         elif self.name == 'substrate':
-            if is_nominate: # To-Do: Bond and Nominate
-                pass
+
+            if is_nominate: 
+
+                assert validators is not None, "SUBSTAKE_STAKING(stake): Validators must be provided for Substrate"
+
+                (is_success, message) = self.substrate.nominate(
+                                            user_address=user_address,
+                                            validators=validators
+                                        )
+                print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
             else:
-                self.substrate.bond(
-                    user_address=user_address,
-                    amount=amount,
-                    payee=payee
-                )
+                amount = amount * 10**SUBSTRATE_DECIMALS
+
+                if is_pool:
+                    assert pool_id is not None, "SUBSTAKE_STAKING(stake): Pool id must be provided for Substrate"
+                    pool_id = int(pool_id)
+
+                    (is_success, message) = self.substrate.bond(
+                                                user_address=user_address,
+                                                amount=amount,
+                                                is_pool=is_pool,
+                                                pool_id=pool_id
+                                            )
+                    print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+                else:
+                    assert payee is not None, "SUBSTAKE_STAKING(stake): Payee must be provided for Substrate"
+                    (is_success, message) = self.substrate.bond(
+                                                user_address=user_address,
+                                                amount=amount,
+                                                payee=payee
+                                            )
+                    print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
     
-    def stake_more(self, user_address, more, collator_address=None):
+    def stake_more(
+        self, 
+        user_address=None, 
+        collator_address=None,
+        more=None, 
+        is_pool=False
+    ):
 
         '''
         Method
@@ -69,32 +126,80 @@ class Staking:
         - collator_address: Only needed in EVM
         '''
 
-        if self.name == 'evm':
-            self.evm.bond_more(
-                user_address=user_address,
-                collator_address=collator_address,
-                more=more
-            )
-        elif self.name == 'substrate':
-            self.substrate.bond_extra(
-                user_address=user_address,
-                additional=more
-            )
+        assert user_address is not None, "SUBSTKAE-STAKING(STAKE MORE): User address must be provided"
+        assert more is not None, "SUBSTAKE-STAKING(STAKE MORE): More should be provided"
+        more = int(more)
 
-    def stake_less(self, user_address, less, collator_address=None):
         if self.name == 'evm':
-            self.evm.bond_less(
-                user_address=user_address,
-                collator_address=collator_address,
-                less=less
-            )
-        elif self.name == 'substrate':
-            self.substrate.unbond(
-                user_address=user_address,
-                amount=less,
-            )
+            assert collator_address is not None, "SUBSTAKE_STAKING(STAKE MORE): Collator address must be provided"
+            more = more * 10**EVM_DECIMALS
 
-    def stop_stake(self, user_address, collator_address=None):
+            (is_success, message) = self.evm.bond_more(
+                                        user_address=user_address,
+                                        collator_address=collator_address,
+                                        more=more
+                                    )
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
+        elif self.name == 'substrate':
+            more = more * 10**SUBSTRATE_DECIMALS
+
+            (is_success, message) = self.substrate.bond_extra(
+                                        user_address=user_address,
+                                        additional=more,
+                                        is_pool=is_pool
+                                    )
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
+    def stake_less(
+        self, 
+        user_address=None, 
+        collator_address=None,
+        less=None, 
+    ):
+
+        assert user_address is not None, "SUBSTAKE-STAKING(STAKE LESS): User address must be provided"
+        assert less is not None, "SUBSTAKE-STAKING(STAKE LESS): Less must be provided"
+        less = int(less)
+
+        if self.name == 'evm':
+            assert collator_address is not None, "SUBSTAKE-STAKING(STAKE LESS): Collator address must be provided for EVM"
+            less = less * 10**EVM_DECIMALS
+
+            (is_success, message) = self.evm.bond_less(
+                                        user_address=user_address,
+                                        collator_address=collator_address,
+                                        less=less
+                                    )
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
+        elif self.name == 'substrate':
+            less = less * 10**SUBSTRATE_DECIMALS
+            (is_success, message) = self.substrate.unbond(user_address=user_address,less=less)
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
+    def restake(
+        self, 
+        user_address=None, 
+        amount=None
+    ):
+        
+        assert user_address is not None, "SUBSTAKE-STAKING(RESTAKE): User address should be provided"
+        assert amount is not None, "SUBSTAKE-STAKING(RESTAKE): Amount shoud be provided"
+        amount = int(amount)
+
+        if self.name == 'evm':
+            pass
+        elif self.name == 'substrate':
+            amount = amount * 10**SUBSTRATE_DECIMALS
+            (is_success, message) = self.substrate.rebond(user_address=user_address, amount=amount)
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
+
+    def stop_stake(
+        self, 
+        user_address=None, 
+        collator_address=None
+    ):
 
         '''
         Method
@@ -104,21 +209,24 @@ class Staking:
         - user_address: Whose asset
         - collator_address: Only needed in EVM(Moonbeam)
         '''
+        assert user_address is not None, "SUBSTAKE-STAKING(STOP STAKE): User address must be provided"
 
         if self.name == 'evm':
-            self.evm.revoke(
-                user_address=user_address, 
-                collator_address=collator_address
-            )
-        elif self.name == 'substrate':
-            self.substrate.chill(user_address=user_address)
+            assert collator_address is not None, "SUBSTAKE-STAKING(STOP STAKE): Collator address must be provided"
+            (is_success, message) = self.evm.revoke(
+                                        user_address=user_address, 
+                                        collator_address=collator_address
+                                    )
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
 
+        elif self.name == 'substrate':
+            (is_success, message) = self.substrate.chill(user_address=user_address)
+            print('Transaction Status: {is_success}, Transaction Hash: {message}'.format(is_success=is_success,message=message))
 
 class EVM:
 
-    def __init__(self, provider=None):
+    def __init__(self, provider):
 
-        assert provider is not None, "SUBSTAKE-EVM: Provider must be provided"
         try:
             self.web3 = Web3(Web3.HTTPProvider(provider))
         except Exception as e:
@@ -132,12 +240,7 @@ class EVM:
             abi=MOONBEAM_STAKING_ABI
         )
         
-    def delegate(
-        self, 
-        user_address=None,
-        collator_address=None, 
-        amount=None, 
-    ):
+    def delegate(self, user_address, collator_address, amount):
 
         '''
         Method
@@ -148,13 +251,7 @@ class EVM:
         - user_address: Who is delegating
         - delegate_amount: amount of delegate
         '''
-
-        assert user_address is not None, "SUBSTAKE-EVM(DELEGATE): User address must be provided"
-        assert collator_address is not None, "SUBSTAKE-EVM(DELEGATE): Collator address must be provided"
-        assert amount is not None, "SUBSTAKE-EVM(DELEGATE): Amount must be provided"
-        assert type(amount) is int, "SUBSTAKE-EVM(DELEGATE): Amount must be Int"
         
-        amount = amount * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         candidate_delgation_count = self.contract.functions.candidate_delegation_count(collator_address).call()
         delegator_delegation_count = self.contract.functions.delegator_delegation_count(user_address).call()
@@ -163,15 +260,17 @@ class EVM:
             amount,
             candidate_delgation_count,
             delegator_delegation_count
-        ).buildTransaction()
+        ).buildTransaction({'gas': 210000})
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
-        Helper.eth_sign_transaction(
-            web3=self.web3, 
-            tx_dict=tx_dict, 
-            user_address=user_address
-        )
+        (is_success, message) = Helper.eth_sign_transaction(
+                        web3=self.web3, 
+                        tx_dict=tx_dict, 
+                        user_address=user_address
+                    )
+
+        return (is_success, message)
 
     def bond_more(self, user_address, collator_address, more):
 
@@ -184,26 +283,22 @@ class EVM:
         - user_address: Who is delegating
         - more: amount of more staking 
         '''
-
-        assert user_address is not None, "SUBSTAKE-EVM(BOND_MORE): User address must be provided"
-        assert collator_address is not None, "SUBSTAKE-EVM(BOND_MORE): Collator address must be provided"
-        assert more is not None, "SUBSTAKE-EVM(BOND_MORE): Amount must be provided"
-        assert type(more) is int, "SUBSTAKE-EVM(BOND_MORE): Amount must be Int"
         
-        more = more * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.delegator_bond_more(
             collator_address,
             more,
-        ).buildTransaction()
+        ).buildTransaction({'gas': 210000})
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
-        Helper.eth_sign_transaction(
-            web3=self.web3,
-            tx_dict=tx_dict,
-            user_address=user_address
-        )
+        (is_success, message) = Helper.eth_sign_transaction(
+                        web3=self.web3, 
+                        tx_dict=tx_dict, 
+                        user_address=user_address
+                    )
+
+        return (is_success, message)
 
     def bond_less(self, user_address, collator_address, less):
         
@@ -217,25 +312,20 @@ class EVM:
         - less: amount of bond less
         '''
 
-        assert user_address is not None, "SUBSTAKE-EVM(BOND_LESS): User address must be provided"
-        assert collator_address is not None, "SUBSTAKE-EVM(BOND_LESS): Collator address must be provided"
-        assert less is not None, "SUBSTAKE-EVM(BOND_LESS): Amount must be provided"
-        assert type(less) is int, "SUBSTAKE-EVM(BOND_LESS): Amount must be Int"
-
-        less = less * 10**EVM_DECIMALS
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.schedule_delegator_bond_less(
             collator_address,
             less,
-        ).buildTransaction()
+        ).buildTransaction({'gas': 210000})
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
+        (is_success, message) = Helper.eth_sign_transaction(
+                        web3=self.web3, 
+                        tx_dict=tx_dict, 
+                        user_address=user_address
+                    )
 
-        Helper.eth_sign_transaction(
-            web3=self.web3,
-            tx_dict=tx_dict,
-            user_address=user_address
-        )
+        return (is_success, message)
 
     def revoke(self, user_address, collator_address):
         
@@ -248,36 +338,33 @@ class EVM:
         - collator_address: Whom to revoke
         '''
 
-        assert user_address is not None, "SUBSTAKE-EVM(REVOKE): User address must be provided"
-        assert collator_address is not None, "SUBSTAKE-EVM(REVOKE): Collator address must be provided"
-
         nonce = self.web3.eth.get_transaction_count(user_address)
         tx_dict = self.contract.functions.schedule_revoke_delegation(
             collator_address,
-        ).buildTransaction()
+        ).buildTransaction({'gas': 210000})
         tx_dict['nonce'] = nonce
         tx_dict['from'] = user_address
 
-        Helper.eth_sign_transaction(
-            web3=self.web3,
-            tx_dict=tx_dict,
-            user_address=user_address
-        )
+        (is_success, message) = Helper.eth_sign_transaction(
+                        web3=self.web3, 
+                        tx_dict=tx_dict, 
+                        user_address=user_address
+                    )
+
+        return (is_success, message)
         
 
 class Substrate:
 
-    def __init__(self, provider=None, is_pool=False):
+    def __init__(self, provider):
         
-        assert provider is not None, "SUBSTAKE-SUBSTRATE: Provider must be provided"
         try:
             self.api = SubstrateInterface(url=provider)
         except Exception as e:
             print("Error connecting local node. Message: {error}".format(error=e))
             return 0
-        self.is_pool = is_pool
 
-    def bond(self, user_address=None, amount=None, payee=None, pool_id=None):
+    def bond(self, user_address, amount, payee, is_pool, pool_id):
 
         '''
         Method
@@ -288,22 +375,16 @@ class Substrate:
         - amount: bond amount. Int
         - payee: Staked(auto-compound) / Stash(Reward goes to stash account)
         - pool_id: Pool id when user stakes to nomination pool. Int
+
+        Returns
+        - (is_success, message)
+        - True, if succeed. False, if failed
+        - message: Tx Hash / Error
         '''
-        
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(BOND): User adress should be provided"
-        assert amount is not None, "SUBSTAKE-SUBSTRATE(BOND): Amount should be provided"
-        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(BOND): Amount should be Int" 
-        
-        if self.is_pool:
-            assert pool_id is not None, "Pool ID must be provided when bond to nomination pool"
-
-        if not self.is_pool:
-            assert payee is not None, "Payee must be provided when bond to validators"
-
-        amount = amount * 10**SUBSTRATE_DECIMALS    
-        pallet = "NominationPools" if self.is_pool else "Staking"
-        dispatch_call = "join" if self.is_pool else "bond"
-        params = {'amount': amount, 'pool_id': pool_id} if self.is_pool \
+ 
+        pallet = "NominationPools" if is_pool else "Staking"
+        dispatch_call = "join" if is_pool else "bond"
+        params = {'amount': amount, 'pool_id': pool_id} if is_pool \
                  else {'controller': user_address, 'value': amount, 'payee': payee}
         
         generic_call = Helper.get_generic_call(
@@ -313,13 +394,14 @@ class Substrate:
             params=params
         )
             
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+        return (is_success, message)
 
-    def nominate(self, user_address=None, validators=None):
+    def nominate(self, user_address, validators):
 
         '''
         Method
@@ -328,11 +410,10 @@ class Substrate:
         Params
         - user_account: User's public address
         - validators: [address of Validators]
-        '''
 
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(NOMINATE): User address should be provided"
-        assert validators is not None, "SUBSTAKE-SUBSTRATE(NOMINATE): Validators should be provided when nominate"
-        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(NOMINATE): Current nomination pool not supports nominate"
+        Returns
+        - is_success: True, if succeed. False, if failed
+        '''
 
         generic_call = Helper.get_generic_call(
             api=self.api,
@@ -342,13 +423,14 @@ class Substrate:
                 'targets': validators
             }
         )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+        return (is_success, message)
 
-    def bond_extra(self, user_address=None, additional=None): 
+    def bond_extra(self, user_address, additional, is_pool): 
         
         '''
         Method
@@ -358,16 +440,14 @@ class Substrate:
         
         Params
         - additional: bond extra amount. 'Int'
+
+        Returns
+        - is_success: True, if succeed. False, if failed
         '''
 
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): User adress should be provided"
-        assert additional is not None, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): Additional amount should be provided"
-        assert type(additional) is int, "SUBSTAKE-SUBSTRATE(BOND_EXTRA): Additional type should be Int"
-        
-        additional = additional * 10**SUBSTRATE_DECIMALS
-        pallet = "NominationPools" if self.is_pool else "Staking"
+        pallet = "NominationPools" if is_pool else "Staking"
         dispatch_call = "bondExtra"
-        params = {'extra': additional} if self.is_pool else {'max_additional': additional}
+        params = {'extra': additional} if is_pool else {'max_additional': additional}
     
         generic_call = Helper.get_generic_call(
             api=self.api,
@@ -375,28 +455,34 @@ class Substrate:
             function=dispatch_call,
             params=params
         )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
 
-        lighter_node = Helper.reorder_bag_for(api=self.api, user_address=user_address) # TO-DO 
-        generic_call = Helper.get_generic_call(
-            api=self.api,
-            module="VoterList",
-            function="putInFrontOf",
-            params={
-                'lighter': lighter_node
-            }
-        )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
 
-    def unbond(self, user_address=None, amount=None):
+        if is_success == "Success": 
+
+            lighter_node = Helper.reorder_bag_for(api=self.api, user_address=user_address) # TO-DO 
+            generic_call = Helper.get_generic_call(
+                api=self.api,
+                module="VoterList",
+                function="putInFrontOf",
+                params={
+                    'lighter': lighter_node
+                }
+            )
+            (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+            return (is_success, message)
+        else:
+            return (is_success, message)
+
+    def unbond(self, user_address, less):
         
         '''
         Method
@@ -404,27 +490,25 @@ class Substrate:
 
         Params
         - amount: unbond amount. 'Int'
+
+        Returns
+        - is_success: True, if succeed. False, if failed
         '''
 
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(UNBOND): User adress should be provided"
-        assert amount is not None, "SUBSTAKE-SUBSTRATE(UNBOND): Amount should be provided"
-        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(UNBOND): Amount should be Int"
-        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(UNBOND): Current nomination pool not support unbond"
-
-        amount = amount * 10**SUBSTRATE_DECIMALS
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
             function="unbond",
             params={
-                'value': amount
+                'value': less
             }
         )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+        return (is_success, message)
 
     def rebond(self, user_address=None, amount=None):
         
@@ -434,14 +518,11 @@ class Substrate:
 
         Params
         - amount: unbond amount. 'Int'
+
+        Returns
+        - is_success: True, if succeed. False, if failed
         '''
 
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(REBOND): User adress should be provided"
-        assert amount is not None, "SUBSTAKE-SUBSTRATE(REBOND): Amount should be provided"
-        assert type(amount) is int, "SUBSTAKE-SUBSTRATE(REBOND): Amount should be Int"
-        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(REBOND): Current nomination pool not supports rebond"
-
-        amount = amount * 10**SUBSTRATE_DECIMALS
         generic_call = Helper.get_generic_call(
             api=self.api,
             module="Staking",
@@ -450,11 +531,12 @@ class Substrate:
                 'value': amount
             }
         )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+        return (is_success, message)
 
     def chill(self, user_address=None):
 
@@ -465,10 +547,10 @@ class Substrate:
 
         Params
         - user_addrss: User's public addrss
-        '''
 
-        assert user_address is not None, "SUBSTAKE-SUBSTRATE(CHILL): User address must be provided"
-        assert self.is_pool is False, "SUBSTAKE_SUBSTRATE(CHILL): Current nomination pool not supports chill"
+        Returns
+        - is_success: True, if succeed. False, if failed
+        '''
         
         generic_call = Helper.get_generic_call(
             api=self.api,
@@ -476,32 +558,27 @@ class Substrate:
             function="chill",
             params={}
         )
-        Helper.send_extrinsic(
-            api=self.api,
-            generic_call=generic_call,
-            user_address=user_address    
-        )
-
+        (is_success, message) = Helper.send_extrinsic(
+                                    api=self.api,
+                                    generic_call=generic_call,
+                                    user_address=user_address    
+                                )
+        return (is_success, message)
 
 if __name__ == "__main__":
 
-    evm = EVM()
-    # substrate = Substrate(provider="wss://ws-api.substake.app", is_pool=True)
-    # substrate.nominate(user_address="a", validators="b")
-    # This account is only for test
-    # No worry for hacking
-    # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
-    # key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
-    # substrate.rebond(
-    #     user_address=key_pair,
-    #     amount=1000000000000,
-    # )
-
-    # staking1 = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
-    # staking2 = Staking(env='substrate', provider='wss://ws-api.substake.app')
-
-    # print(staking1.name)
-    # print(staking2.name)
-
-
+    staking_substrate = Staking(env='substrate', provider='wss://ws-api.substake.app')
+    mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
+    key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
+    staking_substrate.stake_less(
+        user_address=key_pair,
+        less="1"
+    )
+     
+    staking_evm = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
+    staking_evm.stake_less(
+        user_address="0x24E54d40c79dd99Ec626692C0AB58862A126A67b",
+        collator_address="0x3937B5F83f8e3DB413bD202bAf4da5A64879690F",
+        less="1",
+    )
     
