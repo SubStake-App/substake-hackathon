@@ -17,7 +17,7 @@ def get_recommended_collators(bond_amount:int) -> list:
     try:
         conn = db_con.get_connection()
         collator_list = []
-        with conn.cursor() as cur:
+        with conn.cursor() as cur: 
             avg_bpr = 7.5 #80(active collators)/600(blocks per round)
             query_string = f"SELECT * from dev_collator_list " \
                         f"WHERE active_status = True " \
