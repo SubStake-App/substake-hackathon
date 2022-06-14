@@ -73,7 +73,7 @@ class Staking:
                                         collator_address=collator_address, 
                                         amount=amount
                                     )
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             
@@ -90,11 +90,12 @@ class Staking:
                                             user_address=user_address,
                                             validators=validators
                                         )
-                return {'Transaction Status': is_success, 'Message': message}
+                return {'Status': is_success, 'Message': message}
             else:
                 amount = amount * 10**SUBSTRATE_DECIMALS
 
                 if is_pool:
+                    
                     assert pool_id is not None, "SUBSTAKE-STAKING(STAKE): Pool id must be provided for Substrate"
                     pool_id = int(pool_id)
 
@@ -104,7 +105,7 @@ class Staking:
                                                 is_pool=is_pool,
                                                 pool_id=pool_id
                                             )
-                    return {'Transaction Status': is_success, 'Message': message}
+                    return {'Status': is_success, 'Message': message}
                 else:
                     assert payee is not None, "SUBSTAKE-STAKING(STAKE): Payee must be provided for Substrate"
                     (is_success, message) = self.substrate.bond(
@@ -112,7 +113,7 @@ class Staking:
                                                 amount=amount,
                                                 payee=payee
                                             )
-                    return {'Transaction Status': is_success, 'Message': message}
+                    return {'Status': is_success, 'Message': message}
     
     def stake_more(
         self, 
@@ -145,7 +146,7 @@ class Staking:
                                         collator_address=collator_address,
                                         amount=amount
                                     )
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             
@@ -181,7 +182,7 @@ class Staking:
                                         amount=amount
                                     )
 
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             less = less * 10**SUBSTRATE_DECIMALS
@@ -190,7 +191,7 @@ class Staking:
                                         amount=amount
                                     )
 
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
     def restake(
         self, 
@@ -210,7 +211,7 @@ class Staking:
                                         user_address=user_address, 
                                         amount=amount
                                     )
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
     def stop_stake(
         self, 
@@ -234,11 +235,11 @@ class Staking:
                                         user_address=user_address, 
                                         collator_address=collator_address
                                     )
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
             (is_success, message) = self.substrate.chill(user_address=user_address)
-            return {'Transaction Status': is_success, 'Message': message}
+            return {'Status': is_success, 'Message': message}
 
 class EVM:
 
