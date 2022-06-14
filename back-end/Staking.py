@@ -262,6 +262,7 @@ class Staking:
         - Dictionary
         - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
         '''
+        
         assert user_address is not None, "SUBSTAKE-STAKING(STOP STAKE): User address must be provided"
 
         if self.name == 'evm':
