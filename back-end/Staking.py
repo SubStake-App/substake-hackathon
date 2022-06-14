@@ -46,7 +46,7 @@ class Staking:
         '''
         Method
         - EVM: delegate
-        - Substrate: bond
+        - Substrate: bond / nominate / join(nomination pool)
 
         Params
         - user_address: Public address of user. String
@@ -54,9 +54,13 @@ class Staking:
         - validators: For Substrate, list of address of validators. [String]
         - amount: Staking amount. Int
         - payee: For Substrate, 'Staked' or 'Stash'
-        - is_nominate: For Substrate, if already bonds 'True'. Default: 'False' 
-        - is_pool: If user stakes to nomination pool, set to 'True'
-        - pool_id: Pool id for nomination pool
+        - is_nominate: If neccessary. True / False
+        - is_pool: If neccessary. True / False
+        - pool_id: If neccessary. Int 
+
+        Returns
+        - Dictionary
+        - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
         '''
 
         assert user_address is not None, "SUBSTAKE-STAKING(STAKE): User address must be provided"
@@ -95,7 +99,7 @@ class Staking:
                 amount = amount * 10**SUBSTRATE_DECIMALS
 
                 if is_pool:
-                    
+
                     assert pool_id is not None, "SUBSTAKE-STAKING(STAKE): Pool id must be provided for Substrate"
                     pool_id = int(pool_id)
 
@@ -125,12 +129,17 @@ class Staking:
 
         '''
         Method
-        - Send stake-more-asset transaction
+        - Send stake-more transaction
         
         Params
         - user_address: Whose asset
-        - more: additional asset
+        - amount: additional asset
         - collator_address: Only needed in EVM
+        - is_pool: If neccessary. Int
+
+        Returns
+        - Dictionary
+        - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
         '''
 
         assert user_address is not None, "SUBSTKAE-STAKING(STAKE MORE): User address must be provided"
@@ -168,6 +177,16 @@ class Staking:
         amount=None, 
     ):
 
+        '''
+        Method
+        - EVM: bond_less
+        - SUBSTEATE: unbond
+
+        Returns
+        - Dictionary
+        - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
+        '''
+
         assert user_address is not None, "SUBSTAKE-STAKING(STAKE LESS): User address must be provided"
         assert amount is not None, "SUBSTAKE-STAKING(STAKE LESS): Less must be provided"
         amount = int(amount)
@@ -199,6 +218,16 @@ class Staking:
         amount=None
     ):
         
+        '''
+        Method
+        - EVM: pass
+        - SUBSTRATE: rebond
+
+        Returns
+        - Dictionary
+        - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
+        '''
+
         assert user_address is not None, "SUBSTAKE-STAKING(RESTAKE): User address should be provided"
         assert amount is not None, "SUBSTAKE-STAKING(RESTAKE): Amount shoud be provided"
         amount = int(amount)
@@ -222,10 +251,16 @@ class Staking:
         '''
         Method
         - Pull all staked asset
+        - EVM: revoke
+        - SUBSTRATE: chill
 
         Params 
         - user_address: Whose asset
         - collator_address: Only needed in EVM(Moonbeam)
+
+        Returns
+        - Dictionary
+        - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
         '''
         assert user_address is not None, "SUBSTAKE-STAKING(STOP STAKE): User address must be provided"
 
@@ -268,6 +303,11 @@ class EVM:
         - collator_address: Whom to delegate
         - user_address: Who is delegating
         - delegate_amount: amount of delegate
+
+        Returns
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
         
         nonce = self.web3.eth.get_transaction_count(user_address)
@@ -300,6 +340,11 @@ class EVM:
         - collator_address: Whom to delegate
         - user_address: Who is delegating
         - more: amount of more staking 
+
+        Returns
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
         
         nonce = self.web3.eth.get_transaction_count(user_address)
@@ -328,6 +373,11 @@ class EVM:
         - user_address: user's public address
         - collator_address: Whom to bond less
         - less: amount of bond less
+
+        Returns
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         nonce = self.web3.eth.get_transaction_count(user_address)
@@ -354,6 +404,11 @@ class EVM:
         Params
         - user_address: User's public address
         - collator_address: Whom to revoke
+
+        Returns
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         nonce = self.web3.eth.get_transaction_count(user_address)
@@ -396,7 +451,7 @@ class Substrate:
 
         Returns
         - (is_success, message)
-        - True, if succeed. False, if failed
+        - "Success" or "Fail"
         - message: Tx Hash / Error
         '''
  
@@ -430,7 +485,9 @@ class Substrate:
         - validators: [address of Validators]
 
         Returns
-        - is_success: True, if succeed. False, if failed
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         generic_call = Helper.get_generic_call(
@@ -460,7 +517,9 @@ class Substrate:
         - additional: bond extra amount. 'Int'
 
         Returns
-        - is_success: True, if succeed. False, if failed
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         pallet = "NominationPools" if is_pool else "Staking"
@@ -510,7 +569,9 @@ class Substrate:
         - amount: unbond amount. 'Int'
 
         Returns
-        - is_success: True, if succeed. False, if failed
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         generic_call = Helper.get_generic_call(
@@ -538,7 +599,9 @@ class Substrate:
         - amount: unbond amount. 'Int'
 
         Returns
-        - is_success: True, if succeed. False, if failed
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
 
         generic_call = Helper.get_generic_call(
@@ -567,7 +630,9 @@ class Substrate:
         - user_addrss: User's public addrss
 
         Returns
-        - is_success: True, if succeed. False, if failed
+        - (is_success, message)
+        - "Success" or "Fail"
+        - message: Tx Hash / Error
         '''
         
         generic_call = Helper.get_generic_call(
