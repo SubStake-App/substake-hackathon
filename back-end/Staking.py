@@ -3,6 +3,7 @@
 from substrateinterface import SubstrateInterface, Keypair
 from web3 import Web3
 from helper import Helper
+from Utils.helpful_function import str_to_bool
 import json
 
 KEY_PAIR = None
@@ -78,6 +79,8 @@ class Staking:
             
             assert is_nominate is not None, "SUBSTAKE-STAKING(STAKE): Is_nominate must be provided"
             assert is_pool is not None, "SUBSTAKE-STAKING(STAKE): Is_pool must be provided"
+            is_nominate = str_to_bool(is_nominate)
+            is_pool = str_to_bool(is_pool)
 
             if is_nominate: 
 
@@ -147,6 +150,7 @@ class Staking:
         elif self.name == 'substrate':
             
             assert is_pool is not None, "SUBSTAKE-STAKING(STAKE MORE): Is_pool must be provided"
+            is_pool = str_to_bool(is_pool)
             amount = amount * 10**SUBSTRATE_DECIMALS
 
             (is_success, message) = self.substrate.bond_extra(
@@ -523,7 +527,7 @@ class Substrate:
                                 )
         return (is_success, message)
 
-    def rebond(self, user_address=None, amount=None):
+    def rebond(self, user_address, amount):
         
         '''
         Method
@@ -551,7 +555,7 @@ class Substrate:
                                 )
         return (is_success, message)
 
-    def chill(self, user_address=None):
+    def chill(self, user_address):
 
         '''
         Method
@@ -577,6 +581,8 @@ class Substrate:
                                     user_address=user_address    
                                 )
         return (is_success, message)
+
+
 
 if __name__ == "__main__":
 
