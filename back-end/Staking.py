@@ -6,11 +6,9 @@ from helper import Helper
 from Utils.helpful_function import str_to_bool
 import json
 
-KEY_PAIR = None
 EVM_CONTRACT = "0x0000000000000000000000000000000000000800"
 EVM_DECIMALS = 18
 SUBSTRATE_DECIMALS = 12
-PRIVATE_KEY = ""
 
 class Staking:
 
@@ -148,7 +146,7 @@ class Staking:
 
         if self.name == 'evm':
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE MORE): Collator address must be provided"
-            more = more * 10**EVM_DECIMALS
+            amount = amount * 10**EVM_DECIMALS
 
             (is_success, message) = self.evm.bond_more(
                                         user_address=user_address,
@@ -193,7 +191,7 @@ class Staking:
 
         if self.name == 'evm':
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE LESS): Collator address must be provided for EVM"
-            less = less * 10**EVM_DECIMALS
+            amount = amount * 10**EVM_DECIMALS
 
             (is_success, message) = self.evm.bond_less(
                                         user_address=user_address,
@@ -204,7 +202,7 @@ class Staking:
             return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
-            less = less * 10**SUBSTRATE_DECIMALS
+            amount = amount * 10**SUBSTRATE_DECIMALS
             (is_success, message) = self.substrate.unbond(
                                         user_address=user_address,
                                         amount=amount
@@ -262,7 +260,7 @@ class Staking:
         - Dictionary
         - {'Status': "Success" or "Fail", 'Message': Transaction Hash / Error}
         '''
-        
+
         assert user_address is not None, "SUBSTAKE-STAKING(STOP STAKE): User address must be provided"
 
         if self.name == 'evm':
@@ -427,7 +425,6 @@ class EVM:
 
         return (is_success, message)
         
-
 class Substrate:
 
     def __init__(self, provider):
@@ -542,15 +539,18 @@ class Substrate:
 
         if is_success == "Success": 
 
-            lighter_node = Helper.reorder_bag_for(api=self.api, user_address=user_address) # TO-DO 
+            lighter_node = Helper.reorder_bag_for(
+                                api=self.api, 
+                                user_address=user_address
+                            ) 
             generic_call = Helper.get_generic_call(
-                api=self.api,
-                module="VoterList",
-                function="putInFrontOf",
-                params={
-                    'lighter': lighter_node
-                }
-            )
+                                api=self.api,
+                                module="VoterList",
+                                function="putInFrontOf",
+                                params={
+                                    'lighter': lighter_node
+                                }
+                            )
             (is_success, message) = Helper.send_extrinsic(
                                     api=self.api,
                                     generic_call=generic_call,
