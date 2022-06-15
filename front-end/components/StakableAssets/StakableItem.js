@@ -3,7 +3,7 @@ import arrow from '../../assets/arrowRight.png';
 
 export default function StakableItem({ index, img, network, stakeAmount, symbol, setModalVisible }) {
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={() => setModalVisible(true)}>
       <View style={styles.content}>
         <View style={{ justifyContent: 'center', marginRight: 15 }}>
           <Text style={{ color: 'white' }}>{index}</Text>
@@ -16,10 +16,10 @@ export default function StakableItem({ index, img, network, stakeAmount, symbol,
           </Text>
         </View>
       </View>
-      <Pressable style={{ padding: 10 }} onPress={() => setModalVisible(true)}>
+      <View style={{ padding: 10 }}>
         <Image source={arrow} />
-      </Pressable>
-    </View>
+      </View>
+    </Pressable>
   );
 }
 

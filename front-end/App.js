@@ -19,7 +19,6 @@ import MoonbaseDelegator from './pages/Moonbase/Delegator';
 import { useEffect, useState } from 'react';
 import Register from './pages/Register';
 import Welcome from './pages/Welcome';
-import Loading from './pages/Loading';
 
 const Stack = createNativeStackNavigator();
 

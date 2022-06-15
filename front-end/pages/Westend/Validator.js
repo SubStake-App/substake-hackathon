@@ -25,7 +25,7 @@ export default function WestendValidator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>Validator 액션을 선택해주세요</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>모든 액션은 4시간 소요 예상됩니다.</Text>
-            <Divider color="rgba(65, 69, 151, 0.8)" />
+            <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
             <View style={commonStyle.buttonWrapper}>
               <Pressable
                 style={commonStyle.buttonContainer}
@@ -71,7 +71,7 @@ export default function WestendValidator({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     keyboardType="decimal-pad"
@@ -101,7 +101,7 @@ export default function WestendValidator({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>차감하실 스테이킹 수량을 입력해주세요</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>현재 스테이킹 수량: 25253.2124 WND</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     keyboardType="decimal-pad"

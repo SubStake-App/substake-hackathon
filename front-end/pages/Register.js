@@ -34,7 +34,7 @@ export default function Register({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>시드문구로 계정을 복구해주세요</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>서비스 시작을 위해 처음 한 번만 복구하시면 됩니다.</Text>
-            <Divider color="rgba(65, 69, 151, 0.8)" />
+            <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
             <View style={commonStyle.inputContainer}>
               <TextInput
                 style={commonStyle.textInput}
@@ -61,7 +61,7 @@ export default function Register({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>계정 닉네임을 설정해주세요</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>닉네임은 언제든 수정 가능합니다.</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     style={commonStyle.textInput}
@@ -90,7 +90,7 @@ export default function Register({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>비밀번호 재설정이 필요해요.</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>비밀번호는 추후 시드문구로만 재설정할 수 있습니다.</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     style={commonStyle.textInput}
@@ -113,7 +113,7 @@ export default function Register({ navigation }) {
             <View style={commonStyle.serviceChatBox}>
               <Text style={commonStyle.serviceChatBoxTitle}>비밀번호 재확인이 필요해요</Text>
               <Text style={commonStyle.serviceChatBoxDesc}>방금 입력하신 비밀번호를 한 번 더 입력합니다.</Text>
-              <Divider color="rgba(65, 69, 151, 0.8)" />
+              <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
               <View style={commonStyle.inputContainer}>
                 <TextInput
                   style={commonStyle.textInput}

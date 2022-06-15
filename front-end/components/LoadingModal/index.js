@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { View, Image, Animated, Easing, Modal, StyleSheet } from 'react-native';
+import { View, Image, Animated, Easing, Modal, StyleSheet, Text } from 'react-native';
 import loading_bag from '../../assets/loading_bag.png';
 import loading_light from '../../assets/loading_light.png';
 import { Nunito700, Nunito400 } from '../constant';
 
-export default function LoadingModal() {
+export default function LoadingModal({ text }) {
   const [isVisible, setIsVisible] = useState(false);
   const animated = new Animated.Value(5);
   const duration = 500;
@@ -50,6 +50,7 @@ export default function LoadingModal() {
               style={{ position: 'absolute', transform: [{ translateY: animated }] }}
             />
             <Image source={loading_light} style={{ marginTop: 60 }} />
+            {text && <Text style={{ color: '#A8A8A8', fontSize: 17, marginTop: 20, textAlign: 'center' }}>{text}</Text>}
           </View>
         </View>
       </View>

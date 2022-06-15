@@ -5,6 +5,7 @@ export const commonStyle = StyleSheet.create({
     alignSelf: 'stretch',
     alignItems: 'flex-start',
     marginBottom: 15,
+    marginTop: 15,
   },
   userChatContainer: {
     alignSelf: 'stretch',
@@ -14,18 +15,17 @@ export const commonStyle = StyleSheet.create({
   serviceChatBox: {
     backgroundColor: 'rgba(52, 55, 129, 0.63)',
     borderRadius: 10,
-    maxWidth: '60%',
+    maxWidth: '70%',
     padding: 20,
   },
   serviceChatBoxTitle: {
     color: 'white',
     fontSize: 11,
-    marginBottom: 8,
   },
   serviceChatBoxDesc: {
     color: '#A8A8A8',
     fontSize: 10,
-    marginBottom: 12,
+    marginTop: 8,
   },
   userChatBox: {
     backgroundColor: 'rgba(217, 218, 234, 0.76)',
@@ -48,7 +48,7 @@ export const commonStyle = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    marginTop: 20,
+    // marginTop: 20,
   },
   buttonWrapper: {
     justifyContent: 'center',
@@ -61,7 +61,7 @@ export const commonStyle = StyleSheet.create({
     backgroundColor: 'rgba(108, 132, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginTop: 5,
+    // marginTop: 5,
   },
   buttonText: {
     color: 'white',
@@ -87,5 +87,32 @@ export const commonStyle = StyleSheet.create({
   successLink: {
     fontSize: 10,
     color: '#3959FF',
+  },
+  divider: {
+    marginVertical: 12,
+  },
+  sliderContainer: {
+    justifyContent: 'center',
+    backgroundColor: '#383537',
+    borderRadius: 5,
+    height: 24,
+  },
+  disabledSliderContainer: {
+    justifyContent: 'center',
+    backgroundColor: '#212351',
+    borderRadius: 5,
+    height: 24,
+  },
+  sliderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    height: 20,
+    backgroundColor: 'rgba(217, 218, 234, 0.76)',
+  },
+  sliderInnerText: {
+    color: '#FFFFFF',
+    fontSize: 8,
   },
 });
