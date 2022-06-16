@@ -50,7 +50,7 @@ export default function MoonbaseCollator({ navigation }) {
               <Pressable
                 style={commonStyle.buttonContainer}
                 onPress={() => {
-                  setStatus(1);
+                  setStatus(2);
                   setAction(() => 'Cancel Bond Request');
                 }}
                 disabled={status !== 0}
@@ -129,7 +129,7 @@ export default function MoonbaseCollator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.succesContainer}>
-                <Image source={success} style={{ marginRight: 5 }} />
+                <Image source={success} />
                 <View>
                   <Text style={commonStyle.successHeader}>Success</Text>
                   <View style={{ flexDirection: 'row' }}>
@@ -148,6 +148,28 @@ export default function MoonbaseCollator({ navigation }) {
               </View>
             </View>
           </>
+        )}
+        {status > 2 && (
+          <View style={commonStyle.serviceChatContainer}>
+            <View style={commonStyle.succesContainer}>
+              <Image source={success} />
+              <View>
+                <Text style={commonStyle.successHeader}>Success</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
+                  <Pressable
+                    onPress={() =>
+                      openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
+                        presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                      })
+                    }
+                  >
+                    <Text style={commonStyle.successLink}> #2275958-3</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </View>
         )}
       </ScrollView>
     </Layout>

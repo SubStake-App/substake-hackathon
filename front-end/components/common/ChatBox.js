@@ -61,21 +61,34 @@ export const commonStyle = StyleSheet.create({
     backgroundColor: 'rgba(108, 132, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    // marginTop: 5,
+    marginTop: 5,
+  },
+  checkedButtonContainer: {
+    alignSelf: 'stretch',
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: '#26F2A9',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginTop: 5,
   },
   buttonText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 11,
+  },
+  checkedButtonText: {
+    color: 'black',
+    fontSize: 11,
   },
   succesContainer: {
     flexDirection: 'row',
     flex: 1,
     backgroundColor: 'rgba(52, 55, 129, 0.63)',
     borderRadius: 10,
-    maxWidth: '70%',
-    paddingHorizontal: 10,
+    width: '65%',
     paddingVertical: 20,
     alignItems: 'center',
+    justifyContent: 'space-evenly',
   },
   successHeader: {
     color: '#26F2A9',
@@ -114,5 +127,31 @@ export const commonStyle = StyleSheet.create({
   sliderInnerText: {
     color: '#FFFFFF',
     fontSize: 8,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+  },
+  cardBox: {
+    height: 250,
+    width: 250,
+    backgroundColor: 'rgba(52, 55, 129, 0.63)',
+    marginRight: 25,
+  },
+  cardTextWrapper: {
+    padding: 10,
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  cardMainText: {
+    color: 'white',
+    fontSize: 11,
+    // marginBottom: 15,
+  },
+  cardSubText: {
+    color: '#A8A8A8',
+    fontSize: 10,
+  },
+  cardImg: {
+    width: 250,
   },
 });

@@ -125,7 +125,7 @@ export default function MoonbaseDelegator({ navigation }) {
             {status > 1 && (
               <View style={commonStyle.serviceChatContainer}>
                 <View style={commonStyle.succesContainer}>
-                  <Image source={success} style={{ marginRight: 5 }} />
+                  <Image source={success} />
                   <View>
                     <Text style={commonStyle.successHeader}>Success</Text>
                     <View style={{ flexDirection: 'row' }}>
