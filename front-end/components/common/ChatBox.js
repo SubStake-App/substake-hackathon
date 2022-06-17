@@ -43,6 +43,7 @@ export const commonStyle = StyleSheet.create({
     color: '#A8A8A8',
   },
   confirm: {
+    margin: 2,
     color: '#6C84FF',
   },
   inputContainer: {

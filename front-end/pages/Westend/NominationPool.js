@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Image, ScrollView, Text, View, TextInput, Pressable } from 'react-native';
+import { Image, ScrollView, Text, View, TextInput, Pressable, Modal } from 'react-native';
 import { commonStyle } from '../../components/common/ChatBox';
 import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
@@ -11,32 +11,51 @@ import Slider from 'react-native-slide-to-unlock';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import arrowRight from '../../assets/arrowRightBold.png';
+import { NominationPoolModal } from '../../components/NominationPool/Modal';
+
+const cardContent = [
+  {
+    main: 'A member delegates funds to a pool by transferring some amount to the pool’s bonded account with the “join” extrinsic.',
+    sub: 'Note: A member is afforded the ability to bond additional funds, or re-stake rewards as long as they are already actively bonded. Remeber, a member may only belong to one pool at a time.',
+    img: img_1,
+  },
+  {
+    main: 'The member can claim their portion of any rewards that have accumulated since the previous time they claimed (or in the case that they have never claimed, any rewards that have accumulated since the era after they joined). Rewards are split pro rata among the actively bonded members.',
+    sub: '',
+    img: img_2,
+  },
+  {
+    main: "At any point in time after joining the pool, a member can start the process of exiting by unbonding. unbond will unbond part or all of the member's funds.",
+    sub: 'The unbonding duration has passed (e.g. 28 days on Polkadot), a member may withdraw their funds with withdraw unbonded',
+    img: img_3,
+  },
+];
 
 export default function WestendNominationPool({ navigation }) {
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
   const [bondAmount, setBondAmount] = useState(0);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [validatorFilter, setValidatorFilter] = useState([]);
-  const [interestType, setInterestType] = useState('');
+  const [nominationPool, setNominationPool] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
   const scrollViewRef = useRef();
 
-  const cardContent = [
-    {
-      main: 'A member delegates funds to a pool by transferring some amount to the pool’s bonded account with the “join” extrinsic.',
-      sub: 'Note: A member is afforded the ability to bond additional funds, or re-stake rewards as long as they are already actively bonded. Remeber, a member may only belong to one pool at a time.',
-      img: img_1,
-    },
-    {
-      main: 'The member can claim their portion of any rewards that have accumulated since the previous time they claimed (or in the case that they have never claimed, any rewards that have accumulated since the era after they joined). Rewards are split pro rata among the actively bonded members.',
-      sub: '',
-      img: img_2,
-    },
-    {
-      main: "At any point in time after joining the pool, a member can start the process of exiting by unbonding. unbond will unbond part or all of the member's funds.",
-      sub: 'The unbonding duration has passed (e.g. 28 days on Polkadot), a member may withdraw their funds with withdraw unbonded',
-      img: img_3,
-    },
+  const nominationPoolList = [
+    { name: 'Substake_1', points: 43, nominees: 9 },
+    { name: 'Substake_2', points: 43, nominees: 9 },
+    { name: 'Substake_3', points: 43, nominees: 9 },
+    { name: 'Substake_4', points: 43, nominees: 9 },
+    { name: 'Substake_5', points: 43, nominees: 9 },
+    { name: 'Substake_6', points: 43, nominees: 9 },
+    { name: 'Substake_7', points: 43, nominees: 9 },
+    { name: 'Substake_8', points: 43, nominees: 9 },
+    { name: 'Substake_9', points: 43, nominees: 9 },
+    { name: 'Substake_10', points: 43, nominees: 9 },
+    { name: 'Substake_11', points: 43, nominees: 9 },
+    { name: 'Substake_12', points: 43, nominees: 9 },
+    { name: 'Substake_13', points: 43, nominees: 9 },
+    { name: 'Substake_14', points: 43, nominees: 9 },
+    { name: 'Substake_15', points: 43, nominees: 9 },
+    { name: 'Substake_16', points: 43, nominees: 9 },
   ];
 
   return (
@@ -47,6 +66,13 @@ export default function WestendNominationPool({ navigation }) {
         ref={scrollViewRef}
         onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
       >
+        <NominationPoolModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          nominationPoolList={nominationPoolList}
+          nominationPool={nominationPool}
+          setNominationPool={setNominationPool}
+        />
         <ScrollView horizontal={true}>
           <View style={commonStyle.cardContainer}>
             {cardContent.map((el, i) => (
@@ -93,7 +119,7 @@ export default function WestendNominationPool({ navigation }) {
           <>
             <View style={commonStyle.userChatContainer}>
               <View style={commonStyle.userChatBox}>
-                <Text style={commonStyle.userChatBoxText}>{action}</Text>
+                <Text style={commonStyle.userChatBoxText}>Yes, please</Text>
               </View>
             </View>
             <View style={commonStyle.serviceChatContainer}>
@@ -144,6 +170,89 @@ export default function WestendNominationPool({ navigation }) {
                     </View>
                   </View>
                 </View>
+              </>
+            )}
+          </>
+        )}
+        {action === 'manual' && status > 0 && (
+          <>
+            <View style={commonStyle.userChatContainer}>
+              <View style={commonStyle.userChatBox}>
+                <Text style={commonStyle.userChatBoxText}>No, I want to select manually</Text>
+              </View>
+            </View>
+            <View style={commonStyle.serviceChatContainer}>
+              <View style={commonStyle.serviceChatBox}>
+                <Text style={commonStyle.serviceChatBoxTitle}>Which pool are you looking for?</Text>
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                <View style={commonStyle.buttonWrapper}>
+                  <Pressable
+                    style={commonStyle.buttonContainer}
+                    onPress={() => setModalVisible(true)}
+                    disabled={status !== 1}
+                  >
+                    <Text style={commonStyle.buttonText}>Select a Nomination Pool</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+            {nominationPool.length > 0 && (
+              <>
+                <View style={commonStyle.userChatContainer}>
+                  <View style={commonStyle.userChatBox}>
+                    <Text style={commonStyle.userChatBoxText}>{nominationPool}</Text>
+                  </View>
+                </View>
+                <View style={commonStyle.serviceChatContainer}>
+                  <View style={commonStyle.serviceChatBox}>
+                    <Text style={commonStyle.serviceChatBoxTitle}>차감하실 스테이킹 수량을 입력해주세요</Text>
+                    <Text style={commonStyle.serviceChatBoxDesc}>현재 스테이킹 수량: 25253.2124 WND</Text>
+                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                    <View style={commonStyle.inputContainer}>
+                      <TextInput
+                        keyboardType="decimal-pad"
+                        style={commonStyle.textInput}
+                        placeholderTextColor="#A8A8A8"
+                        placeholder="숫자만 입력해주세요"
+                        onChangeText={(amount) => setBondAmount(amount)}
+                        editable={status === 1}
+                        autoCorrect={false}
+                      />
+                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
+                        <Text style={commonStyle.confirm}>확인</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+                {status > 1 && (
+                  <>
+                    <View style={commonStyle.userChatContainer}>
+                      <View style={commonStyle.userChatBox}>
+                        <Text style={commonStyle.userChatBoxText}>{bondAmount}</Text>
+                      </View>
+                    </View>
+                    <View style={commonStyle.serviceChatContainer}>
+                      <View style={commonStyle.succesContainer}>
+                        <Image source={success} />
+                        <View>
+                          <Text style={commonStyle.successHeader}>Success</Text>
+                          <View style={{ flexDirection: 'row' }}>
+                            <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
+                            <Pressable
+                              onPress={() =>
+                                openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
+                                  presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                                })
+                              }
+                            >
+                              <Text style={commonStyle.successLink}> #2275958-3</Text>
+                            </Pressable>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </>
+                )}
               </>
             )}
           </>

@@ -12,6 +12,24 @@ import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import arrowRight from '../../assets/arrowRightBold.png';
 
+const cardContent = [
+  {
+    main: 'After showing your intent to bond your asset, your nomination takes 24 hours(1era) to come in to effect, and it takes 7 eras to completely unstake your fund.',
+    sub: 'Note: Nominators should be only be able to see a SINGLE (our of the validators selected by you) active nomination per era.',
+    img: img_1,
+  },
+  {
+    main: 'Only the state of TOP 22,500 nominators out of nominator intentions (up to 50,000) is considered as the electing set to determine the active validators.',
+    sub: 'Note: ONLY the state of TOP 256 nominatrors of each Active Validator is eligible for the staking reward.',
+    img: img_2,
+  },
+  {
+    main: 'Nominator’s account(or a “voter” will be automatically semi-sorted into a bag of 16 voter-list, based on the amount the voter nominates.',
+    sub: 'SubStake App will automatically support you to adjust “moveUp” and “re-bag” extrinsics on behalf of you.',
+    img: img_3,
+  },
+];
+
 export default function WestendNominator({ navigation }) {
   const [status, setStatus] = useState(0);
   const [bondAmount, setBondAmount] = useState(0);
@@ -19,24 +37,6 @@ export default function WestendNominator({ navigation }) {
   const [validatorFilter, setValidatorFilter] = useState([]);
   const [interestType, setInterestType] = useState('');
   const scrollViewRef = useRef();
-
-  const cardContent = [
-    {
-      main: 'After showing your intent to bond your asset, your nomination takes 24 hours(1era) to come in to effect, and it takes 7 eras to completely unstake your fund.',
-      sub: 'Note: Nominators should be only be able to see a SINGLE (our of the validators selected by you) active nomination per era.',
-      img: img_1,
-    },
-    {
-      main: 'Only the state of TOP 22,500 nominators out of nominator intentions (up to 50,000) is considered as the electing set to determine the active validators.',
-      sub: 'Note: ONLY the state of TOP 256 nominatrors of each Active Validator is eligible for the staking reward.',
-      img: img_2,
-    },
-    {
-      main: 'Nominator’s account(or a “voter” will be automatically semi-sorted into a bag of 16 voter-list, based on the amount the voter nominates.',
-      sub: 'SubStake App will automatically support you to adjust “moveUp” and “re-bag” extrinsics on behalf of you.',
-      img: img_3,
-    },
-  ];
 
   useEffect(() => {
     setValidatorFilter([
