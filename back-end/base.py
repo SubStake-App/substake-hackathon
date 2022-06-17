@@ -4,6 +4,7 @@ from web3 import Web3
 import json
 
 EVM_CONTRACT = "0x0000000000000000000000000000000000000800"
+
 class Base:
 
     def __init__(self, env, provider, which=None):

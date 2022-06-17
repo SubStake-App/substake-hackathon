@@ -1,13 +1,8 @@
 
-
-from substrateinterface import SubstrateInterface, Keypair
-from web3 import Web3
 from helper import Helper
 from Utils.helpful_function import str_to_bool
 from base import Base
-import json
 
-EVM_CONTRACT = "0x0000000000000000000000000000000000000800"
 EVM_DECIMALS = 18
 SUBSTRATE_DECIMALS = 12
 
@@ -23,7 +18,7 @@ class Staking(Base):
         assert env is not None, "SUBSTAKE-STAKING: Environment must be provided"
         assert provider is not None, "SUBSTAKE_STAKING: Provider must be provided"
 
-        super.__init__(env=env, provider=provider, which='staking')
+        super().__init__(env=env, provider=provider, which='staking')
 
     def stake(
         self, 
@@ -376,7 +371,7 @@ class Staking(Base):
             return {'Status': is_success, 'Message': message}
 
         elif self.name == 'substrate':
-            
+
             generic_call = Helper.get_generic_call(
                                 api=self.api,
                                 module="Staking",
@@ -393,18 +388,21 @@ class Staking(Base):
 
 if __name__ == "__main__":
 
+    from substrateinterface import Keypair
+
     staking_substrate = Staking(env='substrate', provider='wss://ws-api.substake.app')
     mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
     key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
-    staking_substrate.stake_less(
+    result = staking_substrate.restake(
         user_address=key_pair,
-        less="1"
+        amount="1"
     )
+    print(result)
      
-    staking_evm = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
-    staking_evm.stake_less(
-        user_address="0x24E54d40c79dd99Ec626692C0AB58862A126A67b",
-        collator_address="0x3937B5F83f8e3DB413bD202bAf4da5A64879690F",
-        less="1",
-    )
+    # staking_evm = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
+    # staking_evm.stake_less(
+    #     user_address="0x24E54d40c79dd99Ec626692C0AB58862A126A67b",
+    #     collator_address="0x3937B5F83f8e3DB413bD202bAf4da5A64879690F",
+    #     less="1",
+    # )
     
