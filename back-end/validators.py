@@ -58,11 +58,11 @@ class Validators(Base):
                 'others':
             }
             '''
-            
+            active_validator = self.active_validators[i]
             validator_info = self.api.query(
                                                 'Staking', 
                                                 'Validators', 
-                                                params=[self.active_validators[i]]
+                                                params=[active_validator]
                                             ).value
             commission = float(validator_info['commission']) / 10**7
             blocked = validator_info['blocked']
@@ -79,7 +79,7 @@ class Validators(Base):
             temp = self.api.query(
                         'Staking', 
                         'ErasStakers', 
-                        params=[self.era, self.active_validators[i]]
+                        params=[self.era, active_validator]
                       ).value 
     
             total = float(temp['total']) / 10**12 
@@ -88,6 +88,13 @@ class Validators(Base):
 
             if len(nominators) > OVER_SUBSCRIBED:
                 continue
+
+            identity = self.api.query(
+                'Identity',
+                'IdentityOf',
+                params=[active_validator]
+            ).value['info']
+            display_name = identity['display']['Raw']
 
             share_ratio = bond_amount / (total + bond_amount)
             print('share_ratio: {share}'.format(share=share_ratio))
@@ -98,8 +105,8 @@ class Validators(Base):
             stakers[self.active_validators[i]] = { 
                                                     'total': total, 
                                                     'own': own, 
+                                                    'display_name': display_name,
                                                     'user_return': user_return, 
-                                                    'nominators': nominators 
                                                 }
             
         with open('output.json', 'w') as f:
