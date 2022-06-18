@@ -30,7 +30,12 @@ def get_recommended_collator():
 def get_recommended_validator():
     if request.method == 'POST':
         
-        validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
+        #dev
+        #validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
+        
+        #production
+        validators = Validators(env='substrate', provider='ws://127.0.0.1:9954')
+        
         return_str = json.dumps(validators.recommend_validators(bond_amount=3.5))
         
         response = make_response(return_str, 200)
