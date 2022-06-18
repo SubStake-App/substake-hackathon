@@ -6,7 +6,7 @@ import dev_substrate_interface as dev
 from Helper import Helper
 from Staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
-from validators import Validators as validator
+from validators import Validators 
 import requests
 import json
 import dev_substrate_interface as dev
@@ -30,7 +30,8 @@ def get_recommended_collator():
 def get_recommended_validator():
     if request.method == 'POST':
         
-        return_str = json.dumps(validator.recommend_validators(bond_amount=3.5))
+        validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
+        return_str = json.dumps(validators.recommend_validators(bond_amount=3.5))
         
         response = make_response(return_str, 200)
         #print(return_str)
