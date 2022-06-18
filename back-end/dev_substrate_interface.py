@@ -49,7 +49,7 @@ def get_recommended_collators(bond_amount:int) -> list:
                                 
                             }
                 collator_list.append((collators))  
-        return collator_list
+        return collator_list 
     except Exception as e:
         e.with_traceback()
     finally:
