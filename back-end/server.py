@@ -8,7 +8,7 @@ from Staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
 
 from flask import Flask, request, make_response, jsonify
-app = Flask (__name__)
+app = Flask (__name__) 
 
 @app.route('/api/request/dev/collator', methods=['POST'])
 def get_recommended_collator():
