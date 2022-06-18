@@ -2,36 +2,35 @@ import { useEffect, useState } from 'react';
 import { View, Image, Animated, Easing, Modal, StyleSheet, Text } from 'react-native';
 import loading_bag from '../../assets/loading_bag.png';
 import loading_light from '../../assets/loading_light.png';
-import { Nunito700, Nunito400 } from '../constant';
 
 export default function LoadingModal({ text }) {
   const [isVisible, setIsVisible] = useState(false);
-  const animated = new Animated.Value(5);
+  const animated = new Animated.Value(-40);
   const duration = 500;
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(animated, {
-          toValue: 15,
+          toValue: -50,
           easing: Easing.bezier(0.5, 1, 0.89, 1),
           duration: duration,
           useNativeDriver: true,
         }),
         Animated.timing(animated, {
-          toValue: 5,
+          toValue: -40,
           easing: Easing.bezier(0.11, 0, 0.5, 0),
           duration: duration,
           useNativeDriver: true,
         }),
         Animated.timing(animated, {
-          toValue: -5,
+          toValue: -30,
           easing: Easing.bezier(0.5, 1, 0.89, 1),
           duration: duration,
           useNativeDriver: true,
         }),
         Animated.timing(animated, {
-          toValue: 5,
+          toValue: -40,
           easing: Easing.bezier(0.11, 0, 0.5, 0),
           duration: duration,
           useNativeDriver: true,
@@ -47,9 +46,10 @@ export default function LoadingModal({ text }) {
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Animated.Image
               source={loading_bag}
-              style={{ position: 'absolute', transform: [{ translateY: animated }] }}
+              resizeMode="contain"
+              style={{ position: 'absolute', transform: [{ translateY: animated }], width: 100 }}
             />
-            <Image source={loading_light} style={{ marginTop: 60 }} />
+            <Image source={loading_light} resizeMode="contain" style={{ marginTop: 60, width: 200 }} />
             {text && <Text style={{ color: '#A8A8A8', fontSize: 17, marginTop: 20, textAlign: 'center' }}>{text}</Text>}
           </View>
         </View>
@@ -76,21 +76,17 @@ const styles = StyleSheet.create({
   },
   modalTitleHeader: {
     fontSize: 18,
-    fontFamily: Nunito700,
   },
   modalTitleMain: {
     fontSize: 10,
-    fontFamily: Nunito400,
     color: '#7E7794',
   },
   modalDetailHeader: {
     fontSize: 10,
-    fontFamily: Nunito700,
     color: '#7E7794',
   },
   modalDetailMain: {
     fontSize: 10,
-    fontFamily: Nunito400,
     color: '#7E7794',
   },
   button: {

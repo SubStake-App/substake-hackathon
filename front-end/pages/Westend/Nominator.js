@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Image, ScrollView, Text, View, TextInput, Pressable } from 'react-native';
+import { Image, ScrollView, Text, View, TextInput, Pressable, StyleSheet } from 'react-native';
 import { commonStyle } from '../../components/common/ChatBox';
 import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
@@ -10,7 +10,10 @@ import { Divider } from '@rneui/base';
 import Slider from 'react-native-slide-to-unlock';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
-import arrowRight from '../../assets/arrowRightBold.png';
+import arrowRight from '../../assets/arrowRight.png';
+import NominatorDetailModal from '../../components/Westend/Nominator/DetailModal';
+import validator_icon from '../../assets/validator_ex.png';
+import NominatorSwitchModal from '../../components/Westend/Nominator/SwitchModal';
 
 const cardContent = [
   {
@@ -33,10 +36,21 @@ const cardContent = [
 export default function WestendNominator({ navigation }) {
   const [status, setStatus] = useState(0);
   const [bondAmount, setBondAmount] = useState(0);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isFilterConfirmed, setIsFilterConfirmed] = useState(false);
+  const [isStakingConfirmed, setIsStakingConfirmed] = useState(false);
   const [validatorFilter, setValidatorFilter] = useState([]);
+  const [validatorList, setValidatorList] = useState([]);
   const [interestType, setInterestType] = useState('');
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [switchModalVisible, setSwitchModalVisible] = useState(false);
+  const [selectedValidator, setSelectedValidator] = useState('');
+  const [newValidator, setNewValidator] = useState('');
+
   const scrollViewRef = useRef();
+
+  useEffect(() => {
+    setValidatorList(['curated_1', 'curated_2', 'curated_3', 'curated_4', 'curated_5', 'curated_6', 'curated_7']);
+  }, []);
 
   useEffect(() => {
     setValidatorFilter([
@@ -53,6 +67,26 @@ export default function WestendNominator({ navigation }) {
 
   return (
     <Layout>
+      {detailModalVisible && (
+        <NominatorDetailModal
+          isVisible={detailModalVisible}
+          setModalVisible={setDetailModalVisible}
+          setSwitchModalVisible={setSwitchModalVisible}
+          validator={selectedValidator}
+          icon={validator_icon}
+        />
+      )}
+      {switchModalVisible && (
+        <NominatorSwitchModal
+          modalVisible={switchModalVisible}
+          setModalVisible={setSwitchModalVisible}
+          newValidator={newValidator}
+          setNewValidator={setNewValidator}
+          selectedValidator={selectedValidator}
+          validatorList={validatorList}
+          setValidatorList={setValidatorList}
+        />
+      )}
       <TopBar title="Nominator" path="StakableAssets" navigation={navigation} />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -76,21 +110,25 @@ export default function WestendNominator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
-            <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-            <View style={commonStyle.inputContainer}>
-              <TextInput
-                keyboardType="decimal-pad"
-                style={commonStyle.textInput}
-                placeholderTextColor="#A8A8A8"
-                placeholder="숫자만 입력해주세요"
-                onChangeText={(amount) => setBondAmount(amount)}
-                editable={status === 0}
-                autoCorrect={false}
-              />
-              <Pressable onPress={() => setStatus(1)} disabled={status !== 0}>
-                <Text style={commonStyle.confirm}>확인</Text>
-              </Pressable>
-            </View>
+            {status === 0 && (
+              <>
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                <View style={commonStyle.inputContainer}>
+                  <TextInput
+                    keyboardType="decimal-pad"
+                    style={commonStyle.textInput}
+                    placeholderTextColor="#A8A8A8"
+                    placeholder="숫자만 입력해주세요"
+                    onChangeText={(amount) => setBondAmount(amount)}
+                    editable={status === 0}
+                    autoCorrect={false}
+                  />
+                  <Pressable onPress={() => setStatus(1)} disabled={status !== 0}>
+                    <Text style={commonStyle.confirm}>확인</Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </View>
         {status > 0 && (
@@ -131,18 +169,18 @@ export default function WestendNominator({ navigation }) {
                 <Slider
                   onEndReached={() => {
                     setStatus(2);
-                    setIsDisabled(true);
+                    setIsFilterConfirmed(true);
                   }}
-                  containerStyle={isDisabled ? commonStyle.disabledSliderContainer : commonStyle.sliderContainer}
+                  containerStyle={isFilterConfirmed ? commonStyle.disabledSliderContainer : commonStyle.sliderContainer}
                   sliderElement={
                     <View style={commonStyle.sliderBox}>
                       <Image source={arrowRight} />
                     </View>
                   }
-                  disableSliding={isDisabled}
+                  disableSliding={isFilterConfirmed}
                 >
                   <Text style={commonStyle.sliderInnerText}>
-                    {isDisabled ? 'confirmed' : 'Swipe to confirm the your filters'}
+                    {isFilterConfirmed ? 'Confirmed' : 'Swipe to confirm the your filters'}
                   </Text>
                 </Slider>
               </View>
@@ -162,47 +200,133 @@ export default function WestendNominator({ navigation }) {
                 <Text style={commonStyle.serviceChatBoxDesc}>
                   단리: 리워드는 즉시 전송가능 상태로 표시됩니다. 복리: 리워드는 자동으로 재-스테이킹 됩니다.
                 </Text>
-                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-                <View style={commonStyle.buttonWrapper}>
-                  <Pressable
-                    style={
-                      interestType === 'Compound' ? commonStyle.checkedButtonContainer : commonStyle.buttonContainer
-                    }
-                    onPress={() => {
-                      setStatus(3);
-                      setInterestType('Compound');
-                    }}
-                    disabled={status !== 2}
-                  >
-                    <Text style={interestType === 'Compound' ? commonStyle.checkedButtonText : commonStyle.buttonText}>
-                      Compound
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    style={interestType === 'Simple' ? commonStyle.checkedButtonContainer : commonStyle.buttonContainer}
-                    onPress={() => {
-                      setStatus(3);
-                      setInterestType('Simple');
-                    }}
-                    disabled={status !== 2}
-                  >
-                    <Text style={interestType === 'Simple' ? commonStyle.checkedButtonText : commonStyle.buttonText}>
-                      Simple
-                    </Text>
-                  </Pressable>
-                </View>
+                {status === 2 && (
+                  <>
+                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                    <View style={commonStyle.buttonWrapper}>
+                      <Pressable
+                        style={commonStyle.buttonContainer}
+                        onPress={() => {
+                          setStatus(3);
+                          setInterestType('Compound');
+                        }}
+                        disabled={status !== 2}
+                      >
+                        <Text style={commonStyle.buttonText}>Compound</Text>
+                      </Pressable>
+                      <Pressable
+                        style={commonStyle.buttonContainer}
+                        onPress={() => {
+                          setStatus(3);
+                          setInterestType('Simple');
+                        }}
+                        disabled={status !== 2}
+                      >
+                        <Text style={commonStyle.buttonText}>Simple</Text>
+                      </Pressable>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
           </>
         )}
         {status > 2 && (
-          <View style={commonStyle.userChatContainer}>
-            <View style={commonStyle.userChatBox}>
-              <Text style={commonStyle.userChatBoxText}>{interestType}</Text>
+          <>
+            <View style={commonStyle.userChatContainer}>
+              <View style={commonStyle.userChatBox}>
+                <Text style={commonStyle.userChatBoxText}>{interestType}</Text>
+              </View>
             </View>
-          </View>
+            <View style={commonStyle.serviceChatContainer}>
+              <View style={commonStyle.serviceChatBox}>
+                <Text style={commonStyle.serviceChatBoxTitle}>큐레이션 결과대로 스테이킹 하시겠어요?</Text>
+                <Text style={commonStyle.serviceChatBoxDesc}>
+                  예상 APY는 86%로, 선택하신 기준에 해당하는 밸리데이터들의 평균 APY보다 1%높습니다.
+                </Text>
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                <View style={commonStyle.buttonWrapper}>
+                  {validatorList.map((el, i) => (
+                    <Pressable
+                      key={i}
+                      style={styles.curatedButton}
+                      onPress={() => {
+                        setDetailModalVisible(true);
+                        setSelectedValidator(el);
+                      }}
+                      disabled={status !== 3}
+                    >
+                      <Text style={commonStyle.buttonText}>{el}</Text>
+                      <Image source={arrowRight} />
+                    </Pressable>
+                  ))}
+                </View>
+                <Slider
+                  onEndReached={() => {
+                    setStatus(4);
+                    setIsStakingConfirmed(true);
+                  }}
+                  containerStyle={
+                    isStakingConfirmed ? commonStyle.disabledSliderContainer : commonStyle.sliderContainer
+                  }
+                  sliderElement={
+                    <View style={commonStyle.sliderBox}>
+                      <Image source={arrowRight} />
+                    </View>
+                  }
+                  disableSliding={isStakingConfirmed}
+                >
+                  <Text style={commonStyle.sliderInnerText}>
+                    {isStakingConfirmed ? 'Confirmed' : 'Swipe to confirm the your filters'}
+                  </Text>
+                </Slider>
+              </View>
+            </View>
+          </>
+        )}
+        {status > 3 && (
+          <>
+            <View style={commonStyle.userChatContainer}>
+              <View style={commonStyle.userChatBox}>
+                <Text style={commonStyle.userChatBoxText}>Confirmed</Text>
+              </View>
+            </View>
+            <View style={commonStyle.serviceChatContainer}>
+              <View style={commonStyle.succesContainer}>
+                <Image source={success} />
+                <View>
+                  <Text style={commonStyle.successHeader}>Success</Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
+                    <Pressable
+                      onPress={() =>
+                        openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
+                          presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                        })
+                      }
+                    >
+                      <Text style={commonStyle.successLink}> #2275958-3</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </>
         )}
       </ScrollView>
     </Layout>
   );
 }
+
+const styles = StyleSheet.create({
+  curatedButton: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    backgroundColor: 'rgba(108, 132, 255, 0.2)',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+});
