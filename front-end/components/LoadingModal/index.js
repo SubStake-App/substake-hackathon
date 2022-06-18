@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { View, Image, Animated, Easing, Modal, StyleSheet, Text } from 'react-native';
 import loading_bag from '../../assets/loading_bag.png';
 import loading_light from '../../assets/loading_light.png';
-import { Nunito700, Nunito400 } from '../constant';
 
 export default function LoadingModal({ text }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -76,21 +75,17 @@ const styles = StyleSheet.create({
   },
   modalTitleHeader: {
     fontSize: 18,
-    fontFamily: Nunito700,
   },
   modalTitleMain: {
     fontSize: 10,
-    fontFamily: Nunito400,
     color: '#7E7794',
   },
   modalDetailHeader: {
     fontSize: 10,
-    fontFamily: Nunito700,
     color: '#7E7794',
   },
   modalDetailMain: {
     fontSize: 10,
-    fontFamily: Nunito400,
     color: '#7E7794',
   },
   button: {

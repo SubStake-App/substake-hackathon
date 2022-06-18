@@ -1,13 +1,26 @@
 import { ScrollView, Text, View, Pressable, Modal, StyleSheet, TextInput } from 'react-native';
 import { useRef } from 'react';
 
-export function NominationPoolModal({
-  setModalVisible,
-  modalVisible,
-  nominationPool,
-  setNominationPool,
-  nominationPoolList,
-}) {
+const totalValidatorList = [
+  { name: 'Substake_1', points: 43, nominees: 9 },
+  { name: 'Substake_2', points: 43, nominees: 9 },
+  { name: 'Substake_3', points: 43, nominees: 9 },
+  { name: 'Substake_4', points: 43, nominees: 9 },
+  { name: 'Substake_5', points: 43, nominees: 9 },
+  { name: 'Substake_6', points: 43, nominees: 9 },
+  { name: 'Substake_7', points: 43, nominees: 9 },
+  { name: 'Substake_8', points: 43, nominees: 9 },
+  { name: 'Substake_9', points: 43, nominees: 9 },
+  { name: 'Substake_10', points: 43, nominees: 9 },
+  { name: 'Substake_11', points: 43, nominees: 9 },
+  { name: 'Substake_12', points: 43, nominees: 9 },
+  { name: 'Substake_13', points: 43, nominees: 9 },
+  { name: 'Substake_14', points: 43, nominees: 9 },
+  { name: 'Substake_15', points: 43, nominees: 9 },
+  { name: 'Substake_16', points: 43, nominees: 9 },
+];
+
+export function NominationPoolModal({ setModalVisible, modalVisible, selectedValidator, setSelectedValidator }) {
   const scrollViewRef = useRef();
 
   return (
@@ -33,15 +46,15 @@ export function NominationPoolModal({
               </View>
             </View>
             <ScrollView ref={scrollViewRef}>
-              {nominationPoolList.map((el, i) => (
+              {totalValidatorList.map((el, i) => (
                 <Pressable
-                  onPress={() => setNominationPool(el.name)}
+                  onPress={() => setSelectedValidator(el.name)}
                   onStartShouldSetResponder={() => true}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     paddingHorizontal: 25,
-                    backgroundColor: nominationPool === el.name ? '#93A2F1' : 'white',
+                    backgroundColor: selectedValidator === el.name ? '#93A2F1' : 'white',
                   }}
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -56,11 +69,11 @@ export function NominationPoolModal({
               ))}
             </ScrollView>
             <Pressable
-              style={nominationPool ? styles.confirmButton : styles.closeButton}
+              style={selectedValidator ? styles.confirmButton : styles.closeButton}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={{ color: nominationPool ? '#ffffff' : 'black' }}>
-                {nominationPool ? 'Confirm' : 'Close'}
+              <Text style={{ color: selectedValidator ? '#ffffff' : 'black' }}>
+                {selectedValidator ? 'Confirm' : 'Close'}
               </Text>
             </Pressable>
           </View>

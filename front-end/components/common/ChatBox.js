@@ -103,7 +103,7 @@ export const commonStyle = StyleSheet.create({
     color: '#3959FF',
   },
   divider: {
-    marginVertical: 12,
+    marginVertical: 8,
   },
   sliderContainer: {
     justifyContent: 'center',

@@ -11,7 +11,7 @@ import Slider from 'react-native-slide-to-unlock';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import arrowRight from '../../assets/arrowRightBold.png';
-import { NominationPoolModal } from '../../components/NominationPool/Modal';
+import { NominationPoolModal } from '../../components/Westend/NominationPool/Modal';
 
 const cardContent = [
   {
@@ -35,28 +35,9 @@ export default function WestendNominationPool({ navigation }) {
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
   const [bondAmount, setBondAmount] = useState(0);
-  const [nominationPool, setNominationPool] = useState('');
+  const [selectedValidator, setSelectedValidator] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const scrollViewRef = useRef();
-
-  const nominationPoolList = [
-    { name: 'Substake_1', points: 43, nominees: 9 },
-    { name: 'Substake_2', points: 43, nominees: 9 },
-    { name: 'Substake_3', points: 43, nominees: 9 },
-    { name: 'Substake_4', points: 43, nominees: 9 },
-    { name: 'Substake_5', points: 43, nominees: 9 },
-    { name: 'Substake_6', points: 43, nominees: 9 },
-    { name: 'Substake_7', points: 43, nominees: 9 },
-    { name: 'Substake_8', points: 43, nominees: 9 },
-    { name: 'Substake_9', points: 43, nominees: 9 },
-    { name: 'Substake_10', points: 43, nominees: 9 },
-    { name: 'Substake_11', points: 43, nominees: 9 },
-    { name: 'Substake_12', points: 43, nominees: 9 },
-    { name: 'Substake_13', points: 43, nominees: 9 },
-    { name: 'Substake_14', points: 43, nominees: 9 },
-    { name: 'Substake_15', points: 43, nominees: 9 },
-    { name: 'Substake_16', points: 43, nominees: 9 },
-  ];
 
   return (
     <Layout>
@@ -69,9 +50,8 @@ export default function WestendNominationPool({ navigation }) {
         <NominationPoolModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          nominationPoolList={nominationPoolList}
-          nominationPool={nominationPool}
-          setNominationPool={setNominationPool}
+          selectedValidator={selectedValidator}
+          setSelectedValidator={setSelectedValidator}
         />
         <ScrollView horizontal={true}>
           <View style={commonStyle.cardContainer}>
@@ -196,11 +176,11 @@ export default function WestendNominationPool({ navigation }) {
                 </View>
               </View>
             </View>
-            {nominationPool.length > 0 && (
+            {selectedValidator.length > 0 && (
               <>
                 <View style={commonStyle.userChatContainer}>
                   <View style={commonStyle.userChatBox}>
-                    <Text style={commonStyle.userChatBoxText}>{nominationPool}</Text>
+                    <Text style={commonStyle.userChatBoxText}>{selectedValidator}</Text>
                   </View>
                 </View>
                 <View style={commonStyle.serviceChatContainer}>

@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { Nunito700 } from '../components/constant';
 import Layout from '../components/Layout';
 import { Button } from '@rneui/base';
 
@@ -34,7 +33,6 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 20,
-    fontFamily: Nunito700,
     marginBottom: 3,
   },
   serviceDetail: {

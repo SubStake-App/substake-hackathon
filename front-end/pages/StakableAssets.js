@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Nunito600 } from '../components/constant';
 import Layout from '../components/Layout';
 import TopBar from '../components/TopBar/TopBar';
 import StakableList from '../components/StakableAssets/StakableList';
@@ -29,7 +28,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontFamily: Nunito600,
     fontSize: 20,
     marginBottom: 5,
   },
