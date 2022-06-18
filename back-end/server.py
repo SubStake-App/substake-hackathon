@@ -1,11 +1,13 @@
 from operator import is_
 from unicodedata import is_normalized
-import requests
-import json
-import dev_substrate_interface as dev
 from helper import Helper
 from staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
+from validators import Validators as validator
+import requests
+import json
+import dev_substrate_interface as dev
+
 
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__)
@@ -15,6 +17,18 @@ def get_recommended_collator():
     if request.method == 'POST':
         
         return_str = json.dumps(dev.get_recommended_collators())
+        
+        response = make_response(return_str, 200)
+        #print(return_str)
+        return response
+    else:
+        return make_response("Not supported method", 400)
+
+@app.route('/api/request/dev/validator', methods=['POST'])
+def get_recommended_collator():
+    if request.method == 'POST':
+        
+        return_str = json.dumps(validator.recommend_validators(bond_amount=3.5))
         
         response = make_response(return_str, 200)
         #print(return_str)
