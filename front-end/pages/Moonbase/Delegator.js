@@ -48,31 +48,35 @@ export default function MoonbaseDelegator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
-            <Divider style={commonStyle.divider} />
-            <View style={commonStyle.inputContainer}>
-              <TextInput
-                keyboardType="decimal-pad"
-                style={commonStyle.textInput}
-                placeholderTextColor="#A8A8A8"
-                placeholder="숫자만 입력해주세요"
-                onChangeText={(amount) => setBondAmount(amount)}
-                editable={status === 0}
-                autoCorrect={false}
-              />
-              <Pressable
-                onPress={async () => {
-                  setLoadingText('Calculating your approximate APR...');
-                  setPending(true);
-                  await new Promise((r) => setTimeout(r, 1000));
-                  setStatus(1);
-                  setPending(false);
-                  setLoadingText('');
-                }}
-                disabled={status !== 0}
-              >
-                <Text style={commonStyle.confirm}>확인</Text>
-              </Pressable>
-            </View>
+            {status === 0 && (
+              <>
+                <Divider style={commonStyle.divider} />
+                <View style={commonStyle.inputContainer}>
+                  <TextInput
+                    keyboardType="decimal-pad"
+                    style={commonStyle.textInput}
+                    placeholderTextColor="#A8A8A8"
+                    placeholder="숫자만 입력해주세요"
+                    onChangeText={(amount) => setBondAmount(amount)}
+                    editable={status === 0}
+                    autoCorrect={false}
+                  />
+                  <Pressable
+                    onPress={async () => {
+                      setLoadingText('Calculating your approximate APR...');
+                      setPending(true);
+                      await new Promise((r) => setTimeout(r, 1000));
+                      setStatus(1);
+                      setPending(false);
+                      setLoadingText('');
+                    }}
+                    disabled={status !== 0}
+                  >
+                    <Text style={commonStyle.confirm}>확인</Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </View>
         {status > 0 && (
