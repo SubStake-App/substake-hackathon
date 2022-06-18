@@ -102,11 +102,10 @@ class Validators(Base):
                                                     'nominators': nominators 
                                                 }
             
-            return stakers
         with open('output.json', 'w') as f:
             json.dump(stakers, f, indent=2)
 
-
+        return stakers
 
 
 if __name__ == '__main__':
