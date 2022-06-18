@@ -25,7 +25,7 @@ export default function MoonbaseCollator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>Collator 액션을 선택해주세요</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>모든 액션은 4시간 소요 예상됩니다.</Text>
-            <Divider color="rgba(65, 69, 151, 0.8)" />
+            <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
             <View style={commonStyle.buttonWrapper}>
               <Pressable
                 style={commonStyle.buttonContainer}
@@ -50,7 +50,7 @@ export default function MoonbaseCollator({ navigation }) {
               <Pressable
                 style={commonStyle.buttonContainer}
                 onPress={() => {
-                  setStatus(1);
+                  setStatus(2);
                   setAction(() => 'Cancel Bond Request');
                 }}
                 disabled={status !== 0}
@@ -71,7 +71,7 @@ export default function MoonbaseCollator({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     keyboardType="decimal-pad"
@@ -101,7 +101,7 @@ export default function MoonbaseCollator({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>차감하실 스테이킹 수량을 입력해주세요</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>현재 스테이킹 수량: 25253.2124 WND</Text>
-                <Divider color="rgba(65, 69, 151, 0.8)" />
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
                     keyboardType="decimal-pad"
@@ -129,7 +129,7 @@ export default function MoonbaseCollator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.succesContainer}>
-                <Image source={success} style={{ marginRight: 5 }} />
+                <Image source={success} />
                 <View>
                   <Text style={commonStyle.successHeader}>Success</Text>
                   <View style={{ flexDirection: 'row' }}>
@@ -148,6 +148,28 @@ export default function MoonbaseCollator({ navigation }) {
               </View>
             </View>
           </>
+        )}
+        {status > 2 && (
+          <View style={commonStyle.serviceChatContainer}>
+            <View style={commonStyle.succesContainer}>
+              <Image source={success} />
+              <View>
+                <Text style={commonStyle.successHeader}>Success</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
+                  <Pressable
+                    onPress={() =>
+                      openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
+                        presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                      })
+                    }
+                  >
+                    <Text style={commonStyle.successLink}> #2275958-3</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+          </View>
         )}
       </ScrollView>
     </Layout>

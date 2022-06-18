@@ -4,6 +4,8 @@ import requests
 import json
 import dev_substrate_interface as dev
 from helper import Helper
+from staking import Staking
+from Utils.chain_info import NETWORK_PROVIDER
 
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__)
@@ -11,7 +13,7 @@ app = Flask (__name__)
 @app.route('/api/request/dev/collator', methods=['POST'])
 def get_recommended_collator():
     if request.method == 'POST':
-
+        
         return_str = json.dumps(dev.get_recommended_collators())
         
         response = make_response(return_str, 200)
@@ -35,8 +37,17 @@ def request_staking_transaction():
         '''
 
         _request = request.get_json()
+        env = _request.get('env')
+        provider = NETWORK_PROVIDER[_request.get('provider')]
+        method = _request.get('method')
+        staking = Staking(env=env, provider=provider)
         print('Data Received: {request}'.format(request=_request))
-        result = Helper.request_staking_transaction(request=_request)
+        result = Helper.request_staking_transaction(
+                    request=_request, 
+                    method=method, 
+                    env=env,
+                    staking=staking
+                )
         return_tx_status = json.dumps(result)
         response = make_response(return_tx_status, 200)
 
