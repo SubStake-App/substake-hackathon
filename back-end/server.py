@@ -27,7 +27,7 @@ def get_recommended_collator():
         return make_response("Not supported method", 400)
 
 @app.route('/api/request/dev/validator', methods=['POST'])
-def get_recommended_collator():
+def get_recommended_validator():
     if request.method == 'POST':
         
         return_str = json.dumps(validator.recommend_validators(bond_amount=3.5))
