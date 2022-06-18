@@ -3,8 +3,8 @@ from unicodedata import is_normalized
 import requests
 import json
 import dev_substrate_interface as dev
-from helper import Helper
-from staking import Staking
+from Helper import Helper
+from Staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
 
 from flask import Flask, request, make_response, jsonify

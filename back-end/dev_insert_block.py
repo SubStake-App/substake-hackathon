@@ -1,4 +1,4 @@
-import psycopg2
+
 import time as time
 import requests, json
 import logging
@@ -19,6 +19,9 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
 )
 
+#Moonbase-Aphal blocks per round
+blocks_per_round = 600
+
 def get_avg_block_from_db(collator_addr, round_count):
     
 #    final_block = get_max_block()
@@ -29,12 +32,12 @@ def get_avg_block_from_db(collator_addr, round_count):
         cur.execute(f"SELECT MAX(blocknum) FROM dev_block_collator")
         final_block = cur.fetchone()[0]
 
-    remain_block = final_block % 600
+    remain_block = final_block % blocks_per_round
     last_end_block = final_block - remain_block    
-    last_start_block = last_end_block - (600 * round_count)
+    last_start_block = last_end_block - (blocks_per_round * round_count)
         
 
-    last_avg_block_count = []
+
    
     with conn:
         cur = conn.cursor()
