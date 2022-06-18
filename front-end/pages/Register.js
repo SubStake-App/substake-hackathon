@@ -6,7 +6,7 @@ import { Divider } from '@rneui/base';
 import LoadingModal from '../components/LoadingModal';
 
 export default function Register({ navigation }) {
-  const [pending, setPending] = useState(true);
+  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
   const [seed, setSeed] = useState('');
   const [nickname, setNickname] = useState('');
