@@ -16,15 +16,18 @@ logging.basicConfig(
 def get_recommended_collators(bond_amount:int) -> list:
     try:
         conn = db_con.get_connection()
-        collator_list = []
+        collator_list = [] 
         with conn.cursor() as cur: 
+            total_acrive_collator = 80 #change to get data from on-chain
+            limit_collator_number = total_acrive_collator*(2/3)
             avg_bpr = 7.5 #80(active collators)/600(blocks per round)
+            
             query_string = f"SELECT * from dev_collator_list " \
                         f"WHERE active_status = True " \
                         f"AND minimun_bond < {bond_amount} " \
                         f"AND average_bpr_week > {avg_bpr} " \
                         f"ORDER BY average_bpr_week DESC, bonded_total DESC " \
-                        f"LIMIT 48" # Total 80 collators.80*(2/3)
+                        f"LIMIT {limit_collator_number}" 
                         
             print(query_string)
             cur.execute(query_string)

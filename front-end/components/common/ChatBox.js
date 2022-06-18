@@ -15,7 +15,7 @@ export const commonStyle = StyleSheet.create({
   serviceChatBox: {
     backgroundColor: 'rgba(52, 55, 129, 0.63)',
     borderRadius: 10,
-    maxWidth: '70%',
+    maxWidth: '65%',
     padding: 20,
   },
   serviceChatBoxTitle: {
@@ -43,13 +43,13 @@ export const commonStyle = StyleSheet.create({
     color: '#A8A8A8',
   },
   confirm: {
-    margin: 2,
     color: '#6C84FF',
+    margin: 5,
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    // marginTop: 20,
+    alignItems: 'center',
+    marginTop: 10,
   },
   buttonWrapper: {
     justifyContent: 'center',
@@ -103,26 +103,26 @@ export const commonStyle = StyleSheet.create({
     color: '#3959FF',
   },
   divider: {
-    marginVertical: 12,
+    marginVertical: 8,
   },
   sliderContainer: {
     justifyContent: 'center',
     backgroundColor: '#383537',
     borderRadius: 5,
-    height: 24,
+    height: 35,
   },
   disabledSliderContainer: {
     justifyContent: 'center',
     backgroundColor: '#212351',
     borderRadius: 5,
-    height: 24,
+    height: 35,
   },
   sliderBox: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     borderRadius: 5,
-    height: 20,
+    height: 35,
     backgroundColor: 'rgba(217, 218, 234, 0.76)',
   },
   sliderInnerText: {

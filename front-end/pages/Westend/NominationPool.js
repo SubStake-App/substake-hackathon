@@ -11,7 +11,7 @@ import Slider from 'react-native-slide-to-unlock';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import arrowRight from '../../assets/arrowRightBold.png';
-import { NominationPoolModal } from '../../components/NominationPool/Modal';
+import { NominationPoolModal } from '../../components/Westend/NominationPool/Modal';
 
 const cardContent = [
   {
@@ -35,28 +35,9 @@ export default function WestendNominationPool({ navigation }) {
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
   const [bondAmount, setBondAmount] = useState(0);
-  const [nominationPool, setNominationPool] = useState('');
+  const [selectedValidator, setSelectedValidator] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const scrollViewRef = useRef();
-
-  const nominationPoolList = [
-    { name: 'Substake_1', points: 43, nominees: 9 },
-    { name: 'Substake_2', points: 43, nominees: 9 },
-    { name: 'Substake_3', points: 43, nominees: 9 },
-    { name: 'Substake_4', points: 43, nominees: 9 },
-    { name: 'Substake_5', points: 43, nominees: 9 },
-    { name: 'Substake_6', points: 43, nominees: 9 },
-    { name: 'Substake_7', points: 43, nominees: 9 },
-    { name: 'Substake_8', points: 43, nominees: 9 },
-    { name: 'Substake_9', points: 43, nominees: 9 },
-    { name: 'Substake_10', points: 43, nominees: 9 },
-    { name: 'Substake_11', points: 43, nominees: 9 },
-    { name: 'Substake_12', points: 43, nominees: 9 },
-    { name: 'Substake_13', points: 43, nominees: 9 },
-    { name: 'Substake_14', points: 43, nominees: 9 },
-    { name: 'Substake_15', points: 43, nominees: 9 },
-    { name: 'Substake_16', points: 43, nominees: 9 },
-  ];
 
   return (
     <Layout>
@@ -69,9 +50,8 @@ export default function WestendNominationPool({ navigation }) {
         <NominationPoolModal
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
-          nominationPoolList={nominationPoolList}
-          nominationPool={nominationPool}
-          setNominationPool={setNominationPool}
+          selectedValidator={selectedValidator}
+          setSelectedValidator={setSelectedValidator}
         />
         <ScrollView horizontal={true}>
           <View style={commonStyle.cardContainer}>
@@ -90,29 +70,33 @@ export default function WestendNominationPool({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>Do you want to join SubStake Pool?</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>If no, you can manually select a pool.</Text>
-            <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-            <View style={commonStyle.buttonWrapper}>
-              <Pressable
-                style={commonStyle.buttonContainer}
-                onPress={() => {
-                  setStatus(1);
-                  setAction(() => 'substake');
-                }}
-                disabled={status !== 0}
-              >
-                <Text style={commonStyle.buttonText}>Yes, please</Text>
-              </Pressable>
-              <Pressable
-                style={commonStyle.buttonContainer}
-                onPress={() => {
-                  setStatus(1);
-                  setAction(() => 'manual');
-                }}
-                disabled={status !== 0}
-              >
-                <Text style={commonStyle.buttonText}>No, I want to select manually</Text>
-              </Pressable>
-            </View>
+            {status === 0 && (
+              <>
+                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                <View style={commonStyle.buttonWrapper}>
+                  <Pressable
+                    style={commonStyle.buttonContainer}
+                    onPress={() => {
+                      setStatus(1);
+                      setAction(() => 'substake');
+                    }}
+                    disabled={status !== 0}
+                  >
+                    <Text style={commonStyle.buttonText}>Yes, please</Text>
+                  </Pressable>
+                  <Pressable
+                    style={commonStyle.buttonContainer}
+                    onPress={() => {
+                      setStatus(1);
+                      setAction(() => 'manual');
+                    }}
+                    disabled={status !== 0}
+                  >
+                    <Text style={commonStyle.buttonText}>No, I want to select manually</Text>
+                  </Pressable>
+                </View>
+              </>
+            )}
           </View>
         </View>
         {action === 'substake' && status > 0 && (
@@ -126,21 +110,25 @@ export default function WestendNominationPool({ navigation }) {
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
-                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-                <View style={commonStyle.inputContainer}>
-                  <TextInput
-                    keyboardType="decimal-pad"
-                    style={commonStyle.textInput}
-                    placeholderTextColor="#A8A8A8"
-                    placeholder="숫자만 입력해주세요"
-                    onChangeText={(amount) => setBondAmount(amount)}
-                    editable={status === 1}
-                    autoCorrect={false}
-                  />
-                  <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                    <Text style={commonStyle.confirm}>확인</Text>
-                  </Pressable>
-                </View>
+                {status === 1 && (
+                  <>
+                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                    <View style={commonStyle.inputContainer}>
+                      <TextInput
+                        keyboardType="decimal-pad"
+                        style={commonStyle.textInput}
+                        placeholderTextColor="#A8A8A8"
+                        placeholder="숫자만 입력해주세요"
+                        onChangeText={(amount) => setBondAmount(amount)}
+                        editable={status === 1}
+                        autoCorrect={false}
+                      />
+                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
+                        <Text style={commonStyle.confirm}>확인</Text>
+                      </Pressable>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
             {status > 1 && (
@@ -184,44 +172,52 @@ export default function WestendNominationPool({ navigation }) {
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>Which pool are you looking for?</Text>
-                <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-                <View style={commonStyle.buttonWrapper}>
-                  <Pressable
-                    style={commonStyle.buttonContainer}
-                    onPress={() => setModalVisible(true)}
-                    disabled={status !== 1}
-                  >
-                    <Text style={commonStyle.buttonText}>Select a Nomination Pool</Text>
-                  </Pressable>
-                </View>
+                {!selectedValidator && (
+                  <>
+                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                    <View style={commonStyle.buttonWrapper}>
+                      <Pressable
+                        style={commonStyle.buttonContainer}
+                        onPress={() => setModalVisible(true)}
+                        disabled={status !== 1}
+                      >
+                        <Text style={commonStyle.buttonText}>Select a Nomination Pool</Text>
+                      </Pressable>
+                    </View>
+                  </>
+                )}
               </View>
             </View>
-            {nominationPool.length > 0 && (
+            {selectedValidator && (
               <>
                 <View style={commonStyle.userChatContainer}>
                   <View style={commonStyle.userChatBox}>
-                    <Text style={commonStyle.userChatBoxText}>{nominationPool}</Text>
+                    <Text style={commonStyle.userChatBoxText}>{selectedValidator}</Text>
                   </View>
                 </View>
                 <View style={commonStyle.serviceChatContainer}>
                   <View style={commonStyle.serviceChatBox}>
                     <Text style={commonStyle.serviceChatBoxTitle}>차감하실 스테이킹 수량을 입력해주세요</Text>
                     <Text style={commonStyle.serviceChatBoxDesc}>현재 스테이킹 수량: 25253.2124 WND</Text>
-                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-                    <View style={commonStyle.inputContainer}>
-                      <TextInput
-                        keyboardType="decimal-pad"
-                        style={commonStyle.textInput}
-                        placeholderTextColor="#A8A8A8"
-                        placeholder="숫자만 입력해주세요"
-                        onChangeText={(amount) => setBondAmount(amount)}
-                        editable={status === 1}
-                        autoCorrect={false}
-                      />
-                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
-                    </View>
+                    {status === 1 && (
+                      <>
+                        <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
+                        <View style={commonStyle.inputContainer}>
+                          <TextInput
+                            keyboardType="decimal-pad"
+                            style={commonStyle.textInput}
+                            placeholderTextColor="#A8A8A8"
+                            placeholder="숫자만 입력해주세요"
+                            onChangeText={(amount) => setBondAmount(amount)}
+                            editable={status === 1}
+                            autoCorrect={false}
+                          />
+                          <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
+                            <Text style={commonStyle.confirm}>확인</Text>
+                          </Pressable>
+                        </View>
+                      </>
+                    )}
                   </View>
                 </View>
                 {status > 1 && (
