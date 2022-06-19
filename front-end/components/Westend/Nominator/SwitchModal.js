@@ -45,7 +45,11 @@ export default function NominatorSwitchModal({
             <View style={{ marginHorizontal: 25, marginBottom: 10 }}>
               <Text style={styles.modalTitle}>Select a Nomination Pool</Text>
               <Text style={styles.modalMain}>Do you have a specific pool you want to join?</Text>
-              <TextInput style={styles.modalTextInput} placeholder="명칭, 주소, 혹은 계좌 인덱스로 필터링합니다." />
+              <TextInput
+                autoCapitalize="none"
+                style={styles.modalTextInput}
+                placeholder="명칭, 주소, 혹은 계좌 인덱스로 필터링합니다."
+              />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.tableHeader}>Open Pools</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

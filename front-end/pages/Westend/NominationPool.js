@@ -1,16 +1,14 @@
 import { useRef, useState, useEffect } from 'react';
 import { Image, ScrollView, Text, View, TextInput, Pressable, Modal } from 'react-native';
 import { commonStyle } from '../../components/common/ChatBox';
-import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
 import img_1 from '../../assets/nomination_pool_1.png';
 import img_2 from '../../assets/nomination_pool_2.png';
 import img_3 from '../../assets/nomination_pool_3.png';
 import { Divider } from '@rneui/base';
-import Slider from 'react-native-slide-to-unlock';
+import Layout from '../../components/Layout';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
-import arrowRight from '../../assets/arrowRightBold.png';
 import { NominationPoolModal } from '../../components/Westend/NominationPool/Modal';
 
 const cardContent = [
@@ -115,6 +113,7 @@ export default function WestendNominationPool({ navigation }) {
                     <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                     <View style={commonStyle.inputContainer}>
                       <TextInput
+                        autoCapitalize="none"
                         keyboardType="decimal-pad"
                         style={commonStyle.textInput}
                         placeholderTextColor="#A8A8A8"
@@ -204,6 +203,7 @@ export default function WestendNominationPool({ navigation }) {
                         <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                         <View style={commonStyle.inputContainer}>
                           <TextInput
+                            autoCapitalize="none"
                             keyboardType="decimal-pad"
                             style={commonStyle.textInput}
                             placeholderTextColor="#A8A8A8"

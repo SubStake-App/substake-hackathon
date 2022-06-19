@@ -1,12 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { commonStyle } from '../components/common/ChatBox';
-import Layout from '../components/Layout';
 import { Divider } from '@rneui/base';
-import LoadingModal from '../components/LoadingModal';
 import { derivePrivateKey } from '../components/utils';
+import { AsyncStorageContext } from '../components/Context/AsyncStorage';
 
-export default function Register({ navigation }) {
+export default function Register() {
+  const { addAccount } = useContext(AsyncStorageContext);
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
@@ -21,13 +21,15 @@ export default function Register({ navigation }) {
     setStatus(1);
   };
 
-  const storeAndNavigate = async () => {
-    // TODO: set item in localStorage
-    navigation.navigate('Home');
+  const storeAccount = async () => {
+    try {
+      addAccount({ publicKey, nickname });
+      console.log('hi');
+    } catch {}
   };
 
   return (
-    <Layout>
+    <>
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -42,6 +44,7 @@ export default function Register({ navigation }) {
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
+                    autoCapitalize="none"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
                     placeholder="시드문구"
@@ -73,6 +76,7 @@ export default function Register({ navigation }) {
                     <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                     <View style={commonStyle.inputContainer}>
                       <TextInput
+                        autoCapitalize="none"
                         style={commonStyle.textInput}
                         placeholderTextColor="#A8A8A8"
                         placeholder="ex) David"
@@ -80,7 +84,7 @@ export default function Register({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={storeAndNavigate} disabled={status !== 1}>
+                      <Pressable onPress={storeAccount} disabled={status !== 1}>
                         <Text style={commonStyle.confirm}>확인</Text>
                       </Pressable>
                     </View>
@@ -98,6 +102,6 @@ export default function Register({ navigation }) {
           </View>
         )}
       </ScrollView>
-    </Layout>
+    </>
   );
 }
