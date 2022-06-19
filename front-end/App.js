@@ -1,4 +1,3 @@
-import { useEffect, useState, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -19,14 +18,14 @@ import MoonbaseCollator from './pages/Moonbase/Collator';
 import MoonbaseDelegator from './pages/Moonbase/Delegator';
 import Register from './pages/Register';
 import Welcome from './pages/Welcome';
-import { AsyncStorageProvider, AsyncStorageContext } from './components/Context/AsyncStorage';
-import LoadingModal from './components/LoadingModal';
+import { AsyncStorageProvider, useAsyncStorageContext } from './components/Context/AsyncStorage';
 import AppLoading from './components/AppLoading';
+import Accounts from './pages/Accounts';
 
 const Stack = createNativeStackNavigator();
 
 export function Root() {
-  const { isLoaded, accounts } = useContext(AsyncStorageContext);
+  const { isLoaded, accounts } = useAsyncStorageContext();
   const isRegistered = accounts && accounts.length > 0;
 
   return (
@@ -43,6 +42,8 @@ export function Root() {
               <Stack.Screen name="WestendValidator" component={WestendValidator} />
               <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
               <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+              <Stack.Screen name="Accounts" component={Accounts} />
+              <Stack.Screen name="Register" component={Register} />
             </>
           ) : (
             <>

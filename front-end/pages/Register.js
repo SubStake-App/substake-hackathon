@@ -1,13 +1,13 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { commonStyle } from '../components/common/ChatBox';
 import { Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
-import { AsyncStorageContext } from '../components/Context/AsyncStorage';
+import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 
-export default function Register() {
-  const { addAccount } = useContext(AsyncStorageContext);
+export default function Register({ navigation }) {
+  const { addAccount } = useAsyncStorageContext();
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
@@ -25,7 +25,7 @@ export default function Register() {
   const storeAccount = async () => {
     try {
       addAccount({ publicKey, nickname });
-      console.log('hi');
+      navigation.navigate('Home');
     } catch {}
   };
 
