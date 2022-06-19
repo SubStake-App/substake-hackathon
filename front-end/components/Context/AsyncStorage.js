@@ -12,27 +12,35 @@ export function AsyncStorageProvider({ children }) {
 
   useEffect(() => {
     const getAccounts = async () => {
-      const accountArr = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
-      setAccounts(accountArr);
+      setIsLoaded(false);
+      const accounts = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
+      setAccounts(accounts);
       setIsLoaded(true);
     };
 
     getAccounts();
   }, []);
 
-  useEffect(() => {
-    AsyncStorage.setItem('@substake_accounts', JSON.stringify(accounts));
-  }, [accounts]);
+  const addAccount = async (account) => {
+    let newAccounts = [];
+    const accounts = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
 
-  const addAccount = (account) => {
-    if (account?.publicKey && account?.nickname) setAccounts([...accounts, account]);
+    if (accounts) newAccounts = [...accounts, account];
+    else newAccounts = [account];
+
+    await AsyncStorage.setItem('@substake_accounts', JSON.stringify(newAccounts));
+
+    setAccounts(newAccounts);
   };
 
-  const removeAccount = (account) => {
-    if (account?.publicKey && account?.nickname) {
-      if (account.publicKey === accounts[accounts.length - 1].publicKey) setCurrentIndex(0);
-      setAccounts(accounts.filter((el) => el.publicKey !== account.publicKey));
-    }
+  const removeAccount = async (account) => {
+    if (account.publicKey === accounts[accounts.length - 1].publicKey) setCurrentIndex(0);
+
+    const accounts = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
+    const newAccounts = accounts.filter((el) => el.publicKey !== account.publicKey);
+    await AsyncStorage.setItem('@substake_accounts', JSON.stringify(newAccounts));
+
+    setAccounts(newAccounts);
   };
 
   return (

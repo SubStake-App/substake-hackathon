@@ -5,12 +5,8 @@ import { Wallet } from 'ethers';
 export const derivePrivateKey = (mnemonic) => {
   try {
     const keyring = new Keyring({ type: 'sr25519' });
-    return keyring.createFromUri(mnemonic);
+    return { sr25519: keyring.createFromUri(mnemonic), bip39: Wallet.fromMnemonic(mnemonic) };
   } catch {
-    try {
-      return Wallet.fromMnemonic(mnemonic);
-    } catch {
-      return undefined;
-    }
+    throw Error('Invalid Mnemonic');
   }
 };

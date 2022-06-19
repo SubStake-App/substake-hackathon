@@ -21,6 +21,7 @@ import Welcome from './pages/Welcome';
 import { AsyncStorageProvider, useAsyncStorageContext } from './components/Context/AsyncStorage';
 import AppLoading from './components/AppLoading';
 import Accounts from './pages/Accounts';
+import ReRegister from './pages/ReRegister';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,24 +34,23 @@ export function Root() {
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isLoaded ? (
-          isRegistered ? (
-            <>
-              <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="StakableAssets" component={StakableAssets} />
-              <Stack.Screen name="WestendNominator" component={WestendNominator} />
-              <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
-              <Stack.Screen name="WestendValidator" component={WestendValidator} />
-              <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
-              <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
-              <Stack.Screen name="Accounts" component={Accounts} />
-              <Stack.Screen name="Register" component={Register} />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="Welcome" component={Welcome} />
-              <Stack.Screen name="Register" component={Register} />
-            </>
-          )
+          <>
+            {!isRegistered && (
+              <>
+                <Stack.Screen name="Welcome" component={Welcome} />
+                <Stack.Screen name="Register" component={Register} />
+              </>
+            )}
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="StakableAssets" component={StakableAssets} />
+            <Stack.Screen name="WestendNominator" component={WestendNominator} />
+            <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
+            <Stack.Screen name="WestendValidator" component={WestendValidator} />
+            <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
+            <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+            <Stack.Screen name="Accounts" component={Accounts} />
+            <Stack.Screen name="ReRegister" component={ReRegister} />
+          </>
         ) : (
           <Stack.Screen name="Loading" component={AppLoading} />
         )}

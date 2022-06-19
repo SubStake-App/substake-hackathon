@@ -27,7 +27,7 @@ export default function Accounts({ navigation }) {
             </Pressable>
           ))}
         </View>
-        <Button title="계정 추가" onPress={() => navigation.navigate('Register')} />
+        <Button title="계정 추가" onPress={() => navigation.navigate('ReRegister')} />
       </View>
     </Layout>
   );
