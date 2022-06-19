@@ -4,6 +4,7 @@ import { commonStyle } from '../components/common/ChatBox';
 import { Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
 import { AsyncStorageContext } from '../components/Context/AsyncStorage';
+import Layout from '../components/Layout';
 
 export default function Register() {
   const { addAccount } = useContext(AsyncStorageContext);
@@ -29,7 +30,7 @@ export default function Register() {
   };
 
   return (
-    <>
+    <Layout>
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -102,6 +103,6 @@ export default function Register() {
           </View>
         )}
       </ScrollView>
-    </>
+    </Layout>
   );
 }
