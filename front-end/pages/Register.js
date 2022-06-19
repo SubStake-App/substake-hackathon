@@ -4,27 +4,30 @@ import { commonStyle } from '../components/common/ChatBox';
 import Layout from '../components/Layout';
 import { Divider } from '@rneui/base';
 import LoadingModal from '../components/LoadingModal';
+import { derivePrivateKey } from '../components/utils';
 
 export default function Register({ navigation }) {
-  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
-  const [seed, setSeed] = useState('');
+  const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordReCheck, setPasswordReCheck] = useState('');
+  const [publicKey, setPublicKey] = useState('');
 
   const scrollViewRef = useRef();
 
-  const loadAndNavigate = async () => {
-    setPending(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setPending(false);
+  const deriveAndPostPrivateKey = async () => {
+    const result = derivePrivateKey(mnemonic);
+    if (result.type === 'sr25519') setPublicKey(result.address);
+    else setPublicKey(result.publicKey);
+    setStatus(1);
+  };
+
+  const storeAndNavigate = async () => {
+    // TODO: set item in localStorage
     navigation.navigate('Home');
   };
 
   return (
     <Layout>
-      {pending && <LoadingModal />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -42,11 +45,11 @@ export default function Register({ navigation }) {
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
                     placeholder="시드문구"
-                    onChangeText={(text) => setSeed(text)}
+                    onChangeText={(text) => setMnemonic(text)}
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <Pressable onPress={() => setStatus(1)} disabled={status !== 0}>
+                  <Pressable onPress={deriveAndPostPrivateKey} disabled={status !== 0}>
                     <Text style={commonStyle.confirm}>확인</Text>
                   </Pressable>
                 </View>
@@ -58,7 +61,7 @@ export default function Register({ navigation }) {
           <>
             <View style={commonStyle.userChatContainer}>
               <View style={commonStyle.userChatBox}>
-                <Text style={commonStyle.userChatBoxText}>{seed}</Text>
+                <Text style={commonStyle.userChatBoxText}>{publicKey}</Text>
               </View>
             </View>
             <View style={commonStyle.serviceChatContainer}>
@@ -77,7 +80,7 @@ export default function Register({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
+                      <Pressable onPress={storeAndNavigate} disabled={status !== 1}>
                         <Text style={commonStyle.confirm}>확인</Text>
                       </Pressable>
                     </View>
@@ -88,57 +91,9 @@ export default function Register({ navigation }) {
           </>
         )}
         {status > 1 && (
-          <>
-            <View style={commonStyle.userChatContainer}>
-              <View style={commonStyle.userChatBox}>
-                <Text style={commonStyle.userChatBoxText}>{nickname}</Text>
-              </View>
-            </View>
-            <View style={commonStyle.serviceChatContainer}>
-              <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>비밀번호 재설정이 필요해요.</Text>
-                <Text style={commonStyle.serviceChatBoxDesc}>비밀번호는 추후 시드문구로만 재설정할 수 있습니다.</Text>
-                {status === 2 && (
-                  <>
-                    <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-                    <View style={commonStyle.inputContainer}>
-                      <TextInput
-                        style={commonStyle.textInput}
-                        placeholderTextColor="#A8A8A8"
-                        placeholder="Password"
-                        secureTextEntry={true}
-                        onChangeText={(text) => setPassword(text)}
-                        editable={status === 2}
-                      />
-                      <Pressable onPress={() => setStatus(3)} disabled={status !== 2}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
-                    </View>
-                  </>
-                )}
-              </View>
-            </View>
-          </>
-        )}
-        {status > 2 && (
-          <View style={commonStyle.serviceChatContainer}>
-            <View style={commonStyle.serviceChatBox}>
-              <Text style={commonStyle.serviceChatBoxTitle}>비밀번호 재확인이 필요해요</Text>
-              <Text style={commonStyle.serviceChatBoxDesc}>방금 입력하신 비밀번호를 한 번 더 입력합니다.</Text>
-              <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
-              <View style={commonStyle.inputContainer}>
-                <TextInput
-                  style={commonStyle.textInput}
-                  placeholderTextColor="#A8A8A8"
-                  placeholder="Password"
-                  secureTextEntry={true}
-                  onChangeText={(text) => setPasswordReCheck(text)}
-                  editable={status === 3}
-                />
-                <Pressable onPress={loadAndNavigate} disabled={status !== 3}>
-                  <Text style={commonStyle.confirm}>확인</Text>
-                </Pressable>
-              </View>
+          <View style={commonStyle.userChatContainer}>
+            <View style={commonStyle.userChatBox}>
+              <Text style={commonStyle.userChatBoxText}>{nickname}</Text>
             </View>
           </View>
         )}
