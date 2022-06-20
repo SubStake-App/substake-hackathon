@@ -7,7 +7,7 @@ import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 import LoadingModal from '../components/LoadingModal';
 
-export default function Register({ navigation }) {
+export default function ReRegister({ navigation }) {
   const { addAccount } = useAsyncStorageContext();
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
@@ -33,7 +33,7 @@ export default function Register({ navigation }) {
     try {
       await addAccount({ publicKey: publicKey.bip39.address, nickname });
       console.log('sucess');
-      navigation.navigate('Home');
+      navigation.navigate('Accounts');
     } catch (e) {
       console.log(e);
       setPending(false);

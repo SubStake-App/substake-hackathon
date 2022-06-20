@@ -1,4 +1,4 @@
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
@@ -16,57 +16,55 @@ import WestendNominationPool from './pages/Westend/NominationPool';
 import WestendValidator from './pages/Westend/Validator';
 import MoonbaseCollator from './pages/Moonbase/Collator';
 import MoonbaseDelegator from './pages/Moonbase/Delegator';
-import { useEffect, useState } from 'react';
 import Register from './pages/Register';
 import Welcome from './pages/Welcome';
+import { AsyncStorageProvider, useAsyncStorageContext } from './components/Context/AsyncStorage';
+import AppLoading from './components/AppLoading';
+import Accounts from './pages/Accounts';
+import ReRegister from './pages/ReRegister';
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const [isRegistered, setIsRegistered] = useState(true);
-  const [loaded, setLoaded] = useState(false);
-
-  useFonts({ Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold });
-
-  useEffect(() => {
-    const checkIfRegistered = async () => {};
-
-    checkIfRegistered();
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => setLoaded(true), 1000);
-  }, []);
+export function Root() {
+  const { isLoaded, accounts } = useAsyncStorageContext();
+  const isRegistered = accounts && accounts.length > 0;
 
   return (
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* {isRegistered ? (
+        {isLoaded ? (
           <>
-            {loaded ? (
-              <> */}
-        <Stack.Screen name="Welcome" component={Welcome} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="StakableAssets" component={StakableAssets} />
-        <Stack.Screen name="WestendNominator" component={WestendNominator} />
-        <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
-        <Stack.Screen name="WestendValidator" component={WestendValidator} />
-        <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
-        <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
-        {/* </>
-            ) : (
-              <Stack.Screen name="Loading" component={Loading} />
-            )} */}
-        {/* </>
-        ) : (
-          <>
-            <Stack.Screen name="Welcome" component={Welcome} />
-            <Stack.Screen name="Register" component={Register} />
+            {!isRegistered && (
+              <>
+                <Stack.Screen name="Welcome" component={Welcome} />
+                <Stack.Screen name="Register" component={Register} />
+              </>
+            )}
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="StakableAssets" component={StakableAssets} />
+            <Stack.Screen name="WestendNominator" component={WestendNominator} />
+            <Stack.Screen name="WestendNominationPool" component={WestendNominationPool} />
+            <Stack.Screen name="WestendValidator" component={WestendValidator} />
+            <Stack.Screen name="MoonbaseCollator" component={MoonbaseCollator} />
+            <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
+            <Stack.Screen name="Accounts" component={Accounts} />
+            <Stack.Screen name="ReRegister" component={ReRegister} />
           </>
-        )} */}
+        ) : (
+          <Stack.Screen name="Loading" component={AppLoading} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  useFonts({ Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold });
+
+  return (
+    <AsyncStorageProvider>
+      <Root />
+    </AsyncStorageProvider>
   );
 }

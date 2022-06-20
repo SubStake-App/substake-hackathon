@@ -74,6 +74,7 @@ export default function WestendValidator({ navigation }) {
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
+                    autoCapitalize="none"
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
@@ -104,6 +105,7 @@ export default function WestendValidator({ navigation }) {
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
+                    autoCapitalize="none"
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"

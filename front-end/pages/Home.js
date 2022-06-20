@@ -1,12 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native';
-import Layout from '../components/Layout';
 import { Button } from '@rneui/base';
 import TopBar from '../components/TopBar/TopBar';
+import Layout from '../components/Layout';
+import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
 
 export default function Home({ navigation }) {
+  const { accounts, currentIndex } = useAsyncStorageContext();
+
   return (
     <Layout>
-      <TopBar title="RHee" />
+      <TopBar title={accounts[currentIndex].nickname} navigation={navigation} />
       <View style={styles.container}>
         <View style={styles.container}>
           <Text style={styles.text}>최초의 섭스레이트 자산 스테이킹 플랫폼</Text>

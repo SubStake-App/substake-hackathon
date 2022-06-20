@@ -53,6 +53,7 @@ export default function MoonbaseDelegator({ navigation }) {
                 <Divider style={commonStyle.divider} />
                 <View style={commonStyle.inputContainer}>
                   <TextInput
+                    autoCapitalize="none"
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
