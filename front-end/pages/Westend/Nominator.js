@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Image, ScrollView, Text, View, TextInput, Pressable, StyleSheet } from 'react-native';
-import { commonStyle } from '../../components/common/ChatBox';
+import { commonStyle, ConfirmButton } from '../../components/common/ChatBox';
 import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
 import img_1 from '../../assets/nominator_1.png';
@@ -124,9 +124,7 @@ export default function WestendNominator({ navigation }) {
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <Pressable onPress={() => setStatus(1)} disabled={status !== 0}>
-                    <Text style={commonStyle.confirm}>확인</Text>
-                  </Pressable>
+                  <ConfirmButton onPress={() => setStatus(1)} status={0} currentStatus={status} />
                 </View>
               </>
             )}

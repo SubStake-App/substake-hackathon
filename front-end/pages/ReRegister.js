@@ -1,48 +1,53 @@
 import { useState, useRef } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
-import { commonStyle } from '../components/common/ChatBox';
+import { commonStyle, ConfirmButton, UserChatBox } from '../components/common/ChatBox';
 import { Button, Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
 import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 import LoadingModal from '../components/LoadingModal';
+import TopBar from '../components/TopBar/TopBar';
 
 export default function ReRegister({ navigation }) {
-  const { addAccount } = useAsyncStorageContext();
+  const { addAccount, accounts } = useAsyncStorageContext();
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
   const [publicKey, setPublicKey] = useState('');
   const [pending, setPending] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const scrollViewRef = useRef();
 
-  const deriveAndPostPrivateKey = async () => {
+  const deriveAndPostPrivateKey = () => {
+    setClicked(true);
     try {
       const result = derivePrivateKey(mnemonic);
-      console.log('success');
+
+      if (accounts.find((el) => el.publicKey === result.bip39.address)) throw new Error('Account already exist');
+
       setPublicKey(result);
       setStatus(1);
-    } catch {
-      console.log('fail');
+    } catch (e) {
+      console.log(e);
     }
+    setClicked(false);
   };
 
   const storeAccount = async () => {
+    setClicked(true);
     setPending(true);
     try {
       await addAccount({ publicKey: publicKey.bip39.address, nickname });
-      console.log('sucess');
       navigation.navigate('Accounts');
     } catch (e) {
-      console.log(e);
       setPending(false);
-      console.log('fail');
     }
   };
 
   return (
     <Layout>
+      <TopBar title="Add account" path="Accounts" navigation={navigation} />
       {pending && <LoadingModal />}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -66,9 +71,7 @@ export default function ReRegister({ navigation }) {
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <Pressable onPress={deriveAndPostPrivateKey} disabled={status !== 0}>
-                    <Text style={commonStyle.confirm}>확인</Text>
-                  </Pressable>
+                  <ConfirmButton onPress={deriveAndPostPrivateKey} disabled={clicked || status !== 0} />
                 </View>
               </>
             )}
@@ -76,13 +79,7 @@ export default function ReRegister({ navigation }) {
         </View>
         {status > 0 && (
           <>
-            <View style={commonStyle.userChatContainer}>
-              <View style={commonStyle.userChatBox}>
-                <Text
-                  style={commonStyle.userChatBoxText}
-                >{`sr25519: ${publicKey.sr25519.address} bip39: ${publicKey.bip39.address}`}</Text>
-              </View>
-            </View>
+            <UserChatBox text={`sr25519: ${publicKey.sr25519.address} bip39: ${publicKey.bip39.address}`} />
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>계정 닉네임을 설정해주세요</Text>
@@ -100,9 +97,7 @@ export default function ReRegister({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={storeAccount} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
+                      <ConfirmButton onPress={storeAccount} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
@@ -110,13 +105,7 @@ export default function ReRegister({ navigation }) {
             </View>
           </>
         )}
-        {status > 1 && (
-          <View style={commonStyle.userChatContainer}>
-            <View style={commonStyle.userChatBox}>
-              <Text style={commonStyle.userChatBoxText}>{nickname}</Text>
-            </View>
-          </View>
-        )}
+        {status > 1 && <UserChatBox text={nickname} />}
       </ScrollView>
     </Layout>
   );

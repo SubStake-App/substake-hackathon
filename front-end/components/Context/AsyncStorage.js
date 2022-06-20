@@ -12,7 +12,6 @@ export function AsyncStorageProvider({ children }) {
 
   useEffect(() => {
     const getAccounts = async () => {
-      setIsLoaded(false);
       const accounts = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
       setAccounts(accounts);
       setIsLoaded(true);

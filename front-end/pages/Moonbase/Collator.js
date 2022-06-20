@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
 import { View, Text, TextInput, Pressable, ScrollView, Image } from 'react-native';
-import { commonStyle } from '../../components/common/ChatBox';
+import { commonStyle, ConfirmButton } from '../../components/common/ChatBox';
 import { Divider } from '@rneui/base';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
@@ -10,6 +10,7 @@ import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser'
 export default function MoonbaseCollator({ navigation }) {
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
+  const [clicked, setClicked] = useState(false);
   const [bondAmount, setBondAmount] = useState(0);
   const scrollViewRef = useRef();
 
@@ -89,9 +90,7 @@ export default function MoonbaseCollator({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
+                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
@@ -124,9 +123,7 @@ export default function MoonbaseCollator({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
+                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 0} />
                     </View>
                   </>
                 )}

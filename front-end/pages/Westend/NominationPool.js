@@ -32,6 +32,7 @@ const cardContent = [
 export default function WestendNominationPool({ navigation }) {
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
+  const [clicked, setClicked] = useState(false);
   const [bondAmount, setBondAmount] = useState(0);
   const [selectedValidator, setSelectedValidator] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -122,9 +123,8 @@ export default function WestendNominationPool({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
+
+                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
@@ -212,9 +212,7 @@ export default function WestendNominationPool({ navigation }) {
                             editable={status === 1}
                             autoCorrect={false}
                           />
-                          <Pressable onPress={() => setStatus(2)} disabled={status !== 1}>
-                            <Text style={commonStyle.confirm}>확인</Text>
-                          </Pressable>
+                          <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
                         </View>
                       </>
                     )}

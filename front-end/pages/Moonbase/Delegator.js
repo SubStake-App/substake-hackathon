@@ -2,7 +2,7 @@ import Layout from '../../components/Layout';
 import TopBar from '../../components/TopBar/TopBar';
 import { useRef, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, Image } from 'react-native';
-import { commonStyle } from '../../components/common/ChatBox';
+import { commonStyle, ConfirmButton } from '../../components/common/ChatBox';
 import { Divider } from '@rneui/base';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
@@ -14,6 +14,7 @@ export default function MoonbaseDelegator({ navigation }) {
   const [status, setStatus] = useState(0);
   const [loadingText, setLoadingText] = useState('');
   const [action, setAction] = useState('');
+  const [clicked, setClicked] = useState(false);
   const [pending, setPending] = useState(false);
   const [bondAmount, setBondAmount] = useState(0);
   const [aprChatStack, setAprChatStack] = useState([]);
@@ -62,7 +63,7 @@ export default function MoonbaseDelegator({ navigation }) {
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <Pressable
+                  <ConfirmButton
                     onPress={async () => {
                       setLoadingText('Calculating your approximate APR...');
                       setPending(true);
@@ -71,10 +72,8 @@ export default function MoonbaseDelegator({ navigation }) {
                       setPending(false);
                       setLoadingText('');
                     }}
-                    disabled={status !== 0}
-                  >
-                    <Text style={commonStyle.confirm}>확인</Text>
-                  </Pressable>
+                    disabled={clicked || status !== 0}
+                  />
                 </View>
               </>
             )}
