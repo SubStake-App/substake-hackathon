@@ -7,7 +7,7 @@ def set_user_info(public_key:str, private_key:str, env:str) -> Boolean:
     try:
         conn = get_connection()
         with conn.cursor() as cur: 
-            private_key = AESCipher(bytes(key)).encrypt(private_key)
+            private_key = AESCipher(bytes(key)).encrypt(private_key).replace("'","''")
             query_str = f"INSERT INTO SUB_USER_KEY (public_key, private_key, env) " \
                     f"VALUES ('{public_key}', '{private_key}', '{env}')"
             cur.execute(query_str)
