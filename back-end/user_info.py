@@ -29,7 +29,13 @@ def get_user_info(public_key:str) -> list:
             cur.execute(query_str)
             result_set = cur.fetchone()
             private_key = AESCipher(bytes(key)).decrypt(result_set[1])
-            
+            result_val = {
+                                'public_key' : result_set[0],                #콜래터 지갑 주소 
+                                'private_key' : private_key,       #콜래터 이름
+                                'env' : result_set[2]
+                                
+                        }
+            return result_val
     except Exception as e:
         e.with_traceback()
         
