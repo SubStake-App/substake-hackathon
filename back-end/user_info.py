@@ -51,5 +51,5 @@ def get_user_info(public_key:str) -> list:
         conn.close()
 
 if __name__ == "__main__":
-    #set_user_info('aaa', 'bbb', 'substrate')
-    print(get_user_info('aaa'))
+    #set_user_info('5F4djM7QZGXF5zsSoRhUYFi99bdEGGVa9QJTxni7mPnzZR3q', 'prize naive pool improve amateur deal because snake debate blossom bleak expand', 'substrate')
+    print(get_user_info('5F4djM7QZGXF5zsSoRhUYFi99bdEGGVa9QJTxni7mPnzZR3q'))
