@@ -20,7 +20,7 @@ class Validators(Base):
     def recommend_validators(self, bond_amount: float):
 
         self.ready()
-        stakers = dict()
+        stakers = []
         # eras_reward_points = self.api.query(
         #                     'Staking',
         #                     'ErasRewardPoints',
@@ -102,12 +102,13 @@ class Validators(Base):
             print('user_reward: {reward}'.format(reward=user_reward))
             user_return = user_reward / bond_amount * 100        
 
-            stakers[self.active_validators[i]] = { 
-                                                    'total': total, 
-                                                    'own': own, 
-                                                    'display_name': display_name,
-                                                    'user_return': user_return, 
-                                                }
+            stakers.append({ 
+                            'public_key': self.active_validators[i],
+                            'total': total, 
+                            'own': own, 
+                            'display_name': display_name,
+                            'user_return': user_return, 
+                        })
             
         with open('output.json', 'w') as f:
             json.dump(stakers, f, indent=2)
