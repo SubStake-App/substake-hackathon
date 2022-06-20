@@ -82,6 +82,9 @@ class Staking(Base):
 
         elif self.name == 'substrate':
             
+            assert is_nominate is not None, "SUBSTAKE-STAKING(STAKE): Is_nominate must be provided"
+            is_nominate = str_to_bool(is_nominate)
+            
             if is_nominate: 
 
                 assert validators is not None, "SUBSTAKE-STAKING(STAKE): Validators must be provided for Substrate"
