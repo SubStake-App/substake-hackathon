@@ -53,13 +53,12 @@ class Staking(Base):
         '''
 
         assert user_address is not None, "SUBSTAKE-STAKING(STAKE): User address must be provided"
-        assert amount is not None, "SUBSTAKE-STAKING(STAKE): Amount must be provided"
-        amount = int(amount)
 
         if self.name == 'evm':
             
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE): Collator address must be provided for EVM"
-
+            assert amount is not None, "SUBSTAKE-STAKING(STAKE): Amount must be provided"
+            amount = int(amount)
             amount = amount * 10**EVM_DECIMALS
             nonce = self.api.eth.get_transaction_count(user_address)
             candidate_delgation_count = self.contract.functions.candidate_delegation_count(collator_address).call()
@@ -83,9 +82,6 @@ class Staking(Base):
 
         elif self.name == 'substrate':
             
-            assert is_nominate is not None, "SUBSTAKE-STAKING(STAKE): Is_nominate must be provided"
-
-            is_nominate = str_to_bool(is_nominate)
             if is_nominate: 
 
                 assert validators is not None, "SUBSTAKE-STAKING(STAKE): Validators must be provided for Substrate"
@@ -107,6 +103,8 @@ class Staking(Base):
 
             else:
                 assert is_pool is not None, "SUBSTAKE-STAKING(STAKE): Is_pool must be provided"
+                assert amount is not None, "SUBSTAKE-STAKING(STAKE): Amount must be provided"
+                amount = int(amount)
                 is_pool = str_to_bool(is_pool)
                 amount = amount * 10**SUBSTRATE_DECIMALS
                 
