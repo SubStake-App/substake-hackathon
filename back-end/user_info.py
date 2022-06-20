@@ -9,7 +9,7 @@ def set_user_info(public_key:str, private_key:str, env:str) -> Boolean:
         with conn.cursor() as cur: 
             private_key = AESCipher(bytes(key)).encrypt(private_key)
             query_str = f"INSERT INTO SUB_USER_KEY (public_key, private_key, env) " \
-                    f"VALUES ({public_key}, {private_key}, {env})"
+                    f"VALUES ('{public_key}', '{private_key}', '{env}')"
             cur.execute(query_str)
             return True;
     except Exception as e:
