@@ -70,19 +70,22 @@ def request_staking_transaction():
             'method': 'stake' / 'stakeMore' / 'stakeLess' / 'reStake' / 'stopStake'
         }
         '''
-
+        
         _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
+
         env = _request.get('env')
         provider = NETWORK_PROVIDER[_request.get('provider')]
         method = _request.get('method')
         staking = Staking(env=env, provider=provider)
-        print('Data Received: {request}'.format(request=_request))
+
         result = Helper.request_staking_transaction(
                     request=_request, 
                     method=method, 
                     env=env,
                     staking=staking
                 )
+                
         return_tx_status = json.dumps(result)
         response = make_response(return_tx_status, 200)
 
