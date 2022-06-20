@@ -25,6 +25,7 @@ def set_user_key():
             }
         '''
         _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
         public_key = _request.get('public_key')
         private_key = _request.get('private_key')
         env = _request.get('env')

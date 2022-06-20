@@ -3,14 +3,17 @@ from Utils.AESCipher import AESCipher
 from Utils.Config import get_connection, key
 
 
-def set_user_info(public_key:str, private_key:str, env:str) -> Boolean:
+def set_user_info(public_key:str, private_key, env:str) -> Boolean:
     try:
         conn = get_connection()
         with conn.cursor() as cur: 
-            private_key = AESCipher(bytes(key)).encrypt(private_key).replace("'","''")
+            private_key = AESCipher(bytes(key)).encrypt(private_key).decode('utf-8')
+            
             query_str = f"INSERT INTO SUB_USER_KEY (public_key, private_key, env) " \
                     f"VALUES ('{public_key}', '{private_key}', '{env}')"
+                    
             cur.execute(query_str)
+            
             return True;
     except Exception as e:
         conn.rollback()
@@ -25,15 +28,18 @@ def get_user_info(public_key:str) -> list:
     try:
         conn = get_connection()
         with conn.cursor() as cur: 
-            private_key = AESCipher(bytes(key)).encrypt(private_key)
+
             query_str = f"SELECT public_key, private_key, env FROM SUB_USER_KEY " \
-                    f"WHERE public_key = {public_key}"
+                    f"WHERE public_key = '{public_key}'"
             cur.execute(query_str)
             result_set = cur.fetchone()
-            private_key = AESCipher(bytes(key)).decrypt(result_set[1])
+            print(result_set[0])
+            print(result_set[1])
+            print(result_set[2])
+            private_key = AESCipher(bytes(key)).decrypt(result_set[1].encode('utf-8'))
             result_val = {
-                                'public_key' : result_set[0],                #콜래터 지갑 주소 
-                                'private_key' : private_key,       #콜래터 이름
+                                'public_key' : result_set[0],
+                                'private_key' : private_key.decode('utf-8'),      
                                 'env' : result_set[2]
                                 
                         }
@@ -43,3 +49,7 @@ def get_user_info(public_key:str) -> list:
         
     finally:
         conn.close()
+
+if __name__ == "__main__":
+    #set_user_info('aaa', 'bbb', 'substrate')
+    print(get_user_info('aaa'))
