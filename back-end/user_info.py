@@ -1,8 +1,9 @@
+from xmlrpc.client import Boolean
 from Utils.AESCipher import AESCipher
 from Utils.Config import get_connection, key
 
 
-def set_user_info(public_key:str, private_key:str, env:str) -> None:
+def set_user_info(public_key:str, private_key:str, env:str) -> Boolean:
     try:
         conn = get_connection()
         with conn.cursor() as cur: 
@@ -10,10 +11,11 @@ def set_user_info(public_key:str, private_key:str, env:str) -> None:
             query_str = f"INSERT INTO SUB_USER_KEY (public_key, private_key, env) " \
                     f"VALUES ({public_key}, {private_key}, {env})"
             cur.execute(query_str)
-        
+            return True;
     except Exception as e:
         conn.rollback()
         e.with_traceback()
+        return False
         
     finally:
         conn.commit()
