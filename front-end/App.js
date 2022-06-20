@@ -8,7 +8,7 @@ import {
   Nunito_700Bold,
   useFonts,
 } from '@expo-google-fonts/nunito';
-
+import { useWestend, WestendContextProvider } from './components/Context/WestendContext';
 import Home from './pages/Home';
 import StakableAssets from './pages/StakableAssets';
 import WestendNominator from './pages/Westend/Nominator';
@@ -18,22 +18,58 @@ import MoonbaseCollator from './pages/Moonbase/Collator';
 import MoonbaseDelegator from './pages/Moonbase/Delegator';
 import Register from './pages/Register';
 import Welcome from './pages/Welcome';
-import { AsyncStorageProvider, useAsyncStorageContext } from './components/Context/AsyncStorage';
+import { AsyncStorageProvider, useAsyncStorage } from './components/Context/AsyncStorage';
 import AppLoading from './components/AppLoading';
 import Accounts from './pages/Accounts';
 import ReRegister from './pages/ReRegister';
+import { MoonbeamContextProvider, useMoonbeam } from './components/Context/MoonbeamContext';
+import { useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserBalance } from './query';
+import { Platform } from 'react-native';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const Stack = createNativeStackNavigator();
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      retry: true,
+    },
+  },
+});
+
 export function Root() {
-  const { isLoaded, accounts } = useAsyncStorageContext();
+  const { isLoaded: asyncStorageLoaded, accounts } = useAsyncStorage();
+  const { isLoaded: westendLoaded } = useWestend();
+  const { isLoaded: moonbeamLoaded } = useMoonbeam();
+
+  useEffect(() => {
+    const clearAsyncStorage = async () => {
+      const asyncStorageKeys = await AsyncStorage.getAllKeys();
+
+      if (asyncStorageKeys.length > 0) {
+        if (Platform.OS === 'android') {
+          await AsyncStorage.clear();
+        }
+        if (Platform.OS === 'ios') {
+          await AsyncStorage.multiRemove(asyncStorageKeys);
+        }
+      }
+    };
+    clearAsyncStorage();
+  }, []);
+
   const isRegistered = accounts && accounts.length > 0;
+
+  console.log(asyncStorageLoaded, westendLoaded, moonbeamLoaded);
 
   return (
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isLoaded ? (
+        {asyncStorageLoaded && westendLoaded && moonbeamLoaded ? (
           <>
             {!isRegistered && (
               <>
@@ -63,8 +99,14 @@ export default function App() {
   useFonts({ Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold });
 
   return (
-    <AsyncStorageProvider>
-      <Root />
-    </AsyncStorageProvider>
+    <QueryClientProvider client={queryClient}>
+      <MoonbeamContextProvider>
+        <WestendContextProvider>
+          <AsyncStorageProvider>
+            <Root />
+          </AsyncStorageProvider>
+        </WestendContextProvider>
+      </MoonbeamContextProvider>
+    </QueryClientProvider>
   );
 }

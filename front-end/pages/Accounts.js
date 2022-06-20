@@ -1,13 +1,13 @@
 import { Button, Divider } from '@rneui/base';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import AccountIcon from '../components/common/AccountIcon';
-import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
+import { useAsyncStorage } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 import TopBar from '../components/TopBar/TopBar';
 import checked from '../assets/checked.png';
 
 export default function Accounts({ navigation }) {
-  const { accounts, currentIndex, setCurrentIndex } = useAsyncStorageContext();
+  const { accounts, currentIndex, setCurrentIndex } = useAsyncStorage();
 
   return (
     <Layout>
@@ -18,7 +18,7 @@ export default function Accounts({ navigation }) {
             <Pressable onPress={() => setCurrentIndex(i)}>
               <View key={i} style={styles.accountRow}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <AccountIcon publicKey={el.publicKey} />
+                  <AccountIcon publicKey={el.bip39} />
                   <Text style={styles.nickname}>{el.nickname}</Text>
                 </View>
                 {currentIndex === i && <Image source={checked} />}

@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '@rneui/base';
 import TopBar from '../components/TopBar/TopBar';
 import Layout from '../components/Layout';
-import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
+import { useAsyncStorage } from '../components/Context/AsyncStorage';
 
 export default function Home({ navigation }) {
-  const { accounts, currentIndex } = useAsyncStorageContext();
+  const { accounts, currentIndex } = useAsyncStorage();
 
   return (
     <Layout>

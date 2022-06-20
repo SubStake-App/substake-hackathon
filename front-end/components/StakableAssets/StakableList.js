@@ -4,6 +4,10 @@ import moonbase from '../../assets/moonbase.png';
 import StakableItem from './StakableItem';
 import { useState } from 'react';
 import StakableModal from './Modals';
+import { useUserBalance } from '../../query';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
+import { formatRawBalanceToString } from '../utils';
 
 const westendDetailContent = [
   {
@@ -55,19 +59,20 @@ const moonbaseTitleContent = {
 export default function StakableList({ navigation }) {
   const [westendModalVisible, setWestendModalVislble] = useState(false);
   const [moonbaseModalVisible, setMoonbaseModalVislble] = useState(false);
+  const { data, isSuccess } = useUserBalance();
 
   const lists = [
     {
       img: westend,
       network: 'Westend',
-      stakeAmount: 150,
+      balance: data?.westendBalance?.free ? formatRawBalanceToString(data?.westendBalance?.free) : 0,
       symbol: 'WND',
       setModalVisible: setWestendModalVislble,
     },
     {
       img: moonbase,
       network: 'Moonbase Alpha',
-      stakeAmount: 253,
+      balance: isSuccess ? data.moonbeamBalance : 0,
       symbol: 'DEV',
       setModalVisible: setMoonbaseModalVislble,
     },

@@ -14,6 +14,9 @@ import arrowRight from '../../assets/arrowRight.png';
 import NominatorDetailModal from '../../components/Westend/Nominator/DetailModal';
 import validator_icon from '../../assets/validator_ex.png';
 import NominatorSwitchModal from '../../components/Westend/Nominator/SwitchModal';
+import { useUserBalance } from '../../query';
+import { formatRawBalanceToString } from '../../components/utils';
+import { useAsyncStorage } from '../../components/Context/AsyncStorage';
 
 const cardContent = [
   {
@@ -45,11 +48,27 @@ export default function WestendNominator({ navigation }) {
   const [switchModalVisible, setSwitchModalVisible] = useState(false);
   const [selectedValidator, setSelectedValidator] = useState('');
   const [newValidator, setNewValidator] = useState('');
+  const [txMessage, setTxMessage] = useState();
+  const [txStatus, setTxStatus] = useState();
+
+  const { data, isSuccess } = useUserBalance();
+  const { accounts, currentIndex } = useAsyncStorage();
 
   const scrollViewRef = useRef();
 
   useEffect(() => {
-    setValidatorList(['curated_1', 'curated_2', 'curated_3', 'curated_4', 'curated_5', 'curated_6', 'curated_7']);
+    const getValidatorList = async () => {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      const result = await response.json();
+      setValidatorList(result);
+    };
+
+    getValidatorList();
   }, []);
 
   useEffect(() => {
@@ -64,6 +83,48 @@ export default function WestendNominator({ navigation }) {
       { filter: 'Average block rate above 4', isChecked: false },
     ]);
   }, []);
+
+  const handleOnEndReached = async () => {
+    setStatus(4);
+    setIsStakingConfirmed(true);
+
+    // const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     env: 'substrate',
+    //     provider: 'westend',
+    //     method: 'stake',
+    //     userAddress: accounts[currentIndex].sr25519,
+    //     amount: bondAmount,
+    //     payee: 'Staked',
+    //     isNominate: 'False',
+    //     isPool: 'False',
+    //   }),
+    // });
+
+    const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        env: 'substrate',
+        provider: 'westend',
+        method: 'stake',
+        userAddress: accounts[currentIndex].sr25519,
+        validators: validatorList.map((el) => el.public_key),
+        isNominate: 'True',
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.Status === 'Success') setTxMessage(result.Message);
+    setTxStatus(result.Status);
+  };
 
   return (
     <Layout>
@@ -109,7 +170,9 @@ export default function WestendNominator({ navigation }) {
         <View style={commonStyle.serviceChatContainer}>
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
-            <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
+            <Text style={commonStyle.serviceChatBoxDesc}>
+              현재 전송가능 잔고: {formatRawBalanceToString(data.westendBalance.free)} WND
+            </Text>
             {status === 0 && (
               <>
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
@@ -134,7 +197,7 @@ export default function WestendNominator({ navigation }) {
           <>
             <View style={commonStyle.userChatContainer}>
               <View style={commonStyle.userChatBox}>
-                <Text style={commonStyle.userChatBoxText}>{bondAmount}</Text>
+                <Text style={commonStyle.userChatBoxText}>{bondAmount} WND</Text>
               </View>
             </View>
             <View style={commonStyle.serviceChatContainer}>
@@ -255,16 +318,13 @@ export default function WestendNominator({ navigation }) {
                       }}
                       disabled={status !== 3}
                     >
-                      <Text style={commonStyle.buttonText}>{el}</Text>
+                      <Text style={commonStyle.buttonText}>{el.display_name}</Text>
                       <Image source={arrowRight} />
                     </Pressable>
                   ))}
                 </View>
                 <Slider
-                  onEndReached={() => {
-                    setStatus(4);
-                    setIsStakingConfirmed(true);
-                  }}
+                  onEndReached={handleOnEndReached}
                   containerStyle={
                     isStakingConfirmed ? commonStyle.disabledSliderContainer : commonStyle.sliderContainer
                   }
@@ -290,26 +350,34 @@ export default function WestendNominator({ navigation }) {
                 <Text style={commonStyle.userChatBoxText}>Confirmed</Text>
               </View>
             </View>
-            <View style={commonStyle.serviceChatContainer}>
-              <View style={commonStyle.succesContainer}>
-                <Image source={success} />
-                <View>
-                  <Text style={commonStyle.successHeader}>Success</Text>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
-                    <Pressable
-                      onPress={() =>
-                        openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
-                          presentationStyle: WebBrowserPresentationStyle.POPOVER,
-                        })
-                      }
-                    >
-                      <Text style={commonStyle.successLink}> #2275958-3</Text>
-                    </Pressable>
+            {txStatus === 'Success' ? (
+              <View style={commonStyle.serviceChatContainer}>
+                <View style={commonStyle.succesContainer}>
+                  <Image source={success} />
+                  <View>
+                    <Text style={commonStyle.successHeader}>Success</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={commonStyle.successMain}>See your extrinsic in </Text>
+                      <Pressable
+                        onPress={() =>
+                          openBrowserAsync(`https://westend.subscan.io/extrinsic/${txMessage}`, {
+                            presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                          })
+                        }
+                      >
+                        <Text style={commonStyle.successLink}>subscan</Text>
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            ) : (
+              <View style={commonStyle.serviceChatContainer}>
+                <View style={commonStyle.serviceChatBox}>
+                  <Text style={commonStyle.successMain}>Transaction Failed</Text>
+                </View>
+              </View>
+            )}
           </>
         )}
       </ScrollView>

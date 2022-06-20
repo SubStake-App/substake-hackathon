@@ -3,13 +3,14 @@ import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { commonStyle, ConfirmButton, UserChatBox } from '../components/common/ChatBox';
 import { Button, Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
-import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
+import { useAsyncStorage } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 import LoadingModal from '../components/LoadingModal';
 import TopBar from '../components/TopBar/TopBar';
+import { Keyring } from '@polkadot/api';
 
 export default function ReRegister({ navigation }) {
-  const { addAccount, accounts } = useAsyncStorageContext();
+  const { addAccount, accounts } = useAsyncStorage();
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
@@ -19,12 +20,36 @@ export default function ReRegister({ navigation }) {
 
   const scrollViewRef = useRef();
 
-  const deriveAndPostPrivateKey = () => {
+  const deriveAndPostPrivateKey = async () => {
     setClicked(true);
     try {
       const result = derivePrivateKey(mnemonic);
 
-      if (accounts.find((el) => el.publicKey === result.bip39.address)) throw new Error('Account already exist');
+      if (accounts.find((el) => el.bip39 === result.bip39.address)) throw new Error('Account already exist');
+
+      await fetch('https://rest-api.substake.app//api/request/dev/set-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_key: result.bip39.address,
+          private_key: result.bip39.privateKey,
+          env: 'evm',
+        }),
+      });
+
+      await fetch('https://rest-api.substake.app//api/request/dev/set-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_key: result.sr25519.address,
+          private_key: mnemonic,
+          env: 'substrate',
+        }),
+      });
 
       setPublicKey(result);
       setStatus(1);
@@ -38,7 +63,7 @@ export default function ReRegister({ navigation }) {
     setClicked(true);
     setPending(true);
     try {
-      await addAccount({ publicKey: publicKey.bip39.address, nickname });
+      await addAccount({ bip39: publicKey.bip39.address, sr25519: publicKey.sr25519.address, nickname });
       navigation.navigate('Accounts');
     } catch (e) {
       setPending(false);
@@ -79,7 +104,12 @@ export default function ReRegister({ navigation }) {
         </View>
         {status > 0 && (
           <>
-            <UserChatBox text={`sr25519: ${publicKey.sr25519.address} bip39: ${publicKey.bip39.address}`} />
+            <View style={commonStyle.userChatContainer}>
+              <View style={commonStyle.userChatBox}>
+                <Text style={commonStyle.userChatBoxText}>{`sr25519: ${publicKey.sr25519.address}`}</Text>
+                <Text style={commonStyle.userChatBoxText}>{`bip39: ${publicKey.bip39.address}`}</Text>
+              </View>
+            </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>계정 닉네임을 설정해주세요</Text>
