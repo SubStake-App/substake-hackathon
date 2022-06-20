@@ -96,7 +96,7 @@ def request_staking_transaction():
                     env=env,
                     staking=staking
                 )
-                
+        print(result)     
         return_tx_status = json.dumps(result)
         response = make_response(return_tx_status, 200)
 
