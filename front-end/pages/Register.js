@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
-import { commonStyle } from '../components/common/ChatBox';
-import { Button, Divider } from '@rneui/base';
+import { View, Text, TextInput, ScrollView } from 'react-native';
+import { commonStyle, ConfirmButton } from '../components/common/ChatBox';
+import { Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
 import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
@@ -14,30 +14,29 @@ export default function Register({ navigation }) {
   const [nickname, setNickname] = useState('');
   const [publicKey, setPublicKey] = useState('');
   const [pending, setPending] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const scrollViewRef = useRef();
 
-  const deriveAndPostPrivateKey = async () => {
+  const deriveAndPostPrivateKey = () => {
+    setClicked(true);
     try {
       const result = derivePrivateKey(mnemonic);
-      console.log('success');
       setPublicKey(result);
       setStatus(1);
-    } catch {
-      console.log('fail');
-    }
+    } catch {}
+    setClicked(false);
   };
 
   const storeAccount = async () => {
+    setClicked(true);
     setPending(true);
     try {
       await addAccount({ publicKey: publicKey.bip39.address, nickname });
-      console.log('sucess');
-      navigation.navigate('Home');
+      navigation.navigate('Accounts');
     } catch (e) {
-      console.log(e);
       setPending(false);
-      console.log('fail');
+      setClicked(false);
     }
   };
 
@@ -66,9 +65,7 @@ export default function Register({ navigation }) {
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <Pressable onPress={deriveAndPostPrivateKey} disabled={status !== 0}>
-                    <Text style={commonStyle.confirm}>확인</Text>
-                  </Pressable>
+                  <ConfirmButton onPress={deriveAndPostPrivateKey} disabled={clicked || status !== 0} />
                 </View>
               </>
             )}
@@ -100,9 +97,7 @@ export default function Register({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <Pressable onPress={storeAccount} disabled={status !== 1}>
-                        <Text style={commonStyle.confirm}>확인</Text>
-                      </Pressable>
+                      <ConfirmButton onPress={storeAccount} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
