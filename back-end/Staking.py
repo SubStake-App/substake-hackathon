@@ -388,16 +388,17 @@ class Staking(Base):
 
 if __name__ == "__main__":
 
-    from substrateinterface import Keypair
-
     staking_substrate = Staking(env='substrate', provider='wss://ws-api.substake.app')
-    mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
-    key_pair = Keypair.create_from_mnemonic(mnemonic=mnemonic)
-    result = staking_substrate.restake(
-        user_address=key_pair,
-        amount="1"
+    # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
+    staking_substrate.stake(
+        user_address='5F4djM7QZGXF5zsSoRhUYFi99bdEGGVa9QJTxni7mPnzZR3q',
+        amount="1",
+        is_nominate="False",
+        payee='Staked',
+        is_pool="False",
     )
-    print(result)
+
+
      
     # staking_evm = Staking(env='evm', provider='https://rpc.api.moonbase.moonbeam.network')
     # staking_evm.stake_less(
