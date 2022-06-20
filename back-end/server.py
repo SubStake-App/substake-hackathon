@@ -10,7 +10,7 @@ from validators import Validators
 import requests
 import json
 import dev_substrate_interface as dev
-
+import user_info
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__) 
 
@@ -25,7 +25,17 @@ def set_user_key():
             }
         '''
         _request = request.get_json()
+        public_key = _request.get('public_key')
+        private_key = _request.get('private_key')
         env = _request.get('env')
+        
+        if user_info.set_user_info(public_key, private_key, env):
+            response = make_response("Success", 200)
+        else :
+            response = make_response("Failed", 200)
+        #print(return_str)
+        return response
+        
         
 @app.route('/api/request/dev/collator', methods=['POST'])
 def get_recommended_collator():

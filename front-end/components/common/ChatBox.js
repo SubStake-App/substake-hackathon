@@ -1,4 +1,5 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import { Button } from '@rneui/base';
 
 export const commonStyle = StyleSheet.create({
   serviceChatContainer: {
@@ -44,7 +45,7 @@ export const commonStyle = StyleSheet.create({
   },
   confirm: {
     color: '#6C84FF',
-    margin: 5,
+    fontSize: 14,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -156,3 +157,30 @@ export const commonStyle = StyleSheet.create({
     width: 250,
   },
 });
+
+export function ConfirmButton({ onPress, disabled }) {
+  return <Button onPress={onPress} type="clear" title="확인" titleStyle={commonStyle.confirm} disabled={disabled} />;
+}
+
+export function OptionButton({ onPress, status, text, currentStatus }) {
+  return (
+    <Button
+      onPress={onPress}
+      type="clear"
+      containerStyle={commonStyle.buttonContainer}
+      title={text}
+      titleStyle={commonStyle.buttonText}
+      disabled={status !== currentStatus}
+    />
+  );
+}
+
+export function UserChatBox({ text }) {
+  return (
+    <View style={commonStyle.userChatContainer}>
+      <View style={commonStyle.userChatBox}>
+        <Text style={commonStyle.userChatBoxText}>{text}</Text>
+      </View>
+    </View>
+  );
+}
