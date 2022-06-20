@@ -58,7 +58,7 @@ class Staking(Base):
             
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE): Collator address must be provided for EVM"
             assert amount is not None, "SUBSTAKE-STAKING(STAKE): Amount must be provided"
-            amount = int(amount)
+            amount = float(amount)
             amount = amount * 10**EVM_DECIMALS
             nonce = self.api.eth.get_transaction_count(user_address)
             candidate_delgation_count = self.contract.functions.candidate_delegation_count(collator_address).call()
@@ -84,7 +84,7 @@ class Staking(Base):
             
             assert is_nominate is not None, "SUBSTAKE-STAKING(STAKE): Is_nominate must be provided"
             is_nominate = str_to_bool(is_nominate)
-            
+
             if is_nominate: 
 
                 assert validators is not None, "SUBSTAKE-STAKING(STAKE): Validators must be provided for Substrate"
@@ -107,7 +107,7 @@ class Staking(Base):
             else:
                 assert is_pool is not None, "SUBSTAKE-STAKING(STAKE): Is_pool must be provided"
                 assert amount is not None, "SUBSTAKE-STAKING(STAKE): Amount must be provided"
-                amount = int(amount)
+                amount = float(amount)
                 is_pool = str_to_bool(is_pool)
                 amount = amount * 10**SUBSTRATE_DECIMALS
                 
@@ -161,7 +161,7 @@ class Staking(Base):
 
         assert user_address is not None, "SUBSTKAE-STAKING(STAKE MORE): User address must be provided"
         assert amount is not None, "SUBSTAKE-STAKING(STAKE MORE): More should be provided"
-        amount = int(amount)
+        amount = float(amount)
 
         if self.name == 'evm':
 
@@ -248,7 +248,7 @@ class Staking(Base):
 
         assert user_address is not None, "SUBSTAKE-STAKING(STAKE LESS): User address must be provided"
         assert amount is not None, "SUBSTAKE-STAKING(STAKE LESS): Less must be provided"
-        amount = int(amount)
+        amount = float(amount)
 
         if self.name == 'evm':
             
@@ -308,7 +308,7 @@ class Staking(Base):
         assert user_address is not None, "SUBSTAKE-STAKING(RESTAKE): User address should be provided"
         assert amount is not None, "SUBSTAKE-STAKING(RESTAKE): Amount shoud be provided"
         
-        amount = int(amount)
+        amount = float(amount)
         if self.name == 'evm':
 
             pass

@@ -6,7 +6,7 @@ import dev_substrate_interface as dev
 from Helper import Helper
 from Staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
-from validators import Validators 
+from curators import Curators 
 import requests
 import json
 import dev_substrate_interface as dev
@@ -58,9 +58,9 @@ def get_recommended_validator():
         #validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
         
         #production
-        validators = Validators(env='substrate', provider='ws://127.0.0.1:9954')
+        curators = Curators(env='substrate', provider='ws://127.0.0.1:9954')
         
-        return_str = json.dumps(validators.recommend_validators(bond_amount=3.5))
+        return_str = json.dumps(curators.recommend_validators(bond_amount=3.5))
         
         response = make_response(return_str, 200)
         #print(return_str)

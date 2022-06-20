@@ -7,7 +7,7 @@ import json
 OVER_SUBSCRIBED = 256
 COMMISSION_THRESHOLD = 10
 
-class Validators(Base):
+class Curators(Base):
     
     def __init__(self, env, provider):
        super().__init__(env=env, provider=provider)
