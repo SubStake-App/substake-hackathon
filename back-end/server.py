@@ -14,6 +14,19 @@ import dev_substrate_interface as dev
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__) 
 
+@app.route('/api/request/dev/set-key', methods=['POST'])
+def set_user_key():
+    if request.method == 'POST':
+        '''
+            request = {
+                'public_key' : 'public_key'
+                'private_key': 'private_key'
+                'env' : 'evm' / 'substrate'
+            }
+        '''
+        _request = request.get_json()
+        env = _request.get('env')
+        
 @app.route('/api/request/dev/collator', methods=['POST'])
 def get_recommended_collator():
     if request.method == 'POST':

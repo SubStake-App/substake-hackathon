@@ -1,6 +1,6 @@
 import logging
 import json
-import Config as db_con
+import Utils.Config as db_con
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
