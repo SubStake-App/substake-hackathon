@@ -6,8 +6,6 @@ from Utils.chain_info import (
     COMMISSION_THRESHOLD
 )
 
-
-
 class Curator(Base):
     
     def __init__(self, env, provider):
@@ -15,9 +13,25 @@ class Curator(Base):
 
     def get_active_validators(self, is_request=False):
         self.active_validators = self.api.query('Session', 'Validators').value
-        if is_request:
-            return self.active_validators
         self.era = self.api.query('Staking', 'ActiveEra').value['index'] - 1
+        if is_request:
+            eras_points = self.api.query('Staking', 'ErasRewardPoints', params=[self.era]).value
+            validators = eras_points['individual']
+            request = []
+            for (validator, points) in validators:
+                query = self.api.query(
+                    'Staking',
+                    'ErasStakers',
+                    params=[self.era, validator]
+                ).value
+                nominees = len(query['others'])
+                request.append({
+                    'validator': validator,
+                    'points': points,
+                    'nominees': nominees
+                })
+
+            return request
         print(self.active_validators)
     
     def recommend_validators(self, bond_amount: float):
@@ -162,7 +176,7 @@ class Curator(Base):
 if __name__ == '__main__':
     
     curator = Curator(env='substrate', provider='wss://ws-api.substake.app')
-    curator.get_nomination_pools()
+    curator.get_active_validators(is_request=True)
 
         
     
