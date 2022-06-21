@@ -5,6 +5,7 @@ import json
 import dev_substrate_interface as dev
 from Helper import Helper
 from Staking import Staking
+from asset_manager import Asset_Manager
 from Utils.chain_info import NETWORK_PROVIDER
 from curator import Curator
 import requests
@@ -36,6 +37,25 @@ def set_user_key():
             response = make_response("Failed", 200)
         #print(return_str)
         return response
+
+@app.route('/api/request/dev/asset', methods=['POST'])
+def request_asset_status():
+    if request.method == 'POST':
+
+        _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
+        user_address = _request.get('user_address')
+        asset_manager = Asset_Manager(env='substrate', provider='ws://127.0.0.1:9954')
+        result = Helper.request_asset_status(
+                user_address=user_address, 
+                asset_manager=asset_manager
+            )
+        asset = json.dumps(result)
+        response = make_response(asset, 200)
+    
+    else:
+        return make_response("Not supported method", 400)
+
 
 @app.route('/api/request/dev/curate', methods=['POST'])
 def request_curation():

@@ -1,11 +1,12 @@
 
-
 from base import Base
-import threading
+from Utils.chain_info import (
+    SUBSTRATE_DECIMALS,
+    OVER_SUBSCRIBED,
+    COMMISSION_THRESHOLD
+)
 
-OVER_SUBSCRIBED = 256
-COMMISSION_THRESHOLD = 10
-SUBSTRATE_DECIMALS = 12
+
 
 class Curator(Base):
     

@@ -1,10 +1,8 @@
 
 from Helper import Helper
 from Utils.helpful_function import str_to_bool
+from Utils.chain_info import SUBSTRATE_DECIMALS, EVM_DECIMALS
 from base import Base
-
-EVM_DECIMALS = 18
-SUBSTRATE_DECIMALS = 12
 
 class Staking(Base):
 
