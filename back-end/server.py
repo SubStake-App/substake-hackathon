@@ -43,7 +43,7 @@ def request_curation():
         
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
-        which = _request.get('method')
+        which = _request.get('which')
         curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
         result = Helper.request_curation(
             which=which,
