@@ -23,9 +23,20 @@ class Asset_Manager(Base):
             print("User is bonding!")
             ledger = ledger.value
             total = float(ledger['total']) / 10**SUBSTRATE_DECIMALS
+            if len(ledger['unlocking']) == 0: 
+                unlocking = []
+            else:
+                unlocking_status = ledger['unlocking'][0]
+                value = float(unlocking_status['value']) / 10**SUBSTRATE_DECIMALS
+                era = unlocking_status['era']
+                unlocking = [{
+                    'value': value,
+                    'era': era
+                }]
             asset_status.append({
                 'is_bonding': "True",
                 'total': total,
+                'unlock': unlocking
             })
 
         return asset_status
