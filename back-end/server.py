@@ -38,7 +38,7 @@ def set_user_key():
         return response
 
 @app.route('/api/request/dev/curate', methods=['POST'])
-def get_recommended_validator():
+def request_curation():
     if request.method == 'POST':
         
         #dev
@@ -46,7 +46,7 @@ def get_recommended_validator():
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
         which = _request.get('method')
-        
+
         if which == 'validators':
             curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
             bond_amount = _request.get('bond_amount')
