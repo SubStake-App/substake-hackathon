@@ -14,26 +14,22 @@ class Asset_Manager(Base):
                                     module='Staking',
                                     storage_function='Ledger',
                                     params=[user_address]
-                                ).value
-    
-        print(ledger)
-        total = float(ledger['total']) / 10**SUBSTRATE_DECIMALS
-        active = float(ledger['active']) / 10**SUBSTRATE_DECIMALS
-        if len(ledger['unlocking']) == 0:
-            unlocking = ['']
+                                )
+        asset_status = [] 
+        if ledger == None:
+            print("User is not bonding!")
+            asset_status.append({'is_bonding': "False"})
         else:
-            unlock = float(ledger['unlocking'][0].get('value')) / 10**SUBSTRATE_DECIMALS
-            era = ledger['unlocking'][0].get('era')
-        result = {
-                    'total': total,
-                    'active': active,
-                    'unlock': {
-                        'value': unlock,
-                        'era': era
-                    }
-                }
-        print(result)
-        return result
+            print("User is bonding!")
+            ledger = ledger.value
+            total = float(ledger['total']) / 10**SUBSTRATE_DECIMALS
+            asset_status.append({
+                'is_boding': "True",
+                'total': total,
+            })
+
+        return asset_status
+
 
 if __name__ == '__main__': 
 
@@ -41,4 +37,6 @@ if __name__ == '__main__':
                                     env='substrate', 
                                     provider='wss://ws-api.substake.app'
                                  )
-    asset_manager.get_user_balance_status(user_address='5GeGNPSck3uML62Xq8SSHSDgxS9WXMJ3ukNfajvrcYQ2HUe9')
+    account_1 = '5F9jBNMWCRh48XVzgGZC4BBWaHLHt128yK53kddyYd6x4P3W'
+    account_2 = '5Fqc8dQkr3zALLGvgc3sDYzzd8Vp6zRWNT7S5xd1gs2UUMDo'
+    asset_manager.get_user_balance_status(user_address=account_1)

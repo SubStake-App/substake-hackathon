@@ -44,7 +44,7 @@ def request_asset_status():
 
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
-        user_address = _request.get('user_address')
+        user_address = _request.get('of')
         asset_manager = Asset_Manager(env='substrate', provider='ws://127.0.0.1:9954')
         result = Helper.request_asset_status(
                 user_address=user_address, 
@@ -52,7 +52,8 @@ def request_asset_status():
             )
         asset = json.dumps(result)
         response = make_response(asset, 200)
-    
+
+        return response
     else:
         return make_response("Not supported method", 400)
 
