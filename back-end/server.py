@@ -41,24 +41,17 @@ def set_user_key():
 def request_curation():
     if request.method == 'POST':
         
-        #dev
-        #validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
         which = _request.get('method')
-        return_str = None
-        if which == 'validators':
-            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
-            bond_amount = _request.get('bond_amount')
-            return_str = json.dumps(curator.recommend_validators(bond_amount=bond_amount))
-        elif which == 'collators':
-            return_str = json.dumps(dev.get_recommended_collators())
-        elif which == 'nomination_pool':
-            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
-            return_str = json.dumps(curator.get_nomination_pools())
-    
-        response = make_response(return_str, 200)
-        #print(return_str)
+        curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
+        result = Helper.request_curation(
+            which=which,
+            request=_request,
+            curator=curator
+        )
+        response = make_response(result, 200)
+        
         return response
     else:
         return make_response("Not supported method", 400)
