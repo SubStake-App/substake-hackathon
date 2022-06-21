@@ -19,8 +19,11 @@ class Asset_Manager(Base):
         print(ledger)
         total = float(ledger['total']) / 10**SUBSTRATE_DECIMALS
         active = float(ledger['active']) / 10**SUBSTRATE_DECIMALS
-        unlock = float(ledger['unlocking'][0].get('value')) / 10**SUBSTRATE_DECIMALS
-        era = ledger['unlocking'][0].get('era')
+        if len(ledger['unlocking']) == 0:
+            unlocking = ['']
+        else:
+            unlock = float(ledger['unlocking'][0].get('value')) / 10**SUBSTRATE_DECIMALS
+            era = ledger['unlocking'][0].get('era')
         result = {
                     'total': total,
                     'active': active,
@@ -38,4 +41,4 @@ if __name__ == '__main__':
                                     env='substrate', 
                                     provider='wss://ws-api.substake.app'
                                  )
-    asset_manager.get_user_balance_status(user_address='5DaGmwaFDdJXdgHM5qncW4JGywpEDUxU2HvGPz72ZQkavvv5')
+    asset_manager.get_user_balance_status(user_address='5GeGNPSck3uML62Xq8SSHSDgxS9WXMJ3ukNfajvrcYQ2HUe9')

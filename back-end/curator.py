@@ -13,8 +13,10 @@ class Curator(Base):
     def __init__(self, env, provider):
        super().__init__(env=env, provider=provider)
 
-    def get_active_validators(self):
+    def get_active_validators(self, is_request=False):
         self.active_validators = self.api.query('Session', 'Validators').value
+        if is_request:
+            return self.active_validators
         self.era = self.api.query('Staking', 'ActiveEra').value['index'] - 1
         print(self.active_validators)
     
