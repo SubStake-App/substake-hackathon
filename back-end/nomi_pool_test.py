@@ -4,7 +4,7 @@ substrate = SubstrateInterface(
     url="wss://ws-api.substake.app"
 )   
 
-result = substrate.query(
+result = substrate.query( 
     module='NominationPools',
     storage_function='LastPoolId'
 )
