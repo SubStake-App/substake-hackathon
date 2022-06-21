@@ -28,8 +28,12 @@ class Curator(Base):
                     module='Identity',
                     storage_function='IdentityOf',
                     params=[validator]
-                ).value['info']
-                display_name = identity['display']['Raw']
+                )
+                if identity == None:
+                    display_name = "No value"
+                else:
+                    identity = identity.value['info']
+                    display_name = identity['display']['Raw']
                 nominees = len(query['others'])
                 request.append({
                     'validator': validator,
