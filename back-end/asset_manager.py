@@ -24,7 +24,7 @@ class Asset_Manager(Base):
             ledger = ledger.value
             total = float(ledger['total']) / 10**SUBSTRATE_DECIMALS
             asset_status.append({
-                'is_boding': "True",
+                'is_bonding': "True",
                 'total': total,
             })
 
@@ -39,4 +39,5 @@ if __name__ == '__main__':
                                  )
     account_1 = '5F9jBNMWCRh48XVzgGZC4BBWaHLHt128yK53kddyYd6x4P3W'
     account_2 = '5Fqc8dQkr3zALLGvgc3sDYzzd8Vp6zRWNT7S5xd1gs2UUMDo'
-    asset_manager.get_user_balance_status(user_address=account_1)
+    account_3 = '5GeGNPSck3uML62Xq8SSHSDgxS9WXMJ3ukNfajvrcYQ2HUe9'
+    asset_manager.get_user_balance_status(user_address=account_3)
