@@ -46,7 +46,7 @@ def request_curation():
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
         which = _request.get('method')
-
+        return_str = None
         if which == 'validators':
             curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
             bond_amount = _request.get('bond_amount')
