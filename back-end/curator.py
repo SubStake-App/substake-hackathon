@@ -24,9 +24,16 @@ class Curator(Base):
                     'ErasStakers',
                     params=[self.era, validator]
                 ).value
+                identity = self.api.query(
+                    module='Identity',
+                    storage_function='IdentityOf',
+                    params=[validator]
+                ).value['info']
+                display_name = identity['display']['Raw']
                 nominees = len(query['others'])
                 request.append({
                     'validator': validator,
+                    'display_name': display_name,
                     'points': points,
                     'nominees': nominees
                 })
