@@ -189,7 +189,7 @@ class Staking(Base):
             is_pool = str_to_bool(is_pool)
             amount = amount * 10**SUBSTRATE_DECIMALS
             pallet = "NominationPools" if is_pool else "Staking"
-            dispatch_call = "bondExtra"
+            dispatch_call = "BondExtra"
             params = {'extra': amount} if is_pool else {'max_additional': amount}
         
             generic_call = Helper.get_generic_call(
