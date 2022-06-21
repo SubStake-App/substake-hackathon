@@ -50,7 +50,8 @@ def request_curation():
             request=_request,
             curator=curator
         )
-        response = make_response(result, 200)
+        curating_result = json.dumps(result)
+        response = make_response(curating_result, 200)
         
         return response
     else:
