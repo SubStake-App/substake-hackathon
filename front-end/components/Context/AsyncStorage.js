@@ -3,10 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AsyncStorageContext = createContext();
 
-export const useAsyncStorageContext = () => useContext(AsyncStorageContext);
+export const useAsyncStorage = () => useContext(AsyncStorageContext);
 
 export function AsyncStorageProvider({ children }) {
   const [accounts, setAccounts] = useState([]);
+  console.log(accounts);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -33,10 +34,10 @@ export function AsyncStorageProvider({ children }) {
   };
 
   const removeAccount = async (account) => {
-    if (account.publicKey === accounts[accounts.length - 1].publicKey) setCurrentIndex(0);
+    if (account.bip39.publicKey === accounts[accounts.length - 1].bip39.publicKey) setCurrentIndex(0);
 
     const accounts = JSON.parse(await AsyncStorage.getItem('@substake_accounts'));
-    const newAccounts = accounts.filter((el) => el.publicKey !== account.publicKey);
+    const newAccounts = accounts.filter((el) => el.bip39.publicKey !== account.bip39.publicKey);
     await AsyncStorage.setItem('@substake_accounts', JSON.stringify(newAccounts));
 
     setAccounts(newAccounts);

@@ -1,10 +1,10 @@
 import { View, StyleSheet, Text, Image, Pressable } from 'react-native';
 import arrow from '../../assets/arrowLeft.png';
 import AccountIcon from '../common/AccountIcon';
-import { useAsyncStorageContext } from '../Context/AsyncStorage';
+import { useAsyncStorage } from '../Context/AsyncStorage';
 
 export default function TopBar({ path, navigation, title, hideIcon }) {
-  const { accounts, currentIndex } = useAsyncStorageContext();
+  const { accounts, currentIndex } = useAsyncStorage();
 
   return (
     <View style={styles.container}>
@@ -18,7 +18,7 @@ export default function TopBar({ path, navigation, title, hideIcon }) {
         <View />
       ) : (
         <Pressable onPress={() => navigation.navigate('Accounts')}>
-          <AccountIcon publicKey={accounts[currentIndex].publicKey} />
+          <AccountIcon publicKey={accounts[currentIndex].bip39} />
         </Pressable>
       )}
     </View>

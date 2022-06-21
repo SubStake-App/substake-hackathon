@@ -1,26 +1,26 @@
 
 
-from substrateinterface import SubstrateInterface
 from base import Base
-import json
+import threading
 
 OVER_SUBSCRIBED = 256
 COMMISSION_THRESHOLD = 10
+SUBSTRATE_DECIMALS = 12
 
-class Validators(Base):
+class Curator(Base):
     
     def __init__(self, env, provider):
        super().__init__(env=env, provider=provider)
 
-    def ready(self):
+    def get_active_validators(self):
         self.active_validators = self.api.query('Session', 'Validators').value
         self.era = self.api.query('Staking', 'ActiveEra').value['index'] - 1
         print(self.active_validators)
     
     def recommend_validators(self, bond_amount: float):
 
-        self.ready()
-        stakers = []
+        self.get_active_validators()
+        validators = []
         # eras_reward_points = self.api.query(
         #                     'Staking',
         #                     'ErasRewardPoints',
@@ -41,9 +41,10 @@ class Validators(Base):
                                             'ErasValidatorReward',
                                             params=[self.era]
                                         ).value
-                                ) / 10**12
+                                ) / 10**SUBSTRATE_DECIMALS
         eras_reward_per_validators = eras_validators_reward / len(self.active_validators)
         
+        print("Indexing validators...")
         for i in range(len(self.active_validators)):
 
             '''
@@ -60,8 +61,8 @@ class Validators(Base):
             '''
             active_validator = self.active_validators[i]
             validator_info = self.api.query(
-                                                'Staking', 
-                                                'Validators', 
+                                                module='Staking', 
+                                                storage_function='Validators', 
                                                 params=[active_validator]
                                             ).value
             commission = float(validator_info['commission']) / 10**7
@@ -77,21 +78,21 @@ class Validators(Base):
             eras_reward_per_validators = (1 - commission / 10**2) * eras_reward_per_validators
             
             temp = self.api.query(
-                        'Staking', 
-                        'ErasStakers', 
+                        module='Staking', 
+                        storage_function='ErasStakers', 
                         params=[self.era, active_validator]
                       ).value 
     
-            total = float(temp['total']) / 10**12 
-            own = float(temp['own']) / 10**12
+            total = float(temp['total']) / 10**SUBSTRATE_DECIMALS 
+            own = float(temp['own']) / 10**SUBSTRATE_DECIMALS
             nominators = temp['others']
 
             if len(nominators) > OVER_SUBSCRIBED:
                 continue
 
             identity = self.api.query(
-                'Identity',
-                'IdentityOf',
+                module='Identity',
+                storage_function='IdentityOf',
                 params=[active_validator]
             ).value['info']
             display_name = identity['display']['Raw']
@@ -102,24 +103,63 @@ class Validators(Base):
             print('user_reward: {reward}'.format(reward=user_reward))
             user_return = user_reward / bond_amount * 100        
 
-            stakers.append({ 
+            validators.append({ 
                             'public_key': self.active_validators[i],
                             'total': total, 
                             'own': own, 
                             'display_name': display_name,
                             'user_return': user_return, 
                         })
-            
-        with open('output.json', 'w') as f:
-            json.dump(stakers, f, indent=2)
+        print("Done..!")
+        return validators
 
-        return stakers
+    def get_nomination_pools(self):
+
+        nomination_pools = []
+        last_pool_id = self.api.query(
+            module='NominationPools',
+            storage_function='LastPoolId'
+        ).value
+        
+        print("Start indexing nomination pools..")
+        for index in range(last_pool_id):
+            bonded_pools = self.api.query(
+                                module='NominationPools',
+                                storage_function='BondedPools',
+                                params=[index+1]
+                            ).value
+
+            if bonded_pools == None:
+                continue
+
+            if bonded_pools['state'] == 'Destroying':
+                continue
+
+            display_name = self.api.query(
+                                    module='NominationPools',
+                                    storage_function='Metadata',
+                                    params=[index+1]
+                                ).value
+
+            points = float(bonded_pools['points']) / 10**SUBSTRATE_DECIMALS
+            member_counts = bonded_pools['member_counter']
+            nomination_pools.append({
+                        'display_name': display_name,
+                        'index': index+1,
+                        'points': points,
+                        'member_counts': member_counts,
+                    })  
+        print("Done..!")
+        print(nomination_pools)
+        return nomination_pools
+        
+        
 
 
 if __name__ == '__main__':
     
-    validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
-    validators.recommend_validators(bond_amount=3.05)
+    curator = Curator(env='substrate', provider='wss://ws-api.substake.app')
+    curator.get_nomination_pools()
 
         
     

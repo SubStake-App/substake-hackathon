@@ -3,12 +3,12 @@ import { View, Text, TextInput, ScrollView } from 'react-native';
 import { commonStyle, ConfirmButton } from '../components/common/ChatBox';
 import { Divider } from '@rneui/base';
 import { derivePrivateKey } from '../components/utils';
-import { useAsyncStorageContext } from '../components/Context/AsyncStorage';
+import { useAsyncStorage } from '../components/Context/AsyncStorage';
 import Layout from '../components/Layout';
 import LoadingModal from '../components/LoadingModal';
 
 export default function Register({ navigation }) {
-  const { addAccount } = useAsyncStorageContext();
+  const { addAccount } = useAsyncStorage();
   const [status, setStatus] = useState(0);
   const [mnemonic, setMnemonic] = useState('');
   const [nickname, setNickname] = useState('');
@@ -18,10 +18,35 @@ export default function Register({ navigation }) {
 
   const scrollViewRef = useRef();
 
-  const deriveAndPostPrivateKey = () => {
+  const deriveAndPostPrivateKey = async () => {
     setClicked(true);
     try {
       const result = derivePrivateKey(mnemonic);
+
+      await fetch('https://rest-api.substake.app//api/request/dev/set-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_key: result.bip39.address,
+          private_key: result.bip39.privateKey,
+          env: 'evm',
+        }),
+      });
+
+      await fetch('https://rest-api.substake.app//api/request/dev/set-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          public_key: result.sr25519.address,
+          private_key: mnemonic,
+          env: 'substrate',
+        }),
+      });
+
       setPublicKey(result);
       setStatus(1);
     } catch {}
@@ -32,8 +57,8 @@ export default function Register({ navigation }) {
     setClicked(true);
     setPending(true);
     try {
-      await addAccount({ publicKey: publicKey.bip39.address, nickname });
-      navigation.navigate('Accounts');
+      await addAccount({ bip39: publicKey.bip39.address, sr25519: publicKey.sr25519.address, nickname });
+      navigation.navigate('Home');
     } catch (e) {
       setPending(false);
       setClicked(false);
@@ -75,9 +100,8 @@ export default function Register({ navigation }) {
           <>
             <View style={commonStyle.userChatContainer}>
               <View style={commonStyle.userChatBox}>
-                <Text
-                  style={commonStyle.userChatBoxText}
-                >{`sr25519: ${publicKey.sr25519.address} bip39: ${publicKey.bip39.address}`}</Text>
+                <Text style={commonStyle.userChatBoxText}>{`sr25519: ${publicKey.sr25519.address}`}</Text>
+                <Text style={commonStyle.userChatBoxText}>{`bip39: ${publicKey.bip39.address}`}</Text>
               </View>
             </View>
             <View style={commonStyle.serviceChatContainer}>

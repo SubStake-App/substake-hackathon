@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Image, ScrollView, Text, View, TextInput, Pressable, Modal } from 'react-native';
-import { commonStyle } from '../../components/common/ChatBox';
+import { commonStyle, ConfirmButton } from '../../components/common/ChatBox';
 import TopBar from '../../components/TopBar/TopBar';
 import img_1 from '../../assets/nomination_pool_1.png';
 import img_2 from '../../assets/nomination_pool_2.png';
@@ -10,6 +10,9 @@ import Layout from '../../components/Layout';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import { NominationPoolModal } from '../../components/Westend/NominationPool/Modal';
+import { useAsyncStorage } from '../../components/Context/AsyncStorage';
+import { useUserBalance } from '../../query';
+import { formatRawBalanceToString } from '../../components/utils';
 
 const cardContent = [
   {
@@ -37,6 +40,42 @@ export default function WestendNominationPool({ navigation }) {
   const [selectedValidator, setSelectedValidator] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const scrollViewRef = useRef();
+  const [poolId, setPoolId] = useState();
+  const [txMessage, setTxMessage] = useState();
+  const [txStatus, setTxStatus] = useState();
+
+  const { data, isSuccess } = useUserBalance();
+  const { accounts, currentIndex } = useAsyncStorage();
+
+  const handleSubstakeSubmit = async () => {
+    setStatus(2);
+
+    try {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          env: 'substrate',
+          provider: 'westend',
+          method: 'stake',
+          userAddress: accounts[currentIndex].sr25519,
+          amount: bondAmount,
+          isNominate: 'False',
+          isPool: 'True',
+          poolId,
+        }),
+      });
+
+      const result = await response.json();
+      console.log(result);
+      if (result.Status === 'Success') setTxMessage(result.Message);
+      setTxStatus(result.Status);
+    } catch {
+      setTxStatus('Failed');
+    }
+  };
 
   return (
     <Layout>
@@ -78,6 +117,7 @@ export default function WestendNominationPool({ navigation }) {
                     onPress={() => {
                       setStatus(1);
                       setAction(() => 'substake');
+                      setPoolId(74);
                     }}
                     disabled={status !== 0}
                   >
@@ -108,7 +148,9 @@ export default function WestendNominationPool({ navigation }) {
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
                 <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
-                <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
+                <Text style={commonStyle.serviceChatBoxDesc}>
+                  현재 전송가능 잔고: {formatRawBalanceToString(data.westendBalance.free)} WND
+                </Text>
                 {status === 1 && (
                   <>
                     <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
@@ -124,7 +166,7 @@ export default function WestendNominationPool({ navigation }) {
                         autoCorrect={false}
                       />
 
-                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
+                      <ConfirmButton onPress={handleSubstakeSubmit} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
@@ -137,26 +179,34 @@ export default function WestendNominationPool({ navigation }) {
                     <Text style={commonStyle.userChatBoxText}>{bondAmount}</Text>
                   </View>
                 </View>
-                <View style={commonStyle.serviceChatContainer}>
-                  <View style={commonStyle.succesContainer}>
-                    <Image source={success} />
-                    <View>
-                      <Text style={commonStyle.successHeader}>Success</Text>
-                      <View style={{ flexDirection: 'row' }}>
-                        <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
-                        <Pressable
-                          onPress={() =>
-                            openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
-                              presentationStyle: WebBrowserPresentationStyle.POPOVER,
-                            })
-                          }
-                        >
-                          <Text style={commonStyle.successLink}> #2275958-3</Text>
-                        </Pressable>
+                {txStatus === 'Success' ? (
+                  <View style={commonStyle.serviceChatContainer}>
+                    <View style={commonStyle.succesContainer}>
+                      <Image source={success} />
+                      <View>
+                        <Text style={commonStyle.successHeader}>Success</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                          <Text style={commonStyle.successMain}>See your extrinsic in </Text>
+                          <Pressable
+                            onPress={() =>
+                              openBrowserAsync(`https://westend.subscan.io/extrinsic/${txMessage}`, {
+                                presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                              })
+                            }
+                          >
+                            <Text style={commonStyle.successLink}>subscan</Text>
+                          </Pressable>
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
+                ) : (
+                  <View style={commonStyle.serviceChatContainer}>
+                    <View style={commonStyle.serviceChatBox}>
+                      <Text style={commonStyle.successMain}>Transaction Failed</Text>
+                    </View>
+                  </View>
+                )}
               </>
             )}
           </>

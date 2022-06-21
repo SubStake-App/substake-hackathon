@@ -1,26 +1,26 @@
 import { ScrollView, Text, View, Pressable, Modal, StyleSheet, TextInput } from 'react-native';
-import { useRef } from 'react';
-
-const totalValidatorList = [
-  { name: 'Substake_1', points: 43, nominees: 9 },
-  { name: 'Substake_2', points: 43, nominees: 9 },
-  { name: 'Substake_3', points: 43, nominees: 9 },
-  { name: 'Substake_4', points: 43, nominees: 9 },
-  { name: 'Substake_5', points: 43, nominees: 9 },
-  { name: 'Substake_6', points: 43, nominees: 9 },
-  { name: 'Substake_7', points: 43, nominees: 9 },
-  { name: 'Substake_8', points: 43, nominees: 9 },
-  { name: 'Substake_9', points: 43, nominees: 9 },
-  { name: 'Substake_10', points: 43, nominees: 9 },
-  { name: 'Substake_11', points: 43, nominees: 9 },
-  { name: 'Substake_12', points: 43, nominees: 9 },
-  { name: 'Substake_13', points: 43, nominees: 9 },
-  { name: 'Substake_14', points: 43, nominees: 9 },
-  { name: 'Substake_15', points: 43, nominees: 9 },
-  { name: 'Substake_16', points: 43, nominees: 9 },
-];
+import { useEffect, useRef, useState } from 'react';
 
 export function NominationPoolModal({ setModalVisible, modalVisible, selectedValidator, setSelectedValidator }) {
+  const [fetchedValidatorList, setFetchedValidatorList] = useState([]);
+
+  // TODO: Change to nomination pool
+  // useEffect(() => {
+  //   const getValidatorList = async () => {
+  //     const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-type': 'application/json',
+  //       },
+  //     });
+  //     const result = await response.json();
+  //     console.log(result);
+  //     setFetchedValidatorList(result);
+  //   };
+
+  //   getValidatorList();
+  // }, []);
+
   const scrollViewRef = useRef();
 
   return (
@@ -50,24 +50,25 @@ export function NominationPoolModal({ setModalVisible, modalVisible, selectedVal
               </View>
             </View>
             <ScrollView ref={scrollViewRef}>
-              {totalValidatorList.map((el, i) => (
+              {fetchedValidatorList.map((el, i) => (
                 <Pressable
-                  onPress={() => setSelectedValidator(el.name)}
+                  key={i}
+                  onPress={() => setSelectedValidator(el.display_name)}
                   onStartShouldSetResponder={() => true}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     paddingHorizontal: 25,
-                    backgroundColor: selectedValidator === el.name ? '#93A2F1' : 'white',
+                    backgroundColor: selectedValidator === el.display_name ? '#93A2F1' : 'white',
                   }}
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ ...styles.tableMain, marginRight: 10 }}>{i + 1}</Text>
-                    <Text style={styles.tableMain}>{el.name}</Text>
+                    <Text style={styles.tableMain}>{el.display_name}</Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.tableMain}>{el.points}WND</Text>
-                    <Text style={{ ...styles.tableMain }}>{el.nominees}</Text>
+                    <Text style={styles.tableMain}>{el.total.toFixed(3)}WND</Text>
+                    <Text style={{ ...styles.tableMain }}>{el.own.toFixed(3)}</Text>
                   </View>
                 </Pressable>
               ))}

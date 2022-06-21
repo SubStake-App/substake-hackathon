@@ -6,7 +6,7 @@ import dev_substrate_interface as dev
 from Helper import Helper
 from Staking import Staking
 from Utils.chain_info import NETWORK_PROVIDER
-from validators import Validators 
+from curator import Curator
 import requests
 import json
 import dev_substrate_interface as dev
@@ -36,32 +36,27 @@ def set_user_key():
             response = make_response("Failed", 200)
         #print(return_str)
         return response
-        
-        
-@app.route('/api/request/dev/collator', methods=['POST'])
-def get_recommended_collator():
-    if request.method == 'POST':
-        
-        return_str = json.dumps(dev.get_recommended_collators())
-        
-        response = make_response(return_str, 200)
-        #print(return_str)
-        return response
-    else:
-        return make_response("Not supported method", 400)
 
-@app.route('/api/request/dev/validator', methods=['POST'])
-def get_recommended_validator():
+@app.route('/api/request/dev/curate', methods=['POST'])
+def request_curation():
     if request.method == 'POST':
         
         #dev
         #validators = Validators(env='substrate', provider='wss://ws-api.substake.app')
-        
-        #production
-        validators = Validators(env='substrate', provider='ws://127.0.0.1:9954')
-        
-        return_str = json.dumps(validators.recommend_validators(bond_amount=3.5))
-        
+        _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
+        which = _request.get('method')
+        return_str = None
+        if which == 'validators':
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
+            bond_amount = _request.get('bond_amount')
+            return_str = json.dumps(curator.recommend_validators(bond_amount=bond_amount))
+        elif which == 'collators':
+            return_str = json.dumps(dev.get_recommended_collators())
+        elif which == 'nomination_pool':
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
+            return_str = json.dumps(curator.get_nomination_pools())
+    
         response = make_response(return_str, 200)
         #print(return_str)
         return response
@@ -96,7 +91,7 @@ def request_staking_transaction():
                     env=env,
                     staking=staking
                 )
-                
+        print(result)     
         return_tx_status = json.dumps(result)
         response = make_response(return_tx_status, 200)
 
