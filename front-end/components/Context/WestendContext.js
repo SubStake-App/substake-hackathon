@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
-const WESTEND_SOCKET = 'wss://westend-rpc.polkadot.io';
+const WESTEND_SOCKET = 'wss://ws-api.substake.app';
 
 const WestendContext = React.createContext();
 

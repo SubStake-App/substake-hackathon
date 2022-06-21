@@ -7,7 +7,7 @@ import { Divider } from '@rneui/base';
 import success from '../../assets/success.png';
 import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import { useUserBalance } from '../../query';
-import { formatRawBalanceToString } from '../../components/utils';
+import { formatBalanceToString } from '../../components/utils';
 
 const option = ['Bond More', 'Bond Less', 'Cancel Bond Request'];
 
@@ -18,7 +18,7 @@ export default function WestendValidator({ navigation }) {
   const scrollViewRef = useRef();
   const [clicked, setClicked] = useState(false);
   const { data, isSuccess } = useUserBalance();
-  // console.log(formatRawBalanceToString(data.westendBalance.feeFrozen));
+  // console.log(formatBalanceToString(data.westendBalance.feeFrozen));
 
   return (
     <Layout>
@@ -65,7 +65,10 @@ export default function WestendValidator({ navigation }) {
                 <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
                   현재 전송가능 잔고:
-                  {data?.westendBalance?.free ? formatRawBalanceToString(data?.westendBalance?.free) : 0} WND
+                  {data?.westendBalance?.transferrableBalance
+                    ? formatBalanceToString(data?.westendBalance?.transferrableBalance)
+                    : 0}{' '}
+                  WND
                 </Text>
                 {status === 1 && (
                   <>
@@ -81,7 +84,7 @@ export default function WestendValidator({ navigation }) {
                         editable={status === 1}
                         autoCorrect={false}
                       />
-                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 0} />
+                      <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}

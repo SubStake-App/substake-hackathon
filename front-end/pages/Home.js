@@ -21,9 +21,12 @@ export default function Home({ navigation }) {
             onPress={() => navigation.navigate('StakableAssets')}
           />
         </View>
-        <View style={styles.serviceDetail}>
-          <Text style={{ color: 'white' }}>서비스 상세정보</Text>
-        </View>
+        <Button
+          onPress={() => navigation.navigate('CurrentStakes')}
+          title="CURRENT STAKES"
+          buttonStyle={styles.currentStakesContainer}
+          titleStyle={styles.currentStakesContainerText}
+        />
       </View>
     </Layout>
   );
@@ -40,11 +43,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 3,
   },
-  serviceDetail: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+  currentStakesContainer: {
+    // paddingVertical: 10,
+    // paddingHorizontal: 20,
     backgroundColor: '#343781A1',
     borderRadius: 10,
-    marginTop: 30,
+    // marginTop: 30,
+  },
+  currentStakesContainerText: {
+    fontSize: 12,
   },
 });

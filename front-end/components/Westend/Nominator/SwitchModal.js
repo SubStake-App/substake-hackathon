@@ -28,25 +28,31 @@ export default function NominatorSwitchModal({
 
   selectedValidator,
   validatorList,
-  setValidatorLIst,
+  setValidatorList,
 }) {
   const scrollViewRef = useRef();
-
   const [fetchedValidatorList, setFetchedValidatorList] = useState([]);
+  const [pressed, setPressed] = useState();
 
   useEffect(() => {
-    const getValidatorList = async () => {
-      const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
+    const getTotalValidatorList = async () => {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/curate', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
+        body: JSON.stringify({
+          which: 'validators',
+          is_curate: 'False',
+        }),
       });
       const result = await response.json();
-      setFetchedValidatorList(result);
+      console.log(result);
+      const filteredResult = result.filter((i) => !validatorList.map((el) => el.public_key).includes(i.validator));
+      setFetchedValidatorList(filteredResult);
     };
 
-    getValidatorList();
+    getTotalValidatorList();
   }, []);
 
   return (
@@ -61,17 +67,17 @@ export default function NominatorSwitchModal({
           <View style={{ justifyContent: 'space-between', flex: 1 }}>
             <View style={{ marginHorizontal: 25, marginBottom: 10 }}>
               <Text style={styles.modalTitle}>Switch to a new Validator</Text>
-              <Text style={styles.modalMain}>Do you have a specific pool you want to join?</Text>
+              {/* <Text style={styles.modalMain}>Do you have a specific pool you want to join?</Text>
               <TextInput
                 autoCapitalize="none"
                 style={styles.modalTextInput}
                 placeholder="명칭, 주소, 혹은 계좌 인덱스로 필터링합니다."
-              />
+              /> */}
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.tableHeader}>Validators</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ ...styles.tableHeader, marginLeft: 15 }}>Points</Text>
-                  <Text style={{ ...styles.tableHeader, marginLeft: 15 }}>Nominees</Text>
+                  <Text style={{ ...styles.tableHeaderRight }}>Points</Text>
+                  <Text style={{ ...styles.tableHeaderRight }}>Nominees</Text>
                 </View>
               </View>
             </View>
@@ -79,33 +85,40 @@ export default function NominatorSwitchModal({
               {fetchedValidatorList.map((el, i) => (
                 <Pressable
                   key={i}
-                  onPress={() => setNewValidator(el.display_name)}
+                  onPress={() =>
+                    setPressed({ public_key: el.validator, validator: el.validator, display_name: el.display_name })
+                  }
                   onStartShouldSetResponder={() => true}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     paddingHorizontal: 25,
-                    backgroundColor: newValidator === el.display_name ? '#93A2F1' : 'white',
+                    backgroundColor: pressed?.validator === el.validator ? '#93A2F1' : 'white',
                   }}
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ ...styles.tableMain, marginRight: 10 }}>{i + 1}</Text>
-                    <Text style={styles.tableMain}>{el.display_name}</Text>
+                    <Text style={styles.tableMain}>
+                      {el.display_name === 'No value'
+                        ? el.validator.slice(0, 4) + '...' + el.validator.slice(44, 48)
+                        : el.display_name}
+                    </Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.tableMain}>{el.total.toFixed(3)}WND</Text>
-                    <Text style={{ ...styles.tableMain }}>{el.own.toFixed(3)}</Text>
+                    <Text style={styles.tableMainRight}>{el.points}</Text>
+                    <Text style={styles.tableMainRight}>{el.nominees}</Text>
                   </View>
                 </Pressable>
               ))}
             </ScrollView>
             <Pressable
-              style={newValidator ? styles.confirmButton : styles.closeButton}
+              style={pressed ? styles.confirmButton : styles.closeButton}
               onPress={() => {
                 setModalVisible(false);
+                setValidatorList([...validatorList.filter((el) => el.public_key !== selectedValidator), pressed]);
               }}
             >
-              <Text style={{ color: newValidator ? '#ffffff' : 'black' }}>{newValidator ? 'Confirm' : 'Close'}</Text>
+              <Text style={{ color: pressed ? '#ffffff' : 'black' }}>{pressed ? 'Confirm' : 'Close'}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -130,6 +143,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 15,
+    marginBottom: 15,
   },
   modalMain: {
     marginTop: 15,
@@ -149,11 +163,23 @@ const styles = StyleSheet.create({
   tableHeader: {
     fontSize: 10,
     color: '#7E7794',
+    textAlign: 'center',
+  },
+  tableHeaderRight: {
+    fontSize: 10,
+    color: '#7E7794',
+    width: 50,
+    textAlign: 'center',
   },
   tableMain: {
     fontSize: 10,
-    marginRight: 20,
     marginVertical: 10,
+  },
+  tableMainRight: {
+    fontSize: 10,
+    marginVertical: 10,
+    width: 50,
+    textAlign: 'center',
   },
   closeButton: {
     alignSelf: 'stretch',

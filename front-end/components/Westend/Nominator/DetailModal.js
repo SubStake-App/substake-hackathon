@@ -22,7 +22,7 @@ export default function NominatorDetailModal({ isVisible, setModalVisible, setSw
         <Pressable style={styles.modalContent}>
           <View style={styles.modalTitle}>
             <Image style={{ width: 38, height: 38 }} source={icon} />
-            <Text style={styles.modalTitleHeader}>{validator}</Text>
+            <Text style={styles.modalTitleHeader}>{validator.display_name}</Text>
           </View>
           <View style={{ marginTop: 20 }}>
             <Text style={styles.subTitle}>Information</Text>

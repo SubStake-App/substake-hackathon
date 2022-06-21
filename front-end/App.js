@@ -1,5 +1,4 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
   Nunito_400Regular,
@@ -28,13 +27,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUserBalance } from './query';
 import { Platform } from 'react-native';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import CurrentStakes from './pages/CurrentStakes';
+import CurrentStakeDetails from './pages/CurrentStakeDetails';
 
 const Stack = createNativeStackNavigator();
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity,
       retry: true,
     },
   },
@@ -43,33 +43,32 @@ const queryClient = new QueryClient({
 export function Root() {
   const { isLoaded: asyncStorageLoaded, accounts } = useAsyncStorage();
   const { isLoaded: westendLoaded } = useWestend();
-  const { isLoaded: moonbeamLoaded } = useMoonbeam();
+  // const { isLoaded: moonbeamLoaded } = useMoonbeam();
 
-  useEffect(() => {
-    const clearAsyncStorage = async () => {
-      const asyncStorageKeys = await AsyncStorage.getAllKeys();
+  // useEffect(() => {
+  //   const clearAsyncStorage = async () => {
+  //     const asyncStorageKeys = await AsyncStorage.getAllKeys();
 
-      if (asyncStorageKeys.length > 0) {
-        if (Platform.OS === 'android') {
-          await AsyncStorage.clear();
-        }
-        if (Platform.OS === 'ios') {
-          await AsyncStorage.multiRemove(asyncStorageKeys);
-        }
-      }
-    };
-    clearAsyncStorage();
-  }, []);
+  //     if (asyncStorageKeys.length > 0) {
+  //       if (Platform.OS === 'android') {
+  //         await AsyncStorage.clear();
+  //       }
+  //       if (Platform.OS === 'ios') {
+  //         await AsyncStorage.multiRemove(asyncStorageKeys);
+  //       }
+  //     }
+  //   };
+  //   clearAsyncStorage();
+  // }, []);
 
   const isRegistered = accounts && accounts.length > 0;
 
-  console.log(asyncStorageLoaded, westendLoaded, moonbeamLoaded);
+  console.log(asyncStorageLoaded, westendLoaded);
 
   return (
     <NavigationContainer>
-      <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {asyncStorageLoaded && westendLoaded && moonbeamLoaded ? (
+        {asyncStorageLoaded && westendLoaded ? (
           <>
             {!isRegistered && (
               <>
@@ -86,6 +85,8 @@ export function Root() {
             <Stack.Screen name="MoonbaseDelegator" component={MoonbaseDelegator} />
             <Stack.Screen name="Accounts" component={Accounts} />
             <Stack.Screen name="ReRegister" component={ReRegister} />
+            <Stack.Screen name="CurrentStakes" component={CurrentStakes} />
+            <Stack.Screen name="CurrentStakeDetails" component={CurrentStakeDetails} />
           </>
         ) : (
           <Stack.Screen name="Loading" component={AppLoading} />

@@ -2,24 +2,28 @@ import { ScrollView, Text, View, Pressable, Modal, StyleSheet, TextInput } from 
 import { useEffect, useRef, useState } from 'react';
 
 export function NominationPoolModal({ setModalVisible, modalVisible, selectedValidator, setSelectedValidator }) {
-  const [fetchedValidatorList, setFetchedValidatorList] = useState([]);
+  const [nominationPoolList, setNominationPoolList] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState();
+  const [selectedName, setSelectedName] = useState();
 
-  // TODO: Change to nomination pool
-  // useEffect(() => {
-  //   const getValidatorList = async () => {
-  //     const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-type': 'application/json',
-  //       },
-  //     });
-  //     const result = await response.json();
-  //     console.log(result);
-  //     setFetchedValidatorList(result);
-  //   };
+  useEffect(() => {
+    const getNominationList = async () => {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/curate', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          which: 'nomination_pool',
+        }),
+      });
+      const result = await response.json();
+      console.log(result);
+      setNominationPoolList(result);
+    };
 
-  //   getValidatorList();
-  // }, []);
+    getNominationList();
+  }, []);
 
   const scrollViewRef = useRef();
 
@@ -44,42 +48,48 @@ export function NominationPoolModal({ setModalVisible, modalVisible, selectedVal
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.tableHeader}>Open Pools</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Text style={{ ...styles.tableHeader, marginLeft: 15 }}>Points</Text>
-                  <Text style={{ ...styles.tableHeader, marginLeft: 15 }}>Nominees</Text>
+                  <Text style={{ ...styles.tableHeaderRight }}>Points</Text>
+                  <Text style={{ ...styles.tableHeaderRight }}>Member Counts</Text>
                 </View>
               </View>
             </View>
             <ScrollView ref={scrollViewRef}>
-              {fetchedValidatorList.map((el, i) => (
+              {nominationPoolList.map((el, i) => (
                 <Pressable
                   key={i}
-                  onPress={() => setSelectedValidator(el.display_name)}
+                  onPress={() => {
+                    setSelectedIndex(el.index);
+                    setSelectedName(el.display_name);
+                  }}
                   onStartShouldSetResponder={() => true}
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     paddingHorizontal: 25,
-                    backgroundColor: selectedValidator === el.display_name ? '#93A2F1' : 'white',
+                    backgroundColor: selectedName === el.display_name ? '#93A2F1' : 'white',
                   }}
                 >
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ ...styles.tableMain, marginRight: 10 }}>{i + 1}</Text>
-                    <Text style={styles.tableMain}>{el.display_name}</Text>
+                    <Text style={styles.tableMain}>
+                      {el.display_name.slice(0, el.display_name.length > 30 ? 30 : el.display_name.length)}
+                    </Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={styles.tableMain}>{el.total.toFixed(3)}WND</Text>
-                    <Text style={{ ...styles.tableMain }}>{el.own.toFixed(3)}</Text>
+                    <Text style={styles.tableMainRight}>{Number.parseFloat(el.points.toFixed(3))}</Text>
+                    <Text style={styles.tableMainRight}>{el.member_counts}</Text>
                   </View>
                 </Pressable>
               ))}
             </ScrollView>
             <Pressable
-              style={selectedValidator ? styles.confirmButton : styles.closeButton}
-              onPress={() => setModalVisible(false)}
+              style={selectedName ? styles.confirmButton : styles.closeButton}
+              onPress={() => {
+                setModalVisible(false);
+                setSelectedValidator({ selectedIndex, selectedName });
+              }}
             >
-              <Text style={{ color: selectedValidator ? '#ffffff' : 'black' }}>
-                {selectedValidator ? 'Confirm' : 'Close'}
-              </Text>
+              <Text style={{ color: selectedName ? '#ffffff' : 'black' }}>{selectedName ? 'Confirm' : 'Close'}</Text>
             </Pressable>
           </View>
         </Pressable>
@@ -123,11 +133,23 @@ const styles = StyleSheet.create({
   tableHeader: {
     fontSize: 10,
     color: '#7E7794',
+    textAlign: 'center',
+  },
+  tableHeaderRight: {
+    fontSize: 10,
+    color: '#7E7794',
+    width: 50,
+    textAlign: 'center',
   },
   tableMain: {
     fontSize: 10,
-    marginRight: 20,
     marginVertical: 10,
+  },
+  tableMainRight: {
+    fontSize: 10,
+    marginVertical: 10,
+    width: 50,
+    textAlign: 'center',
   },
   closeButton: {
     alignSelf: 'stretch',

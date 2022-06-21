@@ -15,7 +15,7 @@ import NominatorDetailModal from '../../components/Westend/Nominator/DetailModal
 import validator_icon from '../../assets/validator_ex.png';
 import NominatorSwitchModal from '../../components/Westend/Nominator/SwitchModal';
 import { useUserBalance } from '../../query';
-import { formatRawBalanceToString } from '../../components/utils';
+import { formatBalanceToString } from '../../components/utils';
 import { useAsyncStorage } from '../../components/Context/AsyncStorage';
 
 const cardContent = [
@@ -56,20 +56,24 @@ export default function WestendNominator({ navigation }) {
 
   const scrollViewRef = useRef();
 
-  useEffect(() => {
-    const getValidatorList = async () => {
-      const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      });
-      const result = await response.json();
-      setValidatorList(result);
-    };
+  const handleBondAmountSubmit = async () => {
+    setStatus(1);
 
-    getValidatorList();
-  }, []);
+    const response = await fetch('https://rest-api.substake.app/api/request/dev/curate', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        which: 'validators',
+        bond_amount: bondAmount,
+        is_curate: 'True',
+      }),
+    });
+    const result = await response.json();
+    console.log(result);
+    setValidatorList(result);
+  };
 
   useEffect(() => {
     setValidatorFilter([
@@ -88,23 +92,6 @@ export default function WestendNominator({ navigation }) {
     setStatus(4);
     setIsStakingConfirmed(true);
 
-    // const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     env: 'substrate',
-    //     provider: 'westend',
-    //     method: 'stake',
-    //     userAddress: accounts[currentIndex].sr25519,
-    //     amount: bondAmount,
-    //     payee: 'Staked',
-    //     isNominate: 'False',
-    //     isPool: 'False',
-    //   }),
-    // });
-
     const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
       method: 'POST',
       headers: {
@@ -121,7 +108,6 @@ export default function WestendNominator({ navigation }) {
     });
 
     const result = await response.json();
-
     if (result.Status === 'Success') setTxMessage(result.Message);
     setTxStatus(result.Status);
   };
@@ -171,7 +157,7 @@ export default function WestendNominator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>
-              현재 전송가능 잔고: {formatRawBalanceToString(data.westendBalance.free)} WND
+              현재 전송가능 잔고: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
             </Text>
             {status === 0 && (
               <>
@@ -187,7 +173,7 @@ export default function WestendNominator({ navigation }) {
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <ConfirmButton onPress={() => setStatus(1)} status={0} currentStatus={status} />
+                  <ConfirmButton onPress={handleBondAmountSubmit} status={0} currentStatus={status} />
                 </View>
               </>
             )}
@@ -313,8 +299,8 @@ export default function WestendNominator({ navigation }) {
                       key={i}
                       style={styles.curatedButton}
                       onPress={() => {
+                        setSelectedValidator(el.public_key);
                         setDetailModalVisible(true);
-                        setSelectedValidator(el);
                       }}
                       disabled={status !== 3}
                     >

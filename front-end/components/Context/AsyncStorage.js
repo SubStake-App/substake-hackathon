@@ -7,7 +7,6 @@ export const useAsyncStorage = () => useContext(AsyncStorageContext);
 
 export function AsyncStorageProvider({ children }) {
   const [accounts, setAccounts] = useState([]);
-  console.log(accounts);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
