@@ -188,17 +188,16 @@ class Staking(Base):
 
             is_pool = str_to_bool(is_pool)
             amount = amount * 10**SUBSTRATE_DECIMALS
-            pallet = "NominationPools" if is_pool else "Staking"
-            dispatch_call = "Bondextra"
+            pallet = 'NominationPools' if is_pool else 'Staking'
+            dispatch_call = 'bondMore'
             params = {'extra': amount} if is_pool else {'max_additional': amount}
-        
+            
             generic_call = Helper.get_generic_call(
                 api=self.api,
                 module=pallet,
                 function=dispatch_call,
                 params=params
             )
-
             (is_success, message) = Helper.send_extrinsic(
                                         api=self.api,
                                         generic_call=generic_call,
@@ -384,16 +383,26 @@ class Staking(Base):
                                     )
             return {'Status': is_success, 'Message': message}
 
+    def get_staking_status(self, user_address):
+        
+        assert user_address is not None, "SUBSTKAE-STAKING(STAKING STATUS): User address must be provided"
+
+        payee = self.api.query(
+            module='Staking',
+            storage_function='payee',
+            params=[user_address]
+        )
+
+        
+
 
 if __name__ == "__main__":
 
     staking_substrate = Staking(env='substrate', provider='wss://ws-api.substake.app')
     # mnemonic = "seminar outside rack viable away limit tunnel marble category witness parrot eager"
-    staking_substrate.stake(
-        user_address='5F4djM7QZGXF5zsSoRhUYFi99bdEGGVa9QJTxni7mPnzZR3q',
+    staking_substrate.stake_more(
+        user_address='5GeGNPSck3uML62Xq8SSHSDgxS9WXMJ3ukNfajvrcYQ2HUe9',
         amount="1",
-        is_nominate="False",
-        payee='Staked',
         is_pool="False",
     )
 
