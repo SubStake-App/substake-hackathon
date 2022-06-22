@@ -116,7 +116,10 @@ export default function NominatorSwitchModal({
               style={pressed ? styles.confirmButton : styles.closeButton}
               onPress={() => {
                 setModalVisible(false);
-                setValidatorList([...validatorList.filter((el) => el.public_key !== selectedValidator), pressed]);
+                setValidatorList([
+                  ...validatorList.filter((el) => el.public_key !== selectedValidator.public_key),
+                  pressed,
+                ]);
               }}
             >
               <Text style={{ color: pressed ? '#ffffff' : 'black' }}>{pressed ? 'Confirm' : 'Close'}</Text>

@@ -62,27 +62,27 @@ export default function CurrentStakeDetails({ route, navigation }) {
     navigation.navigate('CurrentStakes', { paramPropKey: 'paramPropValue' });
   };
 
-  const handleReBond = async () => {
-    setPending(true);
-    const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        env: 'substrate',
-        provider: 'westend',
-        method: 'reStake',
-        userAddress: accounts[currentIndex].sr25519,
-        amount: inputAmount,
-      }),
-    });
-    console.log(response);
-    const result = await response.json();
-    console.log(result);
-    setPending(false);
-    navigation.navigate('CurrentStakes', { paramPropKey: 'paramPropValue' });
-  };
+  // const handleReBond = async () => {
+  //   setPending(true);
+  //   const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       env: 'substrate',
+  //       provider: 'westend',
+  //       method: 'reStake',
+  //       userAddress: accounts[currentIndex].sr25519,
+  //       amount: inputAmount,
+  //     }),
+  //   });
+  //   console.log(response);
+  //   const result = await response.json();
+  //   console.log(result);
+  //   setPending(false);
+  //   navigation.navigate('CurrentStakes', { paramPropKey: 'paramPropValue' });
+  // };
 
   return (
     <Layout white={true} noPadding>
@@ -138,13 +138,13 @@ export default function CurrentStakeDetails({ route, navigation }) {
                   title="OK"
                   type="clear"
                   titleStyle={{ fontSize: 15 }}
-                  onPress={action === 'rebond' ? handleReBond : action === 'bondmore' ? handleBondMore : handleUnBond}
+                  onPress={action === 'bondmore' ? handleBondMore : handleUnBond}
                 />
               </View>
             </View>
           ) : (
             <>
-              <Pressable
+              {/* <Pressable
                 style={styles.buttonFlex}
                 onPress={() => {
                   setShowInput(true);
@@ -153,7 +153,7 @@ export default function CurrentStakeDetails({ route, navigation }) {
               >
                 <Text style={styles.buttonSymbol}>+</Text>
                 <Text style={styles.buttonText}>Re Bond</Text>
-              </Pressable>
+              </Pressable> */}
               <Pressable
                 style={styles.buttonFlex}
                 onPress={() => {

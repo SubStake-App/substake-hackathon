@@ -16,7 +16,6 @@ export default function CurrentStakes({ navigation, route }) {
 
   const { accounts, currentIndex } = useAsyncStorage();
 
-  // TODO: unlock랑 bonding이랑 나누어서 state로 저장하기
   useEffect(() => {
     const getAssets = async () => {
       setPending(true);
@@ -39,8 +38,10 @@ export default function CurrentStakes({ navigation, route }) {
         setBond(0);
         setUnBond(0);
       } else {
-        setBond(subtract(bignumber(result[0].total), bignumber(result[0].unlock[0].value)).toString());
-        setUnBond(result[0].unlock[0].value);
+        if (result[0].unlock.length > 0) {
+          setBond(subtract(bignumber(result[0].total), bignumber(result[0].unlock[0].value)).toString());
+          setUnBond(result[0].unlock[0].value);
+        } else setBond(result[0].total);
       }
 
       setPending(false);
@@ -49,13 +50,12 @@ export default function CurrentStakes({ navigation, route }) {
     getAssets();
   }, [accounts, route]);
 
-  // TODO: Unlock과 Bonding을 나누어서 map으로 보여주기
   return (
     <Layout white={true}>
       {pending && <LoadingModal />}
       <TopBar white={true} title="Current Stakes" navigation={navigation} path="Home" hideIcon={true} />
       <View style={styles.container}>
-        {bond > 0 || unBond > 0 ? (
+        {bond > 0 && (
           <>
             <Pressable
               onPress={() => navigation.navigate('CurrentStakeDetails', { amount: bond, isBonding: true })}
@@ -72,28 +72,27 @@ export default function CurrentStakes({ navigation, route }) {
                 <Text style={{ fontSize: 12 }}>Bonding</Text>
               </View>
             </Pressable>
-            <Divider style={{ width: '100%' }} />
-            <Pressable
-              onPress={() => navigation.navigate('CurrentStakeDetails', { amount: unBond, isBonding: false })}
-              style={styles.content}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image source={westend} style={{ marginRight: 15, width: 36, height: 36 }} />
-                <View style={{ marginRight: 15 }}>
-                  <Text style={styles.network}>Westend</Text>
-                  <Text style={styles.balance}>You nomination : {unBond} WND</Text>
-                </View>
-              </View>
-              <View style={{ backgroundColor: '#E5E5E5', padding: 10, borderRadius: 5 }}>
-                <Text style={{ fontSize: 12 }}>UnBonding</Text>
-              </View>
-            </Pressable>
-          </>
-        ) : (
-          <>
-            <Text>No current stakes</Text>
+            <Divider />
           </>
         )}
+        {unBond > 0 && (
+          <Pressable
+            onPress={() => navigation.navigate('CurrentStakeDetails', { amount: unBond, isBonding: false })}
+            style={styles.content}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={westend} style={{ marginRight: 15, width: 36, height: 36 }} />
+              <View style={{ marginRight: 15 }}>
+                <Text style={styles.network}>Westend</Text>
+                <Text style={styles.balance}>You nomination : {unBond} WND</Text>
+              </View>
+            </View>
+            <View style={{ backgroundColor: '#E5E5E5', padding: 10, borderRadius: 5 }}>
+              <Text style={{ fontSize: 12 }}>UnBonding</Text>
+            </View>
+          </Pressable>
+        )}
+        {bond === 0 && unBond === 0 && <Text>No current stakes</Text>}
       </View>
     </Layout>
   );

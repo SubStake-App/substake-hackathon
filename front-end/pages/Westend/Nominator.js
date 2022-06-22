@@ -109,8 +109,11 @@ export default function WestendNominator({ navigation }) {
           provider: 'westend',
           method: 'stake',
           userAddress: accounts[currentIndex].sr25519,
-          validators: validatorList.map((el) => el.public_key),
+          amount: bondAmount,
+          payee: 'Staked',
           isNominate: 'True',
+          isBoth: 'True',
+          validators: validatorList.map((el) => el.public_key),
         }),
       });
       console.log(response);
@@ -314,7 +317,7 @@ export default function WestendNominator({ navigation }) {
                       key={i}
                       style={styles.curatedButton}
                       onPress={() => {
-                        setSelectedValidator(el.public_key);
+                        setSelectedValidator(el);
                         setDetailModalVisible(true);
                       }}
                       disabled={status !== 3}
