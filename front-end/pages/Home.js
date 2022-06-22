@@ -12,8 +12,8 @@ export default function Home({ navigation }) {
       <TopBar title={accounts[currentIndex].nickname} navigation={navigation} />
       <View style={styles.container}>
         <View style={styles.container}>
-          <Text style={styles.text}>최초의 섭스레이트 자산 스테이킹 플랫폼</Text>
-          <Text style={styles.text}>SubStake에 오신 것을 환영합니다.</Text>
+          <Text style={styles.text}>Welcome to One-stop Staking</Text>
+          <Text style={styles.text}>Curation Platfor, SubStake!</Text>
           <Button
             title="+ STAKE NOW"
             titleStyle={{ color: '#243AFF', fontSize: 13 }}

@@ -62,9 +62,9 @@ export default function WestendValidator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  현재 전송가능 잔고:
+                  Transferrable Amount:
                   {data?.westendBalance?.transferrableBalance
                     ? formatBalanceToString(data?.westendBalance?.transferrableBalance)
                     : 0}{' '}
@@ -79,7 +79,7 @@ export default function WestendValidator({ navigation }) {
                         keyboardType="decimal-pad"
                         style={commonStyle.textInput}
                         placeholderTextColor="#A8A8A8"
-                        placeholder="숫자만 입력해주세요"
+                        placeholder="Please enter only the digits"
                         onChangeText={(amount) => setBondAmount(amount)}
                         editable={status === 1}
                         autoCorrect={false}
@@ -110,7 +110,7 @@ export default function WestendValidator({ navigation }) {
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
-                    placeholder="숫자만 입력해주세요"
+                    placeholder="Please enter only the digits"
                     onChangeText={(amount) => setBondAmount(amount)}
                     editable={status === 1}
                     autoCorrect={false}

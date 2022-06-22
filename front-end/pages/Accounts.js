@@ -11,7 +11,7 @@ export default function Accounts({ navigation }) {
 
   return (
     <Layout>
-      <TopBar title="등록된 계정" navigation={navigation} path="Home" hideIcon={true} />
+      <TopBar title="Accounts" navigation={navigation} path="Home" hideIcon={true} />
       <View style={styles.container}>
         <View>
           {accounts.map((el, i) => (
@@ -27,7 +27,7 @@ export default function Accounts({ navigation }) {
             </Pressable>
           ))}
         </View>
-        <Button title="계정 추가" onPress={() => navigation.navigate('ReRegister')} />
+        <Button title="Add accounts" onPress={() => navigation.navigate('ReRegister')} />
       </View>
     </Layout>
   );

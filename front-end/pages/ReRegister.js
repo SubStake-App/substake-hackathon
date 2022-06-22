@@ -81,8 +81,8 @@ export default function ReRegister({ navigation }) {
       >
         <View style={commonStyle.serviceChatContainer}>
           <View style={commonStyle.serviceChatBox}>
-            <Text style={commonStyle.serviceChatBoxTitle}>시드문구로 계정을 복구해주세요</Text>
-            <Text style={commonStyle.serviceChatBoxDesc}>서비스 시작을 위해 처음 한 번만 복구하시면 됩니다.</Text>
+            <Text style={commonStyle.serviceChatBoxTitle}>Input your mnemonic seed phrase</Text>
+            <Text style={commonStyle.serviceChatBoxDesc}>Only need to input once in order to launch the service.</Text>
             {status === 0 && (
               <>
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
@@ -91,7 +91,7 @@ export default function ReRegister({ navigation }) {
                     autoCapitalize="none"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
-                    placeholder="시드문구"
+                    placeholder="Seed phase"
                     onChangeText={(text) => setMnemonic(text)}
                     editable={status === 0}
                     autoCorrect={false}
@@ -112,8 +112,8 @@ export default function ReRegister({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>계정 닉네임을 설정해주세요</Text>
-                <Text style={commonStyle.serviceChatBoxDesc}>닉네임은 언제든 수정 가능합니다.</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Set a nickname for your account</Text>
+                <Text style={commonStyle.serviceChatBoxDesc}>You may change the name from settings.</Text>
                 {status === 1 && (
                   <>
                     <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />

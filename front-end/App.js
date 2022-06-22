@@ -70,12 +70,7 @@ export function Root() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {asyncStorageLoaded && westendLoaded ? (
           <>
-            {!isRegistered && (
-              <>
-                <Stack.Screen name="Welcome" component={Welcome} />
-                <Stack.Screen name="Register" component={Register} />
-              </>
-            )}
+            {!isRegistered && <Stack.Screen name="Register" component={Register} />}
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="StakableAssets" component={StakableAssets} />
             <Stack.Screen name="WestendNominator" component={WestendNominator} />

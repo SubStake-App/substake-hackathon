@@ -13,6 +13,7 @@ import { NominationPoolModal } from '../../components/Westend/NominationPool/Mod
 import { useAsyncStorage } from '../../components/Context/AsyncStorage';
 import { useUserBalance } from '../../query';
 import { formatBalanceToString } from '../../components/utils';
+import LoadingModal from '../../components/LoadingModal';
 
 const cardContent = [
   {
@@ -33,6 +34,7 @@ const cardContent = [
 ];
 
 export default function WestendNominationPool({ navigation }) {
+  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
   const [clicked, setClicked] = useState(false);
@@ -48,8 +50,7 @@ export default function WestendNominationPool({ navigation }) {
   const { accounts, currentIndex } = useAsyncStorage();
 
   const handleSubmit = async () => {
-    setStatus(2);
-
+    setPending(true);
     try {
       const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
         method: 'POST',
@@ -75,11 +76,14 @@ export default function WestendNominationPool({ navigation }) {
     } catch {
       setTxStatus('Failed');
     }
+    setStatus(2);
+    setPending(false);
   };
 
   return (
     <Layout>
       <TopBar title="Nomination Pool" path="StakableAssets" navigation={navigation} />
+      {pending && <LoadingModal />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -147,9 +151,9 @@ export default function WestendNominationPool({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  현재 전송가능 잔고: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
+                  Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
                 </Text>
                 {status === 1 && (
                   <>
@@ -160,7 +164,7 @@ export default function WestendNominationPool({ navigation }) {
                         keyboardType="decimal-pad"
                         style={commonStyle.textInput}
                         placeholderTextColor="#A8A8A8"
-                        placeholder="숫자만 입력해주세요"
+                        placeholder="Please enter only the digits"
                         onChangeText={(amount) => setBondAmount(amount)}
                         editable={status === 1}
                         autoCorrect={false}
@@ -209,9 +213,9 @@ export default function WestendNominationPool({ navigation }) {
                 </View>
                 <View style={commonStyle.serviceChatContainer}>
                   <View style={commonStyle.serviceChatBox}>
-                    <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
+                    <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
                     <Text style={commonStyle.serviceChatBoxDesc}>
-                      현재 전송가능 잔고: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
+                      Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
                     </Text>
                     {status === 1 && (
                       <>
@@ -222,7 +226,7 @@ export default function WestendNominationPool({ navigation }) {
                             keyboardType="decimal-pad"
                             style={commonStyle.textInput}
                             placeholderTextColor="#A8A8A8"
-                            placeholder="숫자만 입력해주세요"
+                            placeholder="Please enter only the digits"
                             onChangeText={(amount) => setBondAmount(amount)}
                             editable={status === 1}
                             autoCorrect={false}
