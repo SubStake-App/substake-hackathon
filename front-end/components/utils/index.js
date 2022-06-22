@@ -6,7 +6,6 @@ import { formatUnits } from 'ethers/lib/utils';
 export const derivePrivateKey = (mnemonic) => {
   try {
     const keyring = new Keyring({ type: 'sr25519' });
-    console.log(Wallet.fromMnemonic(mnemonic).address, Wallet.fromMnemonic(mnemonic).privateKey);
 
     return { sr25519: keyring.createFromUri(mnemonic), bip39: Wallet.fromMnemonic(mnemonic) };
   } catch {
@@ -14,6 +13,8 @@ export const derivePrivateKey = (mnemonic) => {
   }
 };
 
-export const formatRawBalanceToString = (balance) => {
-  return Number.parseFloat(formatUnits(BigNumber.from(balance.toHuman().replace(/,/g, '')), 12).toString()).toFixed(4);
+export const formatBalanceToString = (balance) => {
+  return Number.parseFloat(
+    Number.parseFloat(formatUnits(BigNumber.from(balance.replace(/,/g, '')), 12).toString()).toFixed(4)
+  );
 };

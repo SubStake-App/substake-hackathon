@@ -159,7 +159,7 @@ export const commonStyle = StyleSheet.create({
 });
 
 export function ConfirmButton({ onPress, disabled }) {
-  return <Button onPress={onPress} type="clear" title="확인" titleStyle={commonStyle.confirm} disabled={disabled} />;
+  return <Button onPress={onPress} type="clear" title="Ok" titleStyle={commonStyle.confirm} disabled={disabled} />;
 }
 
 export function OptionButton({ onPress, status, text, currentStatus }) {

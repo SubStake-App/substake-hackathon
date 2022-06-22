@@ -10,7 +10,7 @@ export default function StakableAssets({ navigation }) {
         <View style={styles.header}>
           <TopBar path="Home" navigation={navigation} />
           <Text style={styles.headerText}>Stakable Assets</Text>
-          <Text style={styles.content}>보유중인 스테이킹 가능한 자산에 해당하는 네트워크 리스트입니다.</Text>
+          <Text style={styles.content}>Stakable Networks corresponding to your assets in hold</Text>
         </View>
         <StakableList navigation={navigation} />
       </View>

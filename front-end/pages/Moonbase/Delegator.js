@@ -47,8 +47,8 @@ export default function MoonbaseDelegator({ navigation }) {
       >
         <View style={commonStyle.serviceChatContainer}>
           <View style={commonStyle.serviceChatBox}>
-            <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
-            <Text style={commonStyle.serviceChatBoxDesc}>현재 전송가능 잔고: 253.2124 WND</Text>
+            <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
+            <Text style={commonStyle.serviceChatBoxDesc}>Transferrable Amount: 253.2124 WND</Text>
             {status === 0 && (
               <>
                 <Divider style={commonStyle.divider} />
@@ -58,7 +58,7 @@ export default function MoonbaseDelegator({ navigation }) {
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
-                    placeholder="숫자만 입력해주세요"
+                    placeholder="Please enter only the digits"
                     onChangeText={(amount) => setBondAmount(amount)}
                     editable={status === 0}
                     autoCorrect={false}

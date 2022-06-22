@@ -15,8 +15,9 @@ import NominatorDetailModal from '../../components/Westend/Nominator/DetailModal
 import validator_icon from '../../assets/validator_ex.png';
 import NominatorSwitchModal from '../../components/Westend/Nominator/SwitchModal';
 import { useUserBalance } from '../../query';
-import { formatRawBalanceToString } from '../../components/utils';
+import { formatBalanceToString } from '../../components/utils';
 import { useAsyncStorage } from '../../components/Context/AsyncStorage';
+import LoadingModal from '../../components/LoadingModal';
 
 const cardContent = [
   {
@@ -37,6 +38,7 @@ const cardContent = [
 ];
 
 export default function WestendNominator({ navigation }) {
+  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
   const [bondAmount, setBondAmount] = useState(0);
   const [isFilterConfirmed, setIsFilterConfirmed] = useState(false);
@@ -56,20 +58,28 @@ export default function WestendNominator({ navigation }) {
 
   const scrollViewRef = useRef();
 
-  useEffect(() => {
-    const getValidatorList = async () => {
-      const response = await fetch('https://rest-api.substake.app/api/request/dev/validator', {
+  const handleBondAmountSubmit = async () => {
+    setPending(true);
+    try {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/curate', {
         method: 'POST',
         headers: {
           'Content-type': 'application/json',
         },
+        body: JSON.stringify({
+          which: 'validators',
+          bond_amount: bondAmount,
+          is_curate: 'True',
+        }),
       });
+      console.log(response);
       const result = await response.json();
+      console.log(result);
       setValidatorList(result);
-    };
-
-    getValidatorList();
-  }, []);
+      setStatus(1);
+    } catch {}
+    setPending(false);
+  };
 
   useEffect(() => {
     setValidatorFilter([
@@ -85,49 +95,37 @@ export default function WestendNominator({ navigation }) {
   }, []);
 
   const handleOnEndReached = async () => {
-    setStatus(4);
+    setPending(true);
     setIsStakingConfirmed(true);
 
-    // const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     env: 'substrate',
-    //     provider: 'westend',
-    //     method: 'stake',
-    //     userAddress: accounts[currentIndex].sr25519,
-    //     amount: bondAmount,
-    //     payee: 'Staked',
-    //     isNominate: 'False',
-    //     isPool: 'False',
-    //   }),
-    // });
+    try {
+      const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          env: 'substrate',
+          provider: 'westend',
+          method: 'stake',
+          userAddress: accounts[currentIndex].sr25519,
+          validators: validatorList.map((el) => el.public_key),
+          isNominate: 'True',
+        }),
+      });
 
-    const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        env: 'substrate',
-        provider: 'westend',
-        method: 'stake',
-        userAddress: accounts[currentIndex].sr25519,
-        validators: validatorList.map((el) => el.public_key),
-        isNominate: 'True',
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.Status === 'Success') setTxMessage(result.Message);
-    setTxStatus(result.Status);
+      const result = await response.json();
+      if (result.Status === 'Success') setTxMessage(result.Message);
+      setTxStatus(result.Status);
+    } catch {
+      setTxStatus('Failed');
+    }
+    setPending(false);
   };
 
   return (
     <Layout>
+      {pending && <LoadingModal />}
       {detailModalVisible && (
         <NominatorDetailModal
           isVisible={detailModalVisible}
@@ -169,9 +167,9 @@ export default function WestendNominator({ navigation }) {
         </ScrollView>
         <View style={commonStyle.serviceChatContainer}>
           <View style={commonStyle.serviceChatBox}>
-            <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
+            <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>
-              현재 전송가능 잔고: {formatRawBalanceToString(data.westendBalance.free)} WND
+              Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
             </Text>
             {status === 0 && (
               <>
@@ -182,12 +180,12 @@ export default function WestendNominator({ navigation }) {
                     keyboardType="decimal-pad"
                     style={commonStyle.textInput}
                     placeholderTextColor="#A8A8A8"
-                    placeholder="숫자만 입력해주세요"
+                    placeholder="Please enter only the digits"
                     onChangeText={(amount) => setBondAmount(amount)}
                     editable={status === 0}
                     autoCorrect={false}
                   />
-                  <ConfirmButton onPress={() => setStatus(1)} status={0} currentStatus={status} />
+                  <ConfirmButton onPress={handleBondAmountSubmit} status={0} currentStatus={status} />
                 </View>
               </>
             )}
@@ -202,9 +200,10 @@ export default function WestendNominator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>벨리데이터 최소 기준을 필터링 해주세요</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Filtering by the validator status</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  지나치게 엄격한 기준은 Validator 생태계에 건강하지 못하므로 최대 6가지 기준만 선택 가능하십니다.
+                  You may select up to 6 conditions, since there is a risk of few validators being saturated due to the
+                  strict standardization.
                 </Text>
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.buttonWrapper}>
@@ -258,9 +257,9 @@ export default function WestendNominator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>스테이킹 리워드 단리/복리 설정</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Select a staking method</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  단리: 리워드는 즉시 전송가능 상태로 표시됩니다. 복리: 리워드는 자동으로 재-스테이킹 됩니다.
+                  Auto-restake: Same as auto-compound. Direct-transfer: calculated as APR%.
                 </Text>
                 {status === 2 && (
                   <>
@@ -270,21 +269,21 @@ export default function WestendNominator({ navigation }) {
                         style={commonStyle.buttonContainer}
                         onPress={() => {
                           setStatus(3);
-                          setInterestType('Compound');
+                          setInterestType('Auto-restake');
                         }}
                         disabled={status !== 2}
                       >
-                        <Text style={commonStyle.buttonText}>Compound</Text>
+                        <Text style={commonStyle.buttonText}>Auto-restake</Text>
                       </Pressable>
                       <Pressable
                         style={commonStyle.buttonContainer}
                         onPress={() => {
                           setStatus(3);
-                          setInterestType('Simple');
+                          setInterestType('Direct-transfer');
                         }}
                         disabled={status !== 2}
                       >
-                        <Text style={commonStyle.buttonText}>Simple</Text>
+                        <Text style={commonStyle.buttonText}>Direct-transfer</Text>
                       </Pressable>
                     </View>
                   </>
@@ -302,9 +301,9 @@ export default function WestendNominator({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>큐레이션 결과대로 스테이킹 하시겠어요?</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Do you want to stake directly as curated?</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  예상 APY는 86%로, 선택하신 기준에 해당하는 밸리데이터들의 평균 APY보다 1%높습니다.
+                  Estimated staking APY is 86%, which is higher than average APY of all validators.
                 </Text>
                 <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
                 <View style={commonStyle.buttonWrapper}>
@@ -313,8 +312,8 @@ export default function WestendNominator({ navigation }) {
                       key={i}
                       style={styles.curatedButton}
                       onPress={() => {
+                        setSelectedValidator(el.public_key);
                         setDetailModalVisible(true);
-                        setSelectedValidator(el);
                       }}
                       disabled={status !== 3}
                     >

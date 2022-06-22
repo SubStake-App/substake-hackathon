@@ -1,20 +1,48 @@
 
-
 from base import Base
-import threading
-
-OVER_SUBSCRIBED = 256
-COMMISSION_THRESHOLD = 10
-SUBSTRATE_DECIMALS = 12
+from Utils.chain_info import (
+    SUBSTRATE_DECIMALS,
+    OVER_SUBSCRIBED,
+    COMMISSION_THRESHOLD
+)
 
 class Curator(Base):
     
     def __init__(self, env, provider):
        super().__init__(env=env, provider=provider)
 
-    def get_active_validators(self):
+    def get_active_validators(self, is_request=False):
         self.active_validators = self.api.query('Session', 'Validators').value
         self.era = self.api.query('Staking', 'ActiveEra').value['index'] - 1
+        if is_request:
+            eras_points = self.api.query('Staking', 'ErasRewardPoints', params=[self.era]).value
+            validators = eras_points['individual']
+            request = []
+            for (validator, points) in validators:
+                query = self.api.query(
+                    'Staking',
+                    'ErasStakers',
+                    params=[self.era, validator]
+                ).value
+                identity = self.api.query(
+                    module='Identity',
+                    storage_function='IdentityOf',
+                    params=[validator]
+                )
+                if identity == None:
+                    display_name = "No value"
+                else:
+                    identity = identity.value['info']
+                    display_name = identity['display']['Raw']
+                nominees = len(query['others'])
+                request.append({
+                    'validator': validator,
+                    'display_name': display_name,
+                    'points': points,
+                    'nominees': nominees
+                })
+
+            return request
         print(self.active_validators)
     
     def recommend_validators(self, bond_amount: float):
@@ -159,7 +187,7 @@ class Curator(Base):
 if __name__ == '__main__':
     
     curator = Curator(env='substrate', provider='wss://ws-api.substake.app')
-    curator.get_nomination_pools()
+    curator.get_active_validators(is_request=True)
 
         
     

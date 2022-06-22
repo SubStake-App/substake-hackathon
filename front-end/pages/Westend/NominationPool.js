@@ -12,7 +12,8 @@ import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser'
 import { NominationPoolModal } from '../../components/Westend/NominationPool/Modal';
 import { useAsyncStorage } from '../../components/Context/AsyncStorage';
 import { useUserBalance } from '../../query';
-import { formatRawBalanceToString } from '../../components/utils';
+import { formatBalanceToString } from '../../components/utils';
+import LoadingModal from '../../components/LoadingModal';
 
 const cardContent = [
   {
@@ -33,6 +34,7 @@ const cardContent = [
 ];
 
 export default function WestendNominationPool({ navigation }) {
+  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState(0);
   const [action, setAction] = useState('');
   const [clicked, setClicked] = useState(false);
@@ -47,9 +49,8 @@ export default function WestendNominationPool({ navigation }) {
   const { data, isSuccess } = useUserBalance();
   const { accounts, currentIndex } = useAsyncStorage();
 
-  const handleSubstakeSubmit = async () => {
-    setStatus(2);
-
+  const handleSubmit = async () => {
+    setPending(true);
     try {
       const response = await fetch('https://rest-api.substake.app/api/request/dev/stake', {
         method: 'POST',
@@ -64,7 +65,7 @@ export default function WestendNominationPool({ navigation }) {
           amount: bondAmount,
           isNominate: 'False',
           isPool: 'True',
-          poolId,
+          poolId: poolId ? poolId : selectedValidator.selectedIndex,
         }),
       });
 
@@ -75,11 +76,14 @@ export default function WestendNominationPool({ navigation }) {
     } catch {
       setTxStatus('Failed');
     }
+    setStatus(2);
+    setPending(false);
   };
 
   return (
     <Layout>
       <TopBar title="Nomination Pool" path="StakableAssets" navigation={navigation} />
+      {pending && <LoadingModal />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         ref={scrollViewRef}
@@ -147,9 +151,9 @@ export default function WestendNominationPool({ navigation }) {
             </View>
             <View style={commonStyle.serviceChatContainer}>
               <View style={commonStyle.serviceChatBox}>
-                <Text style={commonStyle.serviceChatBoxTitle}>추가하실 스테이킹 수량을 입력해주세요.</Text>
+                <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
                 <Text style={commonStyle.serviceChatBoxDesc}>
-                  현재 전송가능 잔고: {formatRawBalanceToString(data.westendBalance.free)} WND
+                  Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
                 </Text>
                 {status === 1 && (
                   <>
@@ -160,55 +164,18 @@ export default function WestendNominationPool({ navigation }) {
                         keyboardType="decimal-pad"
                         style={commonStyle.textInput}
                         placeholderTextColor="#A8A8A8"
-                        placeholder="숫자만 입력해주세요"
+                        placeholder="Please enter only the digits"
                         onChangeText={(amount) => setBondAmount(amount)}
                         editable={status === 1}
                         autoCorrect={false}
                       />
 
-                      <ConfirmButton onPress={handleSubstakeSubmit} disabled={clicked || status !== 1} />
+                      <ConfirmButton onPress={handleSubmit} disabled={clicked || status !== 1} />
                     </View>
                   </>
                 )}
               </View>
             </View>
-            {status > 1 && (
-              <>
-                <View style={commonStyle.userChatContainer}>
-                  <View style={commonStyle.userChatBox}>
-                    <Text style={commonStyle.userChatBoxText}>{bondAmount}</Text>
-                  </View>
-                </View>
-                {txStatus === 'Success' ? (
-                  <View style={commonStyle.serviceChatContainer}>
-                    <View style={commonStyle.succesContainer}>
-                      <Image source={success} />
-                      <View>
-                        <Text style={commonStyle.successHeader}>Success</Text>
-                        <View style={{ flexDirection: 'row' }}>
-                          <Text style={commonStyle.successMain}>See your extrinsic in </Text>
-                          <Pressable
-                            onPress={() =>
-                              openBrowserAsync(`https://westend.subscan.io/extrinsic/${txMessage}`, {
-                                presentationStyle: WebBrowserPresentationStyle.POPOVER,
-                              })
-                            }
-                          >
-                            <Text style={commonStyle.successLink}>subscan</Text>
-                          </Pressable>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={commonStyle.serviceChatContainer}>
-                    <View style={commonStyle.serviceChatBox}>
-                      <Text style={commonStyle.successMain}>Transaction Failed</Text>
-                    </View>
-                  </View>
-                )}
-              </>
-            )}
           </>
         )}
         {action === 'manual' && status > 0 && (
@@ -237,17 +204,19 @@ export default function WestendNominationPool({ navigation }) {
                 )}
               </View>
             </View>
-            {selectedValidator && (
+            {selectedValidator !== null && (
               <>
                 <View style={commonStyle.userChatContainer}>
                   <View style={commonStyle.userChatBox}>
-                    <Text style={commonStyle.userChatBoxText}>{selectedValidator}</Text>
+                    <Text style={commonStyle.userChatBoxText}>{selectedValidator.selectedName}</Text>
                   </View>
                 </View>
                 <View style={commonStyle.serviceChatContainer}>
                   <View style={commonStyle.serviceChatBox}>
-                    <Text style={commonStyle.serviceChatBoxTitle}>차감하실 스테이킹 수량을 입력해주세요</Text>
-                    <Text style={commonStyle.serviceChatBoxDesc}>현재 스테이킹 수량: 25253.2124 WND</Text>
+                    <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
+                    <Text style={commonStyle.serviceChatBoxDesc}>
+                      Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
+                    </Text>
                     {status === 1 && (
                       <>
                         <Divider style={commonStyle.divider} color="rgba(65, 69, 151, 0.8)" />
@@ -257,47 +226,55 @@ export default function WestendNominationPool({ navigation }) {
                             keyboardType="decimal-pad"
                             style={commonStyle.textInput}
                             placeholderTextColor="#A8A8A8"
-                            placeholder="숫자만 입력해주세요"
+                            placeholder="Please enter only the digits"
                             onChangeText={(amount) => setBondAmount(amount)}
                             editable={status === 1}
                             autoCorrect={false}
                           />
-                          <ConfirmButton onPress={() => setStatus(2)} disabled={clicked || status !== 1} />
+                          <ConfirmButton onPress={handleSubmit} disabled={clicked || status !== 1} />
                         </View>
                       </>
                     )}
                   </View>
                 </View>
-                {status > 1 && (
-                  <>
-                    <View style={commonStyle.userChatContainer}>
-                      <View style={commonStyle.userChatBox}>
-                        <Text style={commonStyle.userChatBoxText}>{bondAmount}</Text>
-                      </View>
-                    </View>
-                    <View style={commonStyle.serviceChatContainer}>
-                      <View style={commonStyle.succesContainer}>
-                        <Image source={success} />
-                        <View>
-                          <Text style={commonStyle.successHeader}>Success</Text>
-                          <View style={{ flexDirection: 'row' }}>
-                            <Text style={commonStyle.successMain}>Your Extrinsic tx-id:</Text>
-                            <Pressable
-                              onPress={() =>
-                                openBrowserAsync('https://moonbase.subscan.io/extrinsic/2298472-4', {
-                                  presentationStyle: WebBrowserPresentationStyle.POPOVER,
-                                })
-                              }
-                            >
-                              <Text style={commonStyle.successLink}> #2275958-3</Text>
-                            </Pressable>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </>
-                )}
               </>
+            )}
+          </>
+        )}
+        {status > 1 && (
+          <>
+            <View style={commonStyle.userChatContainer}>
+              <View style={commonStyle.userChatBox}>
+                <Text style={commonStyle.userChatBoxText}>{bondAmount} WND</Text>
+              </View>
+            </View>
+            {txStatus === 'Success' ? (
+              <View style={commonStyle.serviceChatContainer}>
+                <View style={commonStyle.succesContainer}>
+                  <Image source={success} />
+                  <View>
+                    <Text style={commonStyle.successHeader}>Success</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={commonStyle.successMain}>See your extrinsic in </Text>
+                      <Pressable
+                        onPress={() =>
+                          openBrowserAsync(`https://westend.subscan.io/extrinsic/${txMessage}`, {
+                            presentationStyle: WebBrowserPresentationStyle.POPOVER,
+                          })
+                        }
+                      >
+                        <Text style={commonStyle.successLink}>subscan</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              <View style={commonStyle.serviceChatContainer}>
+                <View style={commonStyle.serviceChatBox}>
+                  <Text style={commonStyle.successMain}>Transaction Failed</Text>
+                </View>
+              </View>
             )}
           </>
         )}
