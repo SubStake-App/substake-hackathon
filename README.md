@@ -117,3 +117,12 @@ Relaychains have over thousands of Validators, and Parachains have a maximum ove
 - Substrate Python
 - Web3.py
 
+
+# 7. Appendix: additional information
+![image](https://user-images.githubusercontent.com/39883171/174960925-65aaa045-b961-452a-8c13-b8320e8ac751.png)
+- SubStake Hackathon DEMO:
+- Figma Design: https://www.figma.com/file/zFoJuZk5n48hsXHJv4qY1I/SubStake-new-UI?node-id=0%3A1
+- Telegram Group: https://t.me/substake_support
+- Twitter: https://twitter.com/substake_app 
+- GitHub: https://github.com/SubStake-App
+
