@@ -43,6 +43,7 @@ const queryClient = new QueryClient({
 export function Root() {
   const { isLoaded: asyncStorageLoaded, accounts } = useAsyncStorage();
   const { isLoaded: westendLoaded } = useWestend();
+  const { data, isSuccess } = useUserBalance();
   // const { isLoaded: moonbeamLoaded } = useMoonbeam();
 
   // useEffect(() => {
@@ -63,7 +64,7 @@ export function Root() {
 
   const isRegistered = accounts && accounts.length > 0;
 
-  console.log(asyncStorageLoaded, westendLoaded);
+  console.log(asyncStorageLoaded, westendLoaded, isSuccess, data);
 
   return (
     <NavigationContainer>

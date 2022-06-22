@@ -46,6 +46,7 @@ export default function NominatorSwitchModal({
           is_curate: 'False',
         }),
       });
+      console.log(response);
       const result = await response.json();
       console.log(result);
       const filteredResult = result.filter((i) => !validatorList.map((el) => el.public_key).includes(i.validator));

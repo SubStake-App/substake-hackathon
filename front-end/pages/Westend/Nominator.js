@@ -78,9 +78,9 @@ export default function WestendNominator({ navigation }) {
       setValidatorList(result);
       setStatus(1);
     } catch {}
+
     setPending(false);
   };
-
   useEffect(() => {
     setValidatorFilter([
       { filter: 'One validator per operator', isChecked: false },
@@ -113,13 +113,15 @@ export default function WestendNominator({ navigation }) {
           isNominate: 'True',
         }),
       });
-
+      console.log(response);
       const result = await response.json();
+      console.log(result);
       if (result.Status === 'Success') setTxMessage(result.Message);
       setTxStatus(result.Status);
     } catch {
       setTxStatus('Failed');
     }
+    setStatus(4);
     setPending(false);
   };
 
@@ -169,7 +171,7 @@ export default function WestendNominator({ navigation }) {
           <View style={commonStyle.serviceChatBox}>
             <Text style={commonStyle.serviceChatBoxTitle}>Enter the staking amount intended</Text>
             <Text style={commonStyle.serviceChatBoxDesc}>
-              Transferrable Amount: {formatBalanceToString(data.westendBalance.transferrableBalance)} WND
+              Transferrable Amount: {formatBalanceToString(data?.westendBalance?.transferrableBalance)} WND
             </Text>
             {status === 0 && (
               <>
