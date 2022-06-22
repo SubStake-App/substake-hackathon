@@ -98,7 +98,7 @@ Relaychains have over thousands of Validators, and Parachains have a maximum ove
 - VMWare Korea Head of Tech-sales
 - Bachelor Degree, Business Administration at Yonsei University
 
-## So-yoon Jung - JS/Substrate Engineer
+## So-yoon Jung - Substrate Engineer
 - Polkadot Regional Ambassador of South Korea
 - Rust Developer, [Polkadot DevCamp Alumni 2022](https://medium.com/polkadot-network/polkadot-devcamp-1489a1f8eef2)
 - Bachelor Degree, Computer Science at UNIST(Ulsan National Institute of Science and Technology)
