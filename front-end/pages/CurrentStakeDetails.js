@@ -102,19 +102,18 @@ export default function CurrentStakeDetails({ route, navigation }) {
         </View>
         <View style={styles.mainContainer}>
           <Text style={styles.mainHeader}>Selected Validators</Text>
-          <Text style={styles.mainText}>blah blah blah</Text>
+          <Text style={styles.mainText}>PARITY WESTEND VALIDATOR 2(Active)</Text>
         </View>
         <View style={styles.mainContainer}>
           <Text style={styles.mainHeader}>Validator Condition</Text>
-          <Text style={styles.mainText}>blah blah blah</Text>
+          <Text style={styles.mainText}>- One validator per operator</Text>
+          <Text style={styles.mainText}>- Currently Elected at least in 3 days</Text>
+          <Text style={styles.mainText}>- Commission rate under 20%</Text>
+          <Text style={styles.mainText}>- With an onchain-identity</Text>
         </View>
         <View style={styles.mainContainer}>
           <Text style={styles.mainHeader}>Staking Option</Text>
-          <Text style={styles.mainText}>blah blah blah</Text>
-        </View>
-        <View style={styles.mainContainer}>
-          <Text style={styles.mainHeader}>My Rank in NPoS</Text>
-          <Text style={styles.mainText}>blah blah blah</Text>
+          <Text style={styles.mainText}>Auto-restake</Text>
         </View>
       </ScrollView>
       <View>
@@ -209,7 +208,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     width: '100%',
-    marginTop: 30,
+    marginTop: 40,
   },
   mainHeader: {
     fontSize: 12,
