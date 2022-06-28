@@ -29,7 +29,7 @@ def get_recommended_collators(bond_amount:int) -> list:
         with conn.cursor() as cur: 
             
             total_active_collator_count = get_total_active_collator_count() #change to get data from on-chain
-            limit_collator_count = total_active_collator_count*(2/3)
+            limit_collator_count = 1 #total_active_collator_count*(2/3)
             avg_bpr = total_active_collator_count / 600 #80(active collators)/600(blocks per round)
             
             query_string = f"SELECT * from dev_collator_list " \
