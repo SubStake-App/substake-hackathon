@@ -67,7 +67,7 @@ def get_recommended_collators(bond_amount:int) -> list:
 
 ## for test
 def main():
-    return_str = json.dumps(get_recommended_collators(30))
+    return_str = json.dumps(get_recommended_collators(10.0))
     print(return_str)
 
     
