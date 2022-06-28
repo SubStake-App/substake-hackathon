@@ -230,47 +230,50 @@ class Staking(Base):
 
         elif self.name == 'substrate':
             
-            assert is_pool is not None, "SUBSTAKE-STAKING(STAKE MORE): Is_pool must be provided"
+            # assert is_pool is not None, "SUBSTAKE-STAKING(STAKE MORE): Is_pool must be provided"
 
-            is_pool = str_to_bool(is_pool)
-            amount = amount * 10**SUBSTRATE_DECIMALS
-            pallet = 'NominationPools' if is_pool else 'Staking'
-            dispatch_call = 'bondMore'
-            params = {'extra': amount} if is_pool else {'max_additional': amount}
+            # is_pool = str_to_bool(is_pool)
+            # amount = amount * 10**SUBSTRATE_DECIMALS
+            # pallet = 'NominationPools' if is_pool else 'Staking'
+            # dispatch_call = 'bondMore'
+            # params = {'extra': amount} if is_pool else {'max_additional': amount}
             
-            generic_call = Helper.get_generic_call(
-                api=self.api,
-                module=pallet,
-                function=dispatch_call,
-                params=params
-            )
-            (is_success, message) = Helper.send_extrinsic(
-                                        api=self.api,
-                                        generic_call=generic_call,
-                                        user_address=user_address    
-                                    )
+            # generic_call = Helper.get_generic_call(
+            #     api=self.api,
+            #     module=pallet,
+            #     function=dispatch_call,
+            #     params=params
+            # )
+            # (is_success, message) = Helper.send_extrinsic(
+            #                             api=self.api,
+            #                             generic_call=generic_call,
+            #                             user_address=user_address    
+            #                         )
 
-            if is_success == "Success": 
+            # if is_success == "Success": 
 
-                lighter_node = Helper.reorder_bag_for(
+                
+            #     generic_call = Helper.get_generic_call(
+            #                         api=self.api,
+            #                         module="VoterList",
+            #                         function="putInFrontOf",
+            #                         params={
+            #                             'lighter': lighter_node
+            #                         }
+            #                     )
+            #     (is_success, message) = Helper.send_extrinsic(
+            #                             api=self.api,
+            #                             generic_call=generic_call,
+            #                             user_address=user_address    
+            #                         )
+                
+            # return {'Transaction Status': is_success, 'Message': message}
+
+            lighter_node = Helper.reorder_bag_for(
                                     api=self.api, 
                                     user_address=user_address
                                 ) 
-                generic_call = Helper.get_generic_call(
-                                    api=self.api,
-                                    module="VoterList",
-                                    function="putInFrontOf",
-                                    params={
-                                        'lighter': lighter_node
-                                    }
-                                )
-                (is_success, message) = Helper.send_extrinsic(
-                                        api=self.api,
-                                        generic_call=generic_call,
-                                        user_address=user_address    
-                                    )
-                
-            return {'Transaction Status': is_success, 'Message': message}
+            return lighter_node
 
     def stake_less(
         self, 
