@@ -22,7 +22,7 @@ def get_total_active_collator_count():
     logging.info(f"==== {total_active_collator_count}")
     return total_active_collator_count
 
-def get_recommended_collators(bond_amount:int) -> list:
+def get_recommended_collators(bond_amount:float, risk_level) -> list:
     try:
         conn = db_con.get_connection()
         collator_list = [] 
@@ -38,7 +38,15 @@ def get_recommended_collators(bond_amount:int) -> list:
                         f"AND average_bpr_week > {avg_bpr} " \
                         f"ORDER BY average_bpr_week DESC, bonded_total DESC " \
                         f"LIMIT {limit_collator_count}" 
-            print(query_string)
+                        
+            if risk_level == 'low' :
+                query_string = f"SELECT * from dev_collator_list " \
+                        f"WHERE active_status = True " \
+                        f"AND minimun_bond < {bond_amount} " \
+                        f"AND average_bpr_week > {avg_bpr} " \
+                        f"ORDER BY bonded_total DESC, average_bpr_week DESC " \
+                        f"LIMIT {limit_collator_count}" 
+                        
             cur.execute(query_string)
             collator_set = cur.fetchall()
             
