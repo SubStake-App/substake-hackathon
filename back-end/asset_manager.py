@@ -81,7 +81,7 @@ if __name__ == '__main__':
     #0x163C477C5C29a306bD541A4cb8Bf2E57aaa389FD
     asset_manager = Asset_Manager(
                                     env='substrate', 
-                                    provider='wss://ws-api.moon.substake.app'
+                                    provider='wss://moonbeam-alpha.api.onfinality.io/public-ws'
                                  )
     account_1 = '0x163C477C5C29a306bD541A4cb8Bf2E57aaa389FD'
 

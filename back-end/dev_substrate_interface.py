@@ -1,7 +1,6 @@
 import logging
 import json
 import Utils.Config as db_con
-from Utils.Config import MOONBASE_AMOUNT_DUE
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
@@ -46,17 +45,16 @@ def get_recommended_collators(bond_amount:int) -> list:
                 account_address = row[0]
                 account_displayname = row[1]
                 average_bpr_week = '{:.3f}'.format(float(row[8]))
-                estimated_apr = MOONBASE_AMOUNT_DUE * float(average_bpr_week) * 52 * 100
-                estimated_apr = '{:.2f}'.format(estimated_apr)
                 bonded_total = row[5]
                 simulated_share = (bond_amount/bonded_total) * 100
                 simulated_share = '{:.3f}'.format(float(simulated_share))
                 
                 collators = {
-                                'address' : account_address,                 
-                                'display_name' : account_displayname,       
-                                'estimated_apr' : estimated_apr,             
+                                'address' : account_address,                #콜래터 지갑 주소 
+                                'display_name' : account_displayname,       #콜래터 이름
+                                'average_bpr' : average_bpr_week,           #20pts per block  
                                 'simulated_share' : simulated_share
+                                
                             }
                 collator_list.append((collators))  
         return collator_list 
