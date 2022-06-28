@@ -48,7 +48,7 @@ def get_recommended_collators(bond_amount:int) -> list:
                 average_bpr_week = '{:.3f}'.format(float(row[8]))
                 estimated_apr = MOONBASE_AMOUNT_DUE * float(average_bpr_week) * 52 * 100
                 estimated_apr = '{:.2f}'.format(estimated_apr)
-                bonded_total = row[5]
+                bonded_total = float(row[5])
                 simulated_share = (bond_amount/bonded_total) * 100
                 simulated_share = '{:.3f}'.format(float(simulated_share))
                 
