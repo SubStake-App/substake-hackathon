@@ -70,11 +70,16 @@ def request_curation():
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
         which = _request.get('which')
-        curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
+        amount = _request.get('amount')
+        if which == 'moonbase' :
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9944')
+        else :
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
         result = Helper.request_curation(
             which=which,
             request=_request,
-            curator=curator
+            curator=curator,
+            amount=amount
         )
         curating_result = json.dumps(result)
         response = make_response(curating_result, 200)

@@ -5,6 +5,8 @@ from hexbytes import HexBytes
 from Key import Key_Handler
 from Utils.helpful_function import str_to_bool
 
+from dev_substrate_interface import get_recommended_collators
+
 class Helper:
 
     @staticmethod
@@ -110,6 +112,9 @@ class Helper:
         elif which == 'nomination_pool':
             
             return curator.get_nomination_pools()
+        
+        elif which == 'moonbase':
+            return get_recommended_collators()
 
     @staticmethod
     def send_extrinsic(api, generic_call, user_address):
