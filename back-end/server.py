@@ -14,7 +14,26 @@ import dev_substrate_interface as dev
 import user_info
 from flask import Flask, request, make_response, jsonify
 app = Flask (__name__) 
+
+@app.route('/api/request/dev/get-key', methods=['POST'])
+def get_user_key():
+    if request.method == 'POST':
+        '''
+            {
+                'public_key' : 'public_key'
+            }
+        '''
+        _request = request.get_json()
+        print('Data Received: {request}'.format(request=_request))
+        public_key = _request.get('public_key')
+        
+        result = json.dumps(user_info.get_user_info(public_key))
+        response = make_response(result, 200)
  
+        return response
+    else :
+        return make_response("Not supported method", 400)
+        
 @app.route('/api/request/dev/set-key', methods=['POST'])
 def set_user_key():
     if request.method == 'POST':
