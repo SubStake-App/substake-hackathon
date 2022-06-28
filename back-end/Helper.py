@@ -114,7 +114,7 @@ class Helper:
             return curator.get_nomination_pools()
         
         elif which == 'moonbase':
-            return get_recommended_collators(request.get('amount'))
+            return get_recommended_collators(float(request.get('amount')))
 
     @staticmethod
     def send_extrinsic(api, generic_call, user_address):
