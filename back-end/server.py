@@ -44,11 +44,16 @@ def request_asset_status():
 
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
+        if _request.get('provider') == 'westend' :
+            asset_manager = Asset_Manager(env='substrate', provider='ws://127.0.0.1:9954')
+        else :
+            asset_manager = Asset_Manager(env='substrate', provider='ws://127.0.0.1:9944')
+            
         user_address = _request.get('of')
-        asset_manager = Asset_Manager(env='substrate', provider='ws://127.0.0.1:9954')
         result = Helper.request_asset_status(
                 user_address=user_address, 
-                asset_manager=asset_manager
+                asset_manager=asset_manager,
+                chain_info=_request.get('provider')
             )
         asset = json.dumps(result)
         response = make_response(asset, 200)
@@ -65,7 +70,11 @@ def request_curation():
         _request = request.get_json()
         print('Data Received: {request}'.format(request=_request))
         which = _request.get('which')
-        curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
+        amount = _request.get('amount')
+        if which == 'moonbase' :
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9944')
+        else :
+            curator = Curator(env='substrate', provider='ws://127.0.0.1:9954')
         result = Helper.request_curation(
             which=which,
             request=_request,

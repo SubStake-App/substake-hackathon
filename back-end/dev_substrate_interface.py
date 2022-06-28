@@ -4,7 +4,7 @@ import Utils.Config as db_con
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
-    url="wss://moonbeam-alpha.api.onfinality.io/public-ws"
+    url="ws://127.0.0.1:9944"
 )   
 
 logging.basicConfig(
@@ -28,7 +28,7 @@ def get_recommended_collators(bond_amount:int) -> list:
         with conn.cursor() as cur: 
             
             total_active_collator_count = get_total_active_collator_count() #change to get data from on-chain
-            limit_collator_count = total_active_collator_count*(2/3)
+            limit_collator_count = 1 #total_active_collator_count*(2/3)
             avg_bpr = total_active_collator_count / 600 #80(active collators)/600(blocks per round)
             
             query_string = f"SELECT * from dev_collator_list " \
@@ -45,7 +45,13 @@ def get_recommended_collators(bond_amount:int) -> list:
                 account_address = row[0]
                 account_displayname = row[1]
                 average_bpr_week = '{:.3f}'.format(float(row[8]))
+<<<<<<< HEAD
                 bonded_total = row[5]
+=======
+                estimated_apr = MOONBASE_AMOUNT_DUE * float(average_bpr_week) * 52 * 100
+                estimated_apr = '{:.2f}'.format(estimated_apr)
+                bonded_total = float(row[5])
+>>>>>>> fc6be9e02847cdae202e9b4d6dacdaddfa49906b
                 simulated_share = (bond_amount/bonded_total) * 100
                 simulated_share = '{:.3f}'.format(float(simulated_share))
                 
@@ -65,7 +71,7 @@ def get_recommended_collators(bond_amount:int) -> list:
 
 ## for test
 def main():
-    return_str = json.dumps(get_recommended_collators(30))
+    return_str = json.dumps(get_recommended_collators(10.0))
     print(return_str)
 
     
