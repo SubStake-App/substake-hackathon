@@ -5,7 +5,7 @@ from Utils.Config import MOONBASE_AMOUNT_DUE
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
-    url="wss://127.0.0.1:9944"
+    url="ws://127.0.0.1:9944"
 )   
 
 logging.basicConfig(
