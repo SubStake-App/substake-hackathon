@@ -5,7 +5,7 @@ from Utils.Config import MOONBASE_AMOUNT_DUE
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
-    url="wss://moonbeam-alpha.api.onfinality.io/public-ws"
+    url="wss://127.0.0.1:9944"
 )   
 
 logging.basicConfig(
