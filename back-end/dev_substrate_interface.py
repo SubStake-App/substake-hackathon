@@ -37,6 +37,7 @@ def get_recommended_collators(bond_amount:int) -> list:
                         f"AND average_bpr_week > {avg_bpr} " \
                         f"ORDER BY average_bpr_week DESC, bonded_total DESC " \
                         f"LIMIT {limit_collator_count}" 
+            print(query_string)
             cur.execute(query_string)
             collator_set = cur.fetchall()
             
