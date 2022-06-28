@@ -225,11 +225,11 @@ def insert_dev_block_data(max_page:int):
         conn.close()
 
 def main():
-    max_page =  6 * 24 * 7 * 4
+    max_page =  10
     insert_dev_block_data(max_page)
     insert_collator_list()
-    insert_top_nominator_status()
-    insert_bottom_nominator_status()
+    #insert_top_nominator_status()
+    #insert_bottom_nominator_status()
 
     
 if __name__ == "__main__":
