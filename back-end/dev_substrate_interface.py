@@ -5,7 +5,8 @@ from Utils.Config import MOONBASE_AMOUNT_DUE
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
-    url="ws://127.0.0.1:9944"
+    url="wss://ws-api.moon.substake.app"
+    #url="ws://127.0.0.1:9944"
 )   
 
 logging.basicConfig(
@@ -64,7 +65,7 @@ def get_recommended_collators(bond_amount:float, risk_level) -> list:
                 collators = {
                                 'address' : account_address,                #콜래터 지갑 주소 
                                 'display_name' : account_displayname,       #콜래터 이름
-                                'average_bpr' : average_bpr_week,           #20pts per block  
+                                'estimated_apr' : estimated_apr,            #average apr /week  
                                 'simulated_share' : simulated_share
                                 
                             }
@@ -77,7 +78,9 @@ def get_recommended_collators(bond_amount:float, risk_level) -> list:
 
 ## for test
 def main():
-    return_str = json.dumps(get_recommended_collators(10.0))
+    return_str = json.dumps(get_recommended_collators(10.0, 'high'))
+    print(return_str)
+    return_str = json.dumps(get_recommended_collators(10.0, 'low'))
     print(return_str)
 
     
