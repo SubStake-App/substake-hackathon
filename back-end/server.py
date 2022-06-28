@@ -78,8 +78,7 @@ def request_curation():
         result = Helper.request_curation(
             which=which,
             request=_request,
-            curator=curator,
-            amount=amount
+            curator=curator
         )
         curating_result = json.dumps(result)
         response = make_response(curating_result, 200)
