@@ -2,7 +2,7 @@
 import time as time
 import requests, json
 import logging
-import Config as db_con
+import Utils.Config as db_con
 from substrateinterface import SubstrateInterface
 
 substrate = SubstrateInterface(
@@ -195,7 +195,7 @@ def insert_dev_block_data(max_page:int):
         page = 0
         while page < max_page:
             logging.info("page :: " + str(page))
-            data_row = {'row': 100, 'page': page}
+            data_row = {'row': 100 * 6 * 7 * 4, 'page': page}
 
             response = requests.post("https://moonbase.api.subscan.io/api/scan/blocks", headers=header, data=json.dumps(data_row))
             jsonObject = response.json()
