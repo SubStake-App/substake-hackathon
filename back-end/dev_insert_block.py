@@ -195,7 +195,7 @@ def insert_dev_block_data(max_page:int):
         page = 0
         while page < max_page:
             logging.info("page :: " + str(page))
-            data_row = {'row': 100 * 6 * 7 * 4, 'page': page}
+            data_row = {'row': 100, 'page': page}
 
             response = requests.post("https://moonbase.api.subscan.io/api/scan/blocks", headers=header, data=json.dumps(data_row))
             jsonObject = response.json()
@@ -225,7 +225,7 @@ def insert_dev_block_data(max_page:int):
         conn.close()
 
 def main():
-    max_page = 3
+    max_page =  6 * 24 * 7 * 4
     insert_dev_block_data(max_page)
     insert_collator_list()
     insert_top_nominator_status()
