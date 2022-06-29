@@ -60,6 +60,7 @@ class Staking(Base):
             amount = float(amount)
             amount = amount * 10**EVM_DECIMALS
             nonce = self.api.eth.get_transaction_count(user_address)
+            collator_address = self.api.toChecksumAddress(collator_address)
             candidate_delgation_count = self.contract.functions.candidate_delegation_count(collator_address).call()
             delegator_delegation_count = self.contract.functions.delegator_delegation_count(user_address).call()
             tx_dict = self.contract.functions.delegate(
@@ -210,7 +211,7 @@ class Staking(Base):
         if self.name == 'evm':
 
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE MORE): Collator address must be provided"
-
+            collator_address = self.api.toChecksumAddress(collator_address)
             amount = amount * 10**EVM_DECIMALS
             nonce = self.api.eth.get_transaction_count(user_address)
             tx_dict = self.contract.functions.delegator_bond_more(
@@ -299,7 +300,7 @@ class Staking(Base):
         if self.name == 'evm':
             
             assert collator_address is not None, "SUBSTAKE-STAKING(STAKE LESS): Collator address must be provided for EVM"
-
+            collator_address = self.api.toChecksumAddress(collator_address)
             amount = amount * 10**EVM_DECIMALS
             nonce = self.api.eth.get_transaction_count(user_address)
             tx_dict = self.contract.functions.schedule_delegator_bond_less(
@@ -402,7 +403,7 @@ class Staking(Base):
         if self.name == 'evm':
 
             assert collator_address is not None, "SUBSTAKE-STAKING(STOP STAKE): Collator address must be provided"
-
+            collator_address = self.api.toChecksumAddress(collator_address)
             nonce = self.api.eth.get_transaction_count(user_address)
             tx_dict = self.contract.functions.schedule_revoke_delegation(
                 collator_address,
