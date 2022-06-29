@@ -65,9 +65,9 @@ class Staking(Base):
             delegator_delegation_count = self.contract.functions.delegator_delegation_count(user_address).call()
             tx_dict = self.contract.functions.delegate(
                 collator_address,
-                amount,
-                int(candidate_delgation_count),
-                int(delegator_delegation_count)
+                int(amount),
+                candidate_delgation_count,
+                delegator_delegation_count,
             ).buildTransaction({'gas': 210000})
             tx_dict['nonce'] = nonce
             tx_dict['from'] = user_address
@@ -216,7 +216,7 @@ class Staking(Base):
             nonce = self.api.eth.get_transaction_count(user_address)
             tx_dict = self.contract.functions.delegator_bond_more(
                 collator_address,
-                amount,
+                int(amount),
             ).buildTransaction({'gas': 210000})
             tx_dict['nonce'] = nonce
             tx_dict['from'] = user_address
@@ -305,7 +305,7 @@ class Staking(Base):
             nonce = self.api.eth.get_transaction_count(user_address)
             tx_dict = self.contract.functions.schedule_delegator_bond_less(
                 collator_address,
-                amount,
+                int(amount),
             ).buildTransaction({'gas': 210000})
             tx_dict['nonce'] = nonce
             tx_dict['from'] = user_address
