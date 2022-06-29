@@ -66,8 +66,8 @@ class Staking(Base):
             tx_dict = self.contract.functions.delegate(
                 collator_address,
                 amount,
-                candidate_delgation_count,
-                delegator_delegation_count
+                int(candidate_delgation_count),
+                int(delegator_delegation_count)
             ).buildTransaction({'gas': 210000})
             tx_dict['nonce'] = nonce
             tx_dict['from'] = user_address
